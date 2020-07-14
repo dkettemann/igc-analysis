@@ -5,7 +5,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="initial-scale=1, width=device-width">
     <title>IGC Analytics</title>
-<!--    <link rel="stylesheet" href="lib/css/font-awesome.min.css">-->
+    <!--    <link rel="stylesheet" href="lib/css/font-awesome.min.css">-->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="lib/leaflet/leaflet.css"/>
     <link rel="stylesheet" href="lib/leaflet-awesome-markers/leaflet.awesome-markers.css"/>
@@ -28,122 +28,125 @@
     </p>
 </noscript>
 
-<label for="fileControl">Select a file to view:</label>
-<input id="fileControl" type="file"/>
 
-<button type="button" id="display-default-file">Display a default file!</button>
+<div class="content">
+    <label for="fileControl">Select a file to view:</label>
+    <input id="fileControl" type="file"/>
 
-<p>
-    <!--        <em>Note:</em> The file will be processed entirely within your web browser. Nothing will be uploaded to the Internet.-->
-    <em>IGC File Upload:</em> IGC files will be uploaded to jsigc.onestudies.com.
-</p>
+    <button type="button" id="display-default-file">Display a default file!</button>
 
-<div id="analytics-output-container">
-    <p><em>Curve Detection Algorithm output:</em></p>
+    <p>
+        <!--        <em>Note:</em> The file will be processed entirely within your web browser. Nothing will be uploaded to the Internet.-->
+        <em>IGC File Upload:</em> IGC files will be uploaded to jsigc.onestudies.com.
+    </p>
 
-    <div>
-        <input type="checkbox" id="curve-90" name="scales">
-        <label for="curve-90" class="checkbox-label">curves detected (90°)</label>
-        <input type="checkbox" id="curve-180" name="scales">
-        <label for="curve-180" class="checkbox-label">curves detected (180°)</label>
-    </div>
-    <pre><code id="curve-detection-output">algorithms are running...</code></pre>
+    <div id="analytics-output-container">
+        <p><em>Curve Detection Algorithm output:</em></p>
 
-    <div class="container">
-        <p id="download-p"></p>
-        <a id="download-url"></a>
-    </div>
-
-    <div class="algorithm-buttons">
-        <button type="button" id="run-circle-detection" onclick="circleDetection()">
-            run circle detection
-        </button>
-        <button type="button" id="run-eight-detection" onclick="console.log('Eight detection clicked!')">
-            run eight detection
-        </button>
-        <button type="button" id="run-triangle-detection" onclick="console.log('FAI detection clicked!')">
-            run FAI triangle detection
-        </button>
-    </div>
-
-    <div class="circle-detection">
-        <p><em>Circle Detection Algorithm output:</em></p>
         <div>
-            <input type="checkbox" id="circle-checkbox" name="scales">
-            <label for="circle-checkbox" class="checkbox-label">circles detected</label>
+            <input type="checkbox" id="curve-90" name="scales">
+            <label for="curve-90" class="checkbox-label">curves detected (90°)</label>
+            <input type="checkbox" id="curve-180" name="scales">
+            <label for="curve-180" class="checkbox-label">curves detected (180°)</label>
         </div>
-        <label for="circle-progress">running circle detection:</label>
-        <progress id="circle-progress" value="0" max="100"> 0%</progress>
-        <p id="time-spent-circles"></p>
-    </div>
+        <pre><code id="curve-detection-output">algorithms are running...</code></pre>
 
-</div>
-
-<div id="errorMessage">
-</div>
-
-<h2> Preferences </h2>
-<p>
-    <label for="altitudeUnits">Altitude units:</label>
-    <select id="altitudeUnits" autocomplete="off">
-        <option value="metres">Metres</option>
-        <option value="feet">Feet</option>
-    </select>
-</p>
-
-<p>
-    <label for="timeZoneSelect">Time zone:</label>
-    <select id="timeZoneSelect">
-    </select>
-</p>
-
-<div id="igcFileDisplay">
-    <h2> Flight Information </h2>
-
-    <table id="headerInfo">
-        <tbody></tbody>
-    </table>
-
-    <div id="task">
-        <h2> Task </h2>
-        <ul>
-        </ul>
-    </div>
-
-    <div id="mapWrapper">
-        <div id="map"></div>
-        <div id="slider">
-            <label for="timeSlider">Time:</label>
-            <button id="timeBack"><span class="fa fa-caret-left"></span></button>
-            <input type="range" id="timeSlider" step="1" value="0" min="0" max="100"/>
-            <button id="timeForward"><span class="fa fa-caret-right"></span></button>
-            <p id="timePositionDisplay"></p>
+        <div class="container">
+            <p id="download-p"></p>
+            <a id="download-url"></a>
         </div>
+
+        <div class="algorithm-buttons">
+            <button type="button" id="run-circle-detection" onclick="circleDetection()">
+                run circle detection
+            </button>
+            <button type="button" id="run-eight-detection" onclick="console.log('Eight detection clicked!')">
+                run eight detection
+            </button>
+            <button type="button" id="run-triangle-detection" onclick="console.log('FAI detection clicked!')">
+                run FAI triangle detection
+            </button>
+        </div>
+
+        <div class="circle-detection">
+            <p><em>Circle Detection Algorithm output:</em></p>
+            <div>
+                <input type="checkbox" id="circle-checkbox" name="scales">
+                <label for="circle-checkbox" class="checkbox-label">circles detected</label>
+            </div>
+            <label for="circle-progress">running circle detection:</label>
+            <progress id="circle-progress" value="0" max="100"> 0%</progress>
+            <p id="time-spent-circles"></p>
+        </div>
+
     </div>
-    <div id="barogram"></div>
+
+    <div id="errorMessage">
+    </div>
+
+    <h2> Preferences </h2>
+    <p>
+        <label for="altitudeUnits">Altitude units:</label>
+        <select id="altitudeUnits" autocomplete="off">
+            <option value="metres">Metres</option>
+            <option value="feet">Feet</option>
+        </select>
+    </p>
+
+    <p>
+        <label for="timeZoneSelect">Time zone:</label>
+        <select id="timeZoneSelect">
+        </select>
+    </p>
+
+    <div id="igcFileDisplay">
+        <h2> Flight Information </h2>
+
+        <table id="headerInfo">
+            <tbody></tbody>
+        </table>
+
+        <div id="task">
+            <h2> Task </h2>
+            <ul>
+            </ul>
+        </div>
+
+        <div id="mapWrapper">
+            <div id="map"></div>
+            <div id="slider">
+                <label for="timeSlider">Time:</label>
+                <button id="timeBack"><span class="fa fa-caret-left"></span></button>
+                <input type="range" id="timeSlider" step="1" value="0" min="0" max="100"/>
+                <button id="timeForward"><span class="fa fa-caret-right"></span></button>
+                <p id="timePositionDisplay"></p>
+            </div>
+        </div>
+        <div id="barogram"></div>
+    </div>
+
+    <script src="lib/moment.min.js"></script>
+    <script src="lib/moment-timezone-with-data.min.js"></script>
+    <script src="lib/jquery-2.1.3.min.js"></script>
+    <script src="lib/jquery.flot.min.js"></script>
+    <script src="lib/jquery.flot.axislabels.js"></script>
+    <script src="lib/jquery.flot.resize.min.js"></script>
+    <script src="lib/jquery.flot.crosshair.js"></script>
+    <script src="lib/leaflet/leaflet.js"></script>
+    <script src="lib/leaflet/Semicircle.js"></script>
+    <script src="lib/leaflet-awesome-markers/leaflet.awesome-markers.min.js"></script>
+    <script src="src/config.js"></script>
+    <script src="src/parseigc.js"></script>
+    <script src="src/mapcontrol.js"></script>
+    <script src="src/igcviewer.js"></script>
+    <script src="src/analyzeigc.js"></script>
+    <script src="src/algorithms/curve.js"></script>
+    <script src="src/algorithms/circle.js"></script>
+    <script src="src/displayresults.js"></script>
+
+    <script>
+    </script>
 </div>
-
-<script src="lib/moment.min.js"></script>
-<script src="lib/moment-timezone-with-data.min.js"></script>
-<script src="lib/jquery-2.1.3.min.js"></script>
-<script src="lib/jquery.flot.min.js"></script>
-<script src="lib/jquery.flot.axislabels.js"></script>
-<script src="lib/jquery.flot.resize.min.js"></script>
-<script src="lib/jquery.flot.crosshair.js"></script>
-<script src="lib/leaflet/leaflet.js"></script>
-<script src="lib/leaflet/Semicircle.js"></script>
-<script src="lib/leaflet-awesome-markers/leaflet.awesome-markers.min.js"></script>
-<script src="src/config.js"></script>
-<script src="src/parseigc.js"></script>
-<script src="src/mapcontrol.js"></script>
-<script src="src/igcviewer.js"></script>
-<script src="src/analyzeigc.js"></script>
-<script src="src/algorithms/curve.js"></script>
-<script src="src/algorithms/circle.js"></script>
-<script src="src/displayresults.js"></script>
-
-<script>
-</script>
 </body>
 
 </html>

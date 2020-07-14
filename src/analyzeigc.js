@@ -83,7 +83,7 @@ function setCheckboxValue(checkbox, value) { checkbox.checked = value; }
 document.addEventListener("DOMContentLoaded", () => {});
 
 function fetchIGCData() {
-    fetch(serverName + 'api/igc/getIGCDocuments.php')
+    fetch(serverAddress + 'api/igc/getIGCDocuments.php')
         .then( async response => {
             if (!response.ok) throw new Error("HTTP error " + response.status);
             response = await response.json();
@@ -92,7 +92,7 @@ function fetchIGCData() {
 }
 
 function fetchExample() {
-    fetch(serverName + 'api/igc/getIGCDocuments.php')
+    fetch(serverAddress + 'api/igc/getIGCDocuments.php')
         .then( async response => {
             if (!response.ok) throw new Error("HTTP error " + response.status);
             response = await response.json();

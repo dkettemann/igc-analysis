@@ -209,7 +209,7 @@
         let data = new FormData();
         data.append("igcfile", file);
 
-        fetch(serverName + "api/igc/readFromForm.php?XDEBUG_SESSION_START=TRUE", {
+        fetch(serverAddress + "api/igc/readFromForm.php?XDEBUG_SESSION_START=TRUE", {
             method: 'post',
             body: data,
         }).then(async response => {
@@ -271,7 +271,7 @@
 
        function displayDefaultFile() {
            // fetch('http://jsigc.test/example.igc')
-           fetch(serverName + 'api/igc/getFile.php')
+           fetch(serverAddress + 'api/igc/getFile.php')
                .then(res => res.blob())
                .then(blob => {
                    var reader = new FileReader();
@@ -290,7 +290,7 @@
 
                        igcFile = parseIGC(this.result);
                        const value = displayIgc(mapControl);
-                       console.log(value);
+                       // console.log(value);
                        const results = runAlgorithms(igcFile);
                        console.log(results);
                        displayResults(results, mapControl);

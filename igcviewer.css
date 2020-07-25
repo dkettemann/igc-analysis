@@ -3,6 +3,13 @@ html {
     font-family: sans-serif;
 }
 
+.content{
+    margin: auto;
+    padding: 10px;
+    width: 50vw;
+    border: 1px solid black;
+}
+
 canvas {
     margin-left: -2px; /* avoid the bottom scrollbar */
 }
@@ -50,37 +57,39 @@ canvas {
 }
 
 #barogram {
+    display: none !important;
     cursor: crosshair;
 }
 
-@media print, screen and (max-width: 1100px) {
-    #mapWrapper, #barogram {
-        width: 90%;
-        display: inline-block;
-        position: relative;
-    }
-
-    #barogram {
-        height: calc(90vh - 130px);
-    }
+#mapWrapper, #barogram {
+    width: 90%;
+    display: inline-block;
+    position: relative;
 }
 
-@media screen and (min-width: 1100px) {
-    #mapWrapper, #barogram {
-        display: inline-block;
-        width: calc(50% - 30px);
-    }
-
-    #mapWrapper {
-        margin-left: 30px;
-    }
-
-    #barogram {
-        position: absolute;
-        right: 0px;
-        height: 90vh;
-    }
+#barogram {
+    height: calc(90vh - 130px);
 }
+
+/*@media print, screen and (max-width: 1100px) {*/
+/*}*/
+
+/*@media screen and (min-width: 1100px) {*/
+/*    #mapWrapper, #barogram {*/
+/*        display: inline-block;*/
+/*        width: calc(50% - 30px);*/
+/*    }*/
+
+/*    #mapWrapper {*/
+/*        margin-left: 30px;*/
+/*    }*/
+
+/*    #barogram {*/
+/*        position: absolute;*/
+/*        right: 0px;*/
+/*        height: 90vh;*/
+/*    }*/
+/*}*/
 
 #errorMessage {
     font-weight: bold;

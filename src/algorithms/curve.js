@@ -2,11 +2,11 @@
  A 90° curve should be defined as a broken line of 2km length, while start- and end point
  have a distance of 1.3km to 1.5km between themselves and at least 0.9km to the turning point.
  */
-function curveDetection(latLong, distances, radius) {
+async function curveDetection(latLong, distances, radius) {
     let curves = [[], []];
     console.time("curveDetection");
     // console.log(Math.max(...distances));
-    const result = findCurves(latLong, distances, 1, radius);
+    const result = await findCurves(latLong, distances, 1, radius);
     result.curve90.forEach(idx => {
         // curves[0].push(latLong[idx]);
         curves[0].push(latLong[nextPointInDistance(radius, idx, distances)]);
@@ -76,7 +76,7 @@ function coveredDistance(distances, p0, p1){
  * @param {number} stepSize
  * @returns {{curve180: [], curve90: []}}
  */
-function findCurves(latLong, distances, stepSize, radius) {
+async function findCurves(latLong, distances, stepSize, radius) {
     let curves = {
         curve90: [],
         curve180: []
@@ -86,6 +86,9 @@ function findCurves(latLong, distances, stepSize, radius) {
         // get three successive points with one radius distance
         const p0 = i, p1 = nextPointInDistance(radius, i, distances), p2 = nextPointInDistance(radius, p1, distances);
         if(p2 < 0) break; // point would be outside of the track log
+        if (p0 % 2000 === 0) {
+            await domUpdate();
+        }
         const distP1P0 = distance(p1, p0),
             distP2P1 = distance(p2, p1),
             distP2P0 = distance(p2, p0),

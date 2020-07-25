@@ -39,14 +39,14 @@ function distance(p1, p2) {
     return 12742 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
 }
 
-function runAlgorithms(track) {
+async function runAlgorithms(track) {
     latLong = track.latLong;
     let result = {
         curveDetection: [],
         circleDetection: [],
     };
     distances = calcDistances(latLong);
-    result.curveDetection = curveDetection(track.latLong, distances, 0.3);
+    result.curveDetection = await curveDetection(track.latLong, distances, 0.3);
     fetchIGCData();
     // result.circleDetection = circleDetection(track.latLong, distances);
     return result;

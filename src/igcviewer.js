@@ -222,7 +222,7 @@
         })
     }
 
-   $(document).ready(function () {
+    $(document).ready(function () {
         var mapControl = createMapControl('map');
 
         var timeZoneSelect = $('#timeZoneSelect');
@@ -243,18 +243,46 @@
             storePreference('timeZone', selectedZone);
         });
 
-        $('#fileControl').change(function () {
+        $('#fileControl').change(async function () {
+            if (this.files.length < 1) return;
+
+            sendData(this.files[0]);
+            try {
+                const file = await readFile(this.files[0]);
+                $('#errorMessage').text('');
+                mapControl.reset();
+                $('#timeSlider').val(0);
+
+                igcFile = parseIGC(file);
+                displayIgc(mapControl);
+
+                const results = await runAlgorithms(igcFile);
+                console.log(results);
+                displayResults(results, mapControl);
+            } catch (ex) {
+                if (ex instanceof IGCException) {
+                    $('#errorMessage').text(ex.message);
+                } else {
+                    throw ex;
+                }
+            }
+        });
+
+        $('#fileControls').change(async function () {
             if (this.files.length > 0) {
                 var reader = new FileReader();
-                reader.onload = function (e) {
+                reader.onload = async function () {
                     try {
                         $('#errorMessage').text('');
                         mapControl.reset();
                         $('#timeSlider').val(0);
 
-                        igcFile = parseIGC(this.result);
+                        igcFile = parseIGC(reader.result);
                         displayIgc(mapControl);
-                        runAlgorithms(igcFile);
+
+                        const results = await runAlgorithms(igcFile);
+                        console.log(results);
+                        displayResults(results, mapControl);
                     } catch (ex) {
                         if (ex instanceof IGCException) {
                             $('#errorMessage').text(ex.message);
@@ -263,42 +291,41 @@
                         }
                     }
                 };
+
                 sendData(this.files[0]);
                 reader.readAsText(this.files[0]);
-                $('#downloadURL').text('test')
             }
         });
 
-       function displayDefaultFile() {
-           // fetch('http://jsigc.test/example.igc')
-           fetch(serverAddress + 'api/igc/getFile.php')
-               .then(res => res.blob())
-               .then(blob => {
-                   var reader = new FileReader();
-                   reader.onload = function (e) {
-                       try {
-                           $('#errorMessage').text('');
-                           mapControl.reset();
-                           $('#timeSlider').val(0);
-                       } catch (ex) {
-                           if (ex instanceof IGCException) {
-                               $('#errorMessage').text(ex.message);
-                           } else {
-                               throw ex;
-                           }
-                       }
+        function displayDefaultFile() {
+            fetch(serverAddress + 'api/igc/getFile.php')
+                .then(res => res.blob())
+                .then(blob => {
+                    var reader = new FileReader();
+                    reader.onload = async function (e) {
+                        try {
+                            $('#errorMessage').text('');
+                            mapControl.reset();
+                            $('#timeSlider').val(0);
+                        } catch (ex) {
+                            if (ex instanceof IGCException) {
+                                $('#errorMessage').text(ex.message);
+                            } else {
+                                throw ex;
+                            }
+                        }
 
-                       igcFile = parseIGC(this.result);
-                       const value = displayIgc(mapControl);
-                       // console.log(value);
-                       const results = runAlgorithms(igcFile);
-                       console.log(results);
-                       displayResults(results, mapControl);
-                   };
-                   $('.container').hide();
-                   reader.readAsText(blob);
-               });
-       }
+                        igcFile = parseIGC(this.result);
+                        const value = displayIgc(mapControl);
+                        // console.log(value);
+                        const results = await runAlgorithms(igcFile);
+                        console.log(results);
+                        displayResults(results, mapControl);
+                    };
+                    $('.container').hide();
+                    reader.readAsText(blob);
+                });
+        }
 
         $("#display-default-file").click(function () {
             displayDefaultFile();
@@ -391,6 +418,6 @@
         timeZoneSelect.val(timeZone);
         moment.tz.setDefault(timeZone);
 
-        displayDefaultFile();
+        if (displayDefaultFileOnStartup) displayDefaultFile();
     });
 }(jQuery));

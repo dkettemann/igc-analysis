@@ -28,6 +28,19 @@
     </p>
 </noscript>
 
+<button onclick="runCircleDetection()">Trigger circle detection</button>
+<script>
+    async function runCircleDetection() {
+        console.log("starting the circle detection")
+        const circles = await circleDetection();
+        const results = {
+            curve90: curve90,
+            curve180: curve180,
+            circleResults: circles
+        }
+        console.log(results);
+    }
+</script>
 
 <div class="content">
     <label for="fileControl">Select a file to view:</label>

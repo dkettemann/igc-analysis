@@ -28,17 +28,44 @@
     </p>
 </noscript>
 
-<button onclick="runCircleDetection()">Trigger circle detection</button>
+<button id="run-algorithms" onclick="runCircleDetection()">Run Algorithms</button>
 <script>
     async function runCircleDetection() {
-        console.log("starting the circle detection")
+        console.log("running circle detection")
         const circles = await circleDetection();
         const results = {
-            curve90: curve90,
-            curve180: curve180,
-            circleResults: circles
+            igcHeader: {
+                date: "",
+                pilotName: "",
+                gliderType: "",
+                startLocation: "",
+                country: "",
+                gpsTracker: "",
+                flightRecorder: ""
+            },
+            shapeDetection: {
+                curve90: curve90,
+                curve180: curve180,
+                circle: circles,
+                eight: ""
+            },
+            additionalData: {
+                flightTime: "",
+                totalDistance: "",
+                maxSpeed: "",
+                maxAltitude: "",
+                minAltitude: "",
+                maxAltitudeAboveStart: "",
+                startLocation: "",
+                landingLocation: "",
+                startLandingDistance: ""
+            }
         }
-        console.log(results);
+        console.group('algorithm results');
+        console.log('%c IGC Header', 'color: gray', results.igcHeader)
+        console.log('%c Shape Detection', 'color: blue', results.shapeDetection)
+        console.log('%c Additional Data', 'color: green', results.additionalData)
+        console.groupEnd('algorithm results');
     }
 </script>
 
@@ -49,7 +76,6 @@
     <button type="button" id="display-default-file">Display a default file!</button>
 
     <p>
-        <!--        <em>Note:</em> The file will be processed entirely within your web browser. Nothing will be uploaded to the Internet.-->
         <em>IGC File Upload:</em> IGC files will be uploaded to jsigc.onestudies.com.
     </p>
 

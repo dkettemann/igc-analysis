@@ -41,6 +41,7 @@ function displayCircles(algorithmOutput){
         setMarkers(circles[circle], "circles");
     }
     if(circles.length === 0) circleCheckbox.disabled = true;
+    else circleCheckbox.disabled = false;
 }
 
 circleCheckbox.addEventListener( 'change', () => {

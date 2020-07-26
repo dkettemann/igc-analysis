@@ -20,7 +20,8 @@ canvas {
 
 #map {
     width: 100%;
-    height: calc(100% - 115px);
+    /*height: calc(100% - 115px);*/
+    padding-top: 100%; /* 1:1 Aspect Ratio */
     margin-bottom: 15px;
 }
 
@@ -53,7 +54,6 @@ canvas {
 }
 
 #mapWrapper {
-    height: 90vh;
 }
 
 #barogram {
@@ -129,6 +129,10 @@ table#headerInfo {
     margin-block-end: 1em;
     margin-inline-start: 0px;
     margin-inline-end: 0px;
+}
+
+#run-algorithms{
+    margin-bottom: 12px;
 }
 
 input[type=checkbox] {

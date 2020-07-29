@@ -1,3 +1,8 @@
+/**
+ * Read a file using the FileReader API.
+ * @param file
+ * @returns {Promise<unknown>}
+ */
 function readFile(file) {
     return new Promise((resolve, reject) => {
         let reader = new FileReader();

@@ -13,9 +13,9 @@ async function curveDetection(latLong, distances, radius) {
         // curves[0].push(latLong[nextPointInDistance(2 * radius, idx, distances)]);
     })
     result.curve180.forEach(idx => {
-        curves[1].push(latLong[idx]);
+        // curves[1].push(latLong[idx]);
         curves[1].push(latLong[nextPointInDistance(radius, idx, distances)]);
-        curves[1].push(latLong[nextPointInDistance(2 * radius, idx, distances)]);
+        // curves[1].push(latLong[nextPointInDistance(2 * radius, idx, distances)]);
     })
     console.timeEnd("curveDetection");
     return curves;

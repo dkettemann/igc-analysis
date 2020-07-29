@@ -1,12 +1,22 @@
-/**
+/*
  * Refer to the Mozilla Docs for more Info:
  * https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/File_drag_and_drop
+ */
+
+/**
+ * Handles the ondragover event.
+ * @param ev
  */
 function dragOverHandler(ev) {
     // Prevent default behavior (Prevent file from being opened)
     ev.preventDefault();
 }
 
+/**
+ * Handles the ondrop event.
+ * @param ev
+ * @param callback
+ */
 function dropHandler(ev, callback) {
     console.log('File(s) dropped');
 
@@ -22,7 +32,7 @@ function dropHandler(ev, callback) {
                 console.log('... file[' + i + '].name = ' + file.name);
             }
         }
-        callback();
+        callback(file);
     } else {
         // Use DataTransfer interface to access the file(s)
         for (var i = 0; i < ev.dataTransfer.files.length; i++) {

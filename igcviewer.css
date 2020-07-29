@@ -20,7 +20,6 @@ canvas {
 
 #map {
     width: 100%;
-    /*height: calc(100% - 115px);*/
     padding-top: 100%; /* 1:1 Aspect Ratio */
     margin-bottom: 15px;
 }
@@ -70,26 +69,6 @@ canvas {
 #barogram {
     height: calc(90vh - 130px);
 }
-
-/*@media print, screen and (max-width: 1100px) {*/
-/*}*/
-
-/*@media screen and (min-width: 1100px) {*/
-/*    #mapWrapper, #barogram {*/
-/*        display: inline-block;*/
-/*        width: calc(50% - 30px);*/
-/*    }*/
-
-/*    #mapWrapper {*/
-/*        margin-left: 30px;*/
-/*    }*/
-
-/*    #barogram {*/
-/*        position: absolute;*/
-/*        right: 0px;*/
-/*        height: 90vh;*/
-/*    }*/
-/*}*/
 
 #errorMessage {
     font-weight: bold;

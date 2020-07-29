@@ -279,11 +279,7 @@
                             mapControl.reset();
                             $('#timeSlider').val(0);
                         } catch (ex) {
-                            if (ex instanceof IGCException) {
-                                $('#errorMessage').text(ex.message);
-                            } else {
-                                throw ex;
-                            }
+                            errorHandler(ex);
                         }
 
                         igcFile = parseIGC(this.result);

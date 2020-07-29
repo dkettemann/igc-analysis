@@ -268,35 +268,6 @@
             }
         });
 
-        $('#fileControls').change(async function () {
-            if (this.files.length > 0) {
-                var reader = new FileReader();
-                reader.onload = async function () {
-                    try {
-                        $('#errorMessage').text('');
-                        mapControl.reset();
-                        $('#timeSlider').val(0);
-
-                        igcFile = parseIGC(reader.result);
-                        displayIgc(mapControl);
-
-                        const results = await runAlgorithms(igcFile);
-                        console.log(results);
-                        displayResults(results, mapControl);
-                    } catch (ex) {
-                        if (ex instanceof IGCException) {
-                            $('#errorMessage').text(ex.message);
-                        } else {
-                            throw ex;
-                        }
-                    }
-                };
-
-                sendData(this.files[0]);
-                reader.readAsText(this.files[0]);
-            }
-        });
-
         function displayDefaultFile() {
             fetch(serverAddress + 'api/igc/getFile.php')
                 .then(res => res.blob())

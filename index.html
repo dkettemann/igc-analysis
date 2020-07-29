@@ -67,8 +67,8 @@
         console.log('%c Additional Data', 'color: green', results.additionalData)
         console.groupEnd();
     }
-    function callback(){
-        console.log("cb is called")
+    let callback = (file) => {
+        // this function is overwritten src/igcviewer.js
     }
 </script>
 
@@ -178,9 +178,15 @@
         <script src="lib/leaflet/leaflet.js"></script>
         <script src="lib/leaflet/Semicircle.js"></script>
         <script src="lib/leaflet-awesome-markers/leaflet.awesome-markers.min.js"></script>
-        <script src="src/config.js"></script>
+        <!--    Import of source files:    -->
+        <!--    For a production environment, the number of files should be significantly reduced    -->
+        <script src="src/shared/config.js"></script>
         <script src="src/utils/readFile.js"></script>
         <script src="src/utils/dropFile.js"></script>
+        <script src="src/utils/wait.js"></script>
+        <script src="src/utils/distance.js"></script>
+        <script src="src/shared/UIControl.js"></script>
+        <script src="src/shared/globalVariables.js"></script>
         <script src="src/parseigc.js"></script>
         <script src="src/mapcontrol.js"></script>
         <script src="src/igcviewer.js"></script>

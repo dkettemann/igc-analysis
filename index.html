@@ -22,16 +22,23 @@
 <p>This site is built upon the <a href="https://github.com/alistairmgreen/IGCWebView">IGCWebView GitHub Repository</a>.
 </p>
 
-<noscript>
-    <p>
-        <strong>Please enable JavaScript to use this application.</strong>
-    </p>
-</noscript>
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <p>IMPORTANT NOTE: The analysis of the IGC file heavily uses your CPU.
+            This may not let you use this browser window while the calculations are still running.</p>
+        <p>Too slow down calculations and reduce CPU usage, click the button below.</p>
 
-<button id="run-algorithms" onclick="runCircleDetection()">Run Algorithms</button>
+        <button id="keep-calculation-speed" onclick="closeModal()">OK</button>
+        <button id="slower-calculations-btn" onclick="reduceCalculationSpeed()">Reduce Calculation Speed</button>
+    </div>
+</div>
+
+<button id="run-algorithms-btn" onclick="runCircleDetection()">Run Algorithms</button>
 <script>
-    async function runCircleDetection() {
-        console.log("running circle detection")
+        async function runCircleDetection() {
+        console.log("running circle detection");
+        openModal();
         const circles = await circleDetection();
         const results = {
             igcHeader: {
@@ -67,6 +74,7 @@
         console.log('%c Additional Data', 'color: green', results.additionalData)
         console.groupEnd();
     }
+
     let callback = (file) => {
         // this function is overwritten src/igcViewer.js
     }
@@ -187,6 +195,7 @@
         <script src="src/utils/distance.js"></script>
         <script src="src/shared/UIControl.js"></script>
         <script src="src/shared/globalVariables.js"></script>
+        <script src="src/shared/modal.js"></script>
         <script src="src/parseIGC.js"></script>
         <script src="src/mapControl.js"></script>
         <script src="src/igcViewer.js"></script>

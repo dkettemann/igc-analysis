@@ -25,19 +25,20 @@ async function findCircles(latLong, distances) {
     let circles = [];
     let circlesFound = false;
     for (let p0 = 0; p0 < latLong.length; p0++) {
-        if (p0 % 2000 === 0) {
+        if (p0 % numberOfCalculations === 0) {
             if (!circlesFound && circles.length > 0) {
                 circlesFound = true;
                 setCheckboxValue(circleCheckbox, true);
             }
             await setCircleDetectionProgress(p0, latLong.length);
-            await domUpdate();
+            await pauseCalculations();
         }
         for (let p1 = nextPointInDistance(0.1, p0, distances); p1 < latLong.length; p1++) {
             if (p1 < 0) break;
             if (circleCondition1(p0, p1) && circleCondition2(latLong, distances, p0, p1)) circles.push([latLong[p0], latLong[p1]]);
         }
     }
+    closeModal();
     return circles;
 }
 

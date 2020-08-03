@@ -4,10 +4,6 @@ html {
 }
 
 .content{
-    margin: auto;
-    padding: 10px;
-    width: 50vw;
-    border: 1px solid black;
 }
 
 canvas {
@@ -20,6 +16,7 @@ canvas {
 
 #map {
     width: 100%;
+    /*height: calc(100% - 115px);*/
     padding-top: 100%; /* 1:1 Aspect Ratio */
     margin-bottom: 15px;
 }
@@ -56,18 +53,36 @@ canvas {
 }
 
 #barogram {
-    display: none !important;
     cursor: crosshair;
 }
 
-#mapWrapper, #barogram {
-    width: 90%;
-    display: inline-block;
-    position: relative;
+@media print, screen and (max-width: 1100px) {
+    #mapWrapper, #barogram {
+        width: 90%;
+        display: inline-block;
+        position: relative;
+    }
+
+    #barogram {
+        height: calc(90vh - 130px);
+    }
 }
 
-#barogram {
-    height: calc(90vh - 130px);
+@media screen and (min-width: 1100px) {
+    #mapWrapper, #barogram {
+        display: inline-block;
+        width: calc(50% - 30px);
+    }
+
+    #mapWrapper {
+        margin-left: 30px;
+    }
+
+    #barogram {
+        position: absolute;
+        right: 0px;
+        height: 90vh;
+    }
 }
 
 #errorMessage {
@@ -110,10 +125,6 @@ table#headerInfo {
     margin-inline-end: 0px;
 }
 
-#run-algorithms{
-    margin-bottom: 12px;
-}
-
 input[type=checkbox] {
     /*margin-left: 40px;*/
     cursor: pointer;
@@ -130,7 +141,7 @@ input[type=checkbox] {
 }
 
 .algorithm-buttons, .circle-detection {
-    display: none;
+    display: none; /* they will be set to visible depending on the context */
 }
 
 .algorithm-buttons > button {
@@ -139,4 +150,43 @@ input[type=checkbox] {
 
 #circle-progress {
     margin-top: 20px;
+}
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+/* The Close Button */
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
 }

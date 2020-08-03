@@ -21,3 +21,8 @@ function fetchIGCData() {
             console.log(response)
         })
 }
+
+async function pauseCalculations(){
+    await domUpdate();
+    await sleep(calculationSlowdown);
+}

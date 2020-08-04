@@ -74,14 +74,10 @@
         console.log('%c Additional Data', 'color: green', results.additionalData)
         console.groupEnd();
     }
-
-    let callback = (file) => {
-        // this function is overwritten src/igcViewer.js
-    }
 </script>
 
 <div class="content">
-    <div id="drop_zone" ondrop="dropHandler(event, callback);" ondragover="dragOverHandler(event);">
+    <div id="drop_zone" ondrop="dropHandler(event, handleFileInput);" ondragover="dragOverHandler(event);">
         <label for="fileControl">Select a file to view:</label>
         <input id="fileControl" type="file"/>
 

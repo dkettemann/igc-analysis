@@ -18,7 +18,6 @@ function fetchIGCData() {
         .then( async response => {
             if (!response.ok) throw new Error("HTTP error " + response.status);
             response = await response.json();
-            console.log(response)
         })
 }
 

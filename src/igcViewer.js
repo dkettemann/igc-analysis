@@ -243,8 +243,8 @@
             storePreference('timeZone', selectedZone);
         });
 
-        function handleFileInput(file){
-            var reader = new FileReader();
+        handleFileInput = (file) => {
+            const reader = new FileReader();
             reader.onload = async function (e) {
                 try {
                     $('#errorMessage').text('');
@@ -263,11 +263,7 @@
             };
             $('.container').hide();
             reader.readAsText(file);
-        }
-
-        callback = (file) => {
-            handleFileInput(file)
-        }
+        };
 
         $('#fileControl').change(async function () {
             if (this.files.length < 1) return;

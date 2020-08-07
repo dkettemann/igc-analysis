@@ -16,3 +16,8 @@ shapes (eight, FAI triangle) and key figures in the future.
 
 Note: this app requires a web-server to upload IGC files and fetch a default file.
 You can configure this server in 'src/config.js'.
+
+Known Problems:
+ * When the application is running in the background, the cpu usage goes very low
+    * This is intended by most browsers 
+    * Not much can be done about it, except for informing the user about this

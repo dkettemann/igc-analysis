@@ -5,11 +5,6 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="initial-scale=1, width=device-width">
     <title>IGC Analytics</title>
-    <!--    <link rel="stylesheet" href="lib/css/font-awesome.min.css">-->
-<!--    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">-->
-    <link rel="stylesheet" href="lib/leaflet/leaflet.css"/>
-    <link rel="stylesheet" href="lib/leaflet-awesome-markers/leaflet.awesome-markers.css"/>
-    <link rel="stylesheet" href="igcviewer.css"/>
 </head>
 
 <body>
@@ -19,7 +14,8 @@
     A free browser-based tool for viewing and analyzing GPS tracks and barograph traces from gliding loggers using the
     IGC data format.
 </p>
-<p>This site is built upon the <a href="https://github.com/alistairmgreen/IGCWebView">IGCWebView GitHub Repository</a>.
+<p>
+    This site is built upon the <a href="https://github.com/alistairmgreen/IGCWebView">IGCWebView GitHub Repository</a>.
 </p>
 
 <div id="myModal" class="modal">
@@ -34,61 +30,62 @@
 </div>
 
 <button id="run-algorithms-btn" onclick="runCircleDetection()">Run Algorithms</button>
-<script>
-    async function loadFileByURL(fileURL) {
-        const res = await fetch(fileURL);
-        const blob = await res.blob();
-        await handleFileInput(blob);
-    }
-
-    const fileURL = 'https://api.igc.onestudies.com/api/igc/getFile.php';
-
-    window.onload = async () => {
-        await loadFileByURL(fileURL);
-        // runCircleDetection();
-    }
-
-    async function runCircleDetection() {
-        console.log("running circle detection");
-        if(showCpuUsageWarning) openModal();
-        const circles = await circleDetection();
-        const results = {
-            igcHeader: {
-                date: "August 21, 2019",
-                pilotName: "Uli",
-                gliderType: "BGD Cure",
-                startLocation: "Bremm",
-                country: "DE",
-                gpsTracker: "",
-                flightRecorder: ""
-            },
-            shapeDetection: {
-                curve90: curve90,
-                curve180: curve180,
-                circle: circles,
-                eight: ""
-            },
-            additionalData: {
-                flightTime: "6:03",
-                totalDistance: "223.1",
-                maxSpeed: "76.1",
-                maxAltitude: "1223",
-                minAltitude: "201",
-                maxAltitudeAboveStart: "1022",
-                startLocation: "Bremmer Calmont",
-                landingLocation: "Nehren",
-                startLandingDistance: "7500"
-            }
-        }
-        console.group('algorithm results');
-        console.log('%c IGC Header', 'color: gray', results.igcHeader)
-        console.log('%c Shape Detection', 'color: blue', results.shapeDetection)
-        console.log('%c Additional Data', 'color: green', results.additionalData)
-        console.groupEnd();
-    }
-</script>
 
 <div class="content">
+    <script>
+        async function loadFileByURL(fileURL) {
+            const res = await fetch(fileURL);
+            const blob = await res.blob();
+            await handleFileInput(blob);
+        }
+
+        const fileURL = 'https://api.igc.onestudies.com/api/igc/getFile.php';
+
+        window.onload = async () => {
+            await loadFileByURL(fileURL);
+            // runCircleDetection();
+        }
+
+        async function runCircleDetection() {
+            console.log("running circle detection");
+            if (showCpuUsageWarning) openModal();
+            const circles = await circleDetection();
+            const results = {
+                igcHeader: {
+                    date: "August 21, 2019",
+                    pilotName: "Uli",
+                    gliderType: "BGD Cure",
+                    startLocation: "Bremm",
+                    country: "DE",
+                    gpsTracker: "",
+                    flightRecorder: ""
+                },
+                shapeDetection: {
+                    curve90: curve90,
+                    curve180: curve180,
+                    circle: circles,
+                    eight: ""
+                },
+                additionalData: {
+                    flightTime: "6:03",
+                    totalDistance: "223.1",
+                    maxSpeed: "76.1",
+                    maxAltitude: "1223",
+                    minAltitude: "201",
+                    maxAltitudeAboveStart: "1022",
+                    startLocation: "Bremmer Calmont",
+                    landingLocation: "Nehren",
+                    startLandingDistance: "7500"
+                }
+            }
+            console.group('algorithm results');
+            console.log('%c IGC Header', 'color: gray', results.igcHeader)
+            console.log('%c Shape Detection', 'color: blue', results.shapeDetection)
+            console.log('%c Additional Data', 'color: green', results.additionalData)
+            console.groupEnd();
+        }
+    </script>
+
     <div id="drop_zone" ondrop="dropHandler(event, handleFileInput);" ondragover="dragOverHandler(event);">
         <label for="fileControl">Select a file to view:</label>
         <input id="fileControl" type="file"/>
@@ -183,6 +180,10 @@
             </div>
             <div id="barogram"></div>
         </div>
+
+        <link rel="stylesheet" href="lib/leaflet/leaflet.css"/>
+        <link rel="stylesheet" href="lib/leaflet-awesome-markers/leaflet.awesome-markers.css"/>
+        <link rel="stylesheet" href="igcviewer.css"/>
 
         <script src="lib/moment.min.js"></script>
         <script src="lib/moment-timezone-with-data.min.js"></script>

@@ -243,26 +243,29 @@
             storePreference('timeZone', selectedZone);
         });
 
-        handleFileInput = (file) => {
-            const reader = new FileReader();
-            reader.onload = async function (e) {
-                try {
-                    $('#errorMessage').text('');
-                    mapControl.reset();
-                    $('#timeSlider').val(0);
-                } catch (ex) {
-                    errorHandler(ex);
-                }
+        handleFileInput = async (file) => {
+            return new Promise(resolve => {
+                const reader = new FileReader();
+                reader.onload = async function (e) {
+                    try {
+                        $('#errorMessage').text('');
+                        mapControl.reset();
+                        $('#timeSlider').val(0);
+                    } catch (ex) {
+                        errorHandler(ex);
+                    }
 
-                igcFile = parseIGC(reader.result);
-                const value = displayIgc(mapControl);
-                // console.log(value);
-                const results = await runAlgorithms(igcFile);
-                console.log(results);
-                displayResults(results, mapControl);
-            };
-            $('.container').hide();
-            reader.readAsText(file);
+                    igcFile = parseIGC(reader.result);
+                    displayIgc(mapControl);
+                    const results = await runAlgorithms(igcFile);
+                    console.log(results);
+                    await displayResults(results, mapControl);
+                    return resolve();
+                };
+                $('.container').hide();
+                reader.readAsText(file);
+
+            })
         };
 
         $('#fileControl').change(async function () {

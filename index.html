@@ -35,7 +35,20 @@
 
 <button id="run-algorithms-btn" onclick="runCircleDetection()">Run Algorithms</button>
 <script>
-        async function runCircleDetection() {
+    async function loadFileByURL(fileURL) {
+        const res = await fetch(fileURL);
+        const blob = await res.blob();
+        await handleFileInput(blob);
+    }
+
+    const fileURL = 'https://api.igc.onestudies.com/api/igc/getFile.php';
+
+    window.onload = async () => {
+        await loadFileByURL(fileURL);
+        // runCircleDetection();
+    }
+
+    async function runCircleDetection() {
         console.log("running circle detection");
         openModal();
         const circles = await circleDetection();

@@ -6,7 +6,7 @@
     <meta name="viewport" content="initial-scale=1, width=device-width">
     <title>IGC Analytics</title>
     <!--    <link rel="stylesheet" href="lib/css/font-awesome.min.css">-->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+<!--    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">-->
     <link rel="stylesheet" href="lib/leaflet/leaflet.css"/>
     <link rel="stylesheet" href="lib/leaflet-awesome-markers/leaflet.awesome-markers.css"/>
     <link rel="stylesheet" href="igcviewer.css"/>
@@ -50,7 +50,7 @@
 
     async function runCircleDetection() {
         console.log("running circle detection");
-        openModal();
+        if(showCpuUsageWarning) openModal();
         const circles = await circleDetection();
         const results = {
             igcHeader: {

@@ -52,16 +52,13 @@ canvas {
     margin-right: auto;
 }
 
-#mapWrapper {
-}
-
-#barogram {
-    display: none !important;
-    cursor: crosshair;
-}
+/*#barogram {*/
+/*    display: none !important;*/
+/*    cursor: crosshair;*/
+/*}*/
 
 #mapWrapper, #barogram {
-    width: 90%;
+    width: 100%;
     display: inline-block;
     position: relative;
 }
@@ -71,19 +68,20 @@ canvas {
 }
 
 #errorMessage {
-    font-weight: bold;
-    color: Red;
-    margin-top: 30px;
-    margin-bottom: 30px;
+    display: none;
+    /*font-weight: bold;*/
+    /*color: Red;*/
+    /*margin-top: 30px;*/
+    /*margin-bottom: 30px;*/
 }
 
-#igcFileDisplay {
+#igcFileDisplay, #barogram, table#headerInfo{
     display: none;
 }
 
-table#headerInfo {
-    border-spacing: 1em 0;
-}
+/*table#headerInfo {*/
+/*    border-spacing: 1em 0;*/
+/*}*/
 
 #headerInfo th {
     text-align: left;

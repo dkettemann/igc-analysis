@@ -3,7 +3,7 @@ html {
     font-family: sans-serif;
 }
 
-.content{
+.igc-content{
 }
 
 canvas {
@@ -105,11 +105,11 @@ table#headerInfo {
     font-weight: bold;
 }
 
-.container {
+.igc-container {
     display: none;
 }
 
-.container.algorithm-buttons {
+.igc-container.algorithm-buttons {
     display: flex !important;
 }
 

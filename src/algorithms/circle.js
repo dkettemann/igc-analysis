@@ -10,6 +10,8 @@ async function circleDetection() {
     const start = window.performance.now();
     console.time("circleDetection");
 
+    // latLong = latLong.slice(0,1000)
+    // distances = distances.slice(0,1000)
     const circles = await findCircles(latLong, distances);
 
     console.timeEnd("circleDetection");
@@ -23,6 +25,7 @@ async function circleDetection() {
 
 async function findCircles(latLong, distances) {
     let circles = [];
+    circleIndices = [];
     let circlesFound = false;
     for (let p0 = 0; p0 < latLong.length; p0++) {
         if (p0 % numberOfCalculations === 0) {
@@ -35,7 +38,10 @@ async function findCircles(latLong, distances) {
         }
         for (let p1 = nextPointInDistance(0.1, p0, distances); p1 < latLong.length; p1++) {
             if (p1 < 0) break;
-            if (circleCondition1(p0, p1) && circleCondition2(latLong, distances, p0, p1)) circles.push([latLong[p0], latLong[p1]]);
+            if (circleCondition1(p0, p1) && circleCondition2(latLong, distances, p0, p1)){
+                circles.push([latLong[p0], latLong[p1]]);
+                circleIndices.push([p0, p1]);
+            }
         }
     }
     closeModal();

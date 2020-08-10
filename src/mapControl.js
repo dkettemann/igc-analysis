@@ -33,7 +33,7 @@ function createMapControl(elementName) {
         var startrads = pt1[0] * Math.PI / 180;
         var longdiff = (pt1[1] - pt2[1]) * Math.cos(northmean);
         var hypotenuse = Math.sqrt(latdiff * latdiff + longdiff * longdiff);
-        //assume earth is a sphere circumference 40030 Km 
+        //assume earth is a sphere circumference 40030 Km
         var latdelta = linerad * longdiff / hypotenuse / 111.1949269;
         var longdelta = linerad * latdiff / hypotenuse / 111.1949269 / Math.cos(startrads);
         var linestart = L.latLng(pt1[0] - latdelta, pt1[1] - longdelta);
@@ -146,6 +146,16 @@ function createMapControl(elementName) {
             layersControl.addOverlay(mapLayers.track, 'Flight path');
 
             map.fitBounds(trackLine.getBounds());
+        },
+
+        addCircle: function (latLong) {
+            trackLatLong = latLong;
+            var trackLine = L.polyline(latLong, { color: 'blue', weight: 3 });
+            timePositionMarker = L.marker(latLong[0], { icon: planeIcon });
+            mapLayers.track = L.layerGroup([
+                trackLine
+            ]).addTo(map);
+            layersControl.addOverlay(mapLayers.track, 'Flight path');
         },
 
         addTask: function (coordinates, names) {

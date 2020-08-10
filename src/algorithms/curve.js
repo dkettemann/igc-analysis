@@ -48,19 +48,6 @@ function average(values) {
 }
 
 /**
- * Finds the next track log point with a distance greater than dist starting from index idx in distances.
- * @returns {number}
- */
-function nextPointInDistance(dist, idx, distances) {
-    for (let i = idx+1; i < distances.length; i++) {
-        const arr = distances.slice(idx, i);
-        const sum = arr.reduce((a, b) => a + b, 0);
-        if (sum > dist) return i;
-    }
-    return -1;
-}
-
-/**
  * Measures the traveled distance through all points of the track log from p0 to and including p1.
  * @returns {*}
  */

@@ -22,11 +22,6 @@ async function displayResults(results, mapCtrl) {
             } else curve180Checkbox.disabled = true;
         }
     }
-
-    // console.log(curve90)
-    // console.log(curve180)
-    // console.log(circles)
-    // circles = await circleDetection();
 }
 
 function setMarkers(positionArray, layerName=""){
@@ -37,8 +32,10 @@ function setMarkers(positionArray, layerName=""){
 
 function displayCircles(algorithmOutput){
     circles = algorithmOutput;
-    for (let circle in circles) {
-        setMarkers(circles[circle], "circles");
+    for (let circle in circleIndices) {
+        mapControl.addMarkerTo("circles", latLong[circleIndices[circle][0]]);
+        const circlePoints = latLong.slice(circleIndices[circle][0], circleIndices[circle][1])
+        mapControl.addCircle(circlePoints);
     }
     if(circles.length === 0) circleCheckbox.disabled = true;
     else circleCheckbox.disabled = false;

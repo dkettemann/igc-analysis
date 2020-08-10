@@ -155,7 +155,6 @@ function createMapControl(elementName) {
             mapLayers.track = L.layerGroup([
                 trackLine
             ]).addTo(map);
-            layersControl.addOverlay(mapLayers.track, 'Flight path');
         },
 
         addTask: function (coordinates, names) {

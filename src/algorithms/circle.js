@@ -77,7 +77,7 @@ function circleCondition2(latLong, distances, p0, p1) {
         const opposite = getOppositeCirclePoint(circumference, px, );
         if (opposite < 0) return true; // end of circle is reached
         const oppositeDistance = distance(px, opposite);
-        if (oppositeDistance < circleRadiusMinFactor * radius) {
+        if (oppositeDistance < (1 - circleDiameterMaxDeviation) * radius * 2) {
             return false;
         }
     }

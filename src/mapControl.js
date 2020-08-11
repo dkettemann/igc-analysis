@@ -70,58 +70,76 @@ function createMapControl(elementName) {
 
     // End of private methods
 
-    var map = L.map(elementName);
-
-    var cartoAttribution = '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>';
-    var mapLayers = {
-        positron: L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
-            attribution: cartoAttribution,
-            maxZoom: 18
-        }),
-
-        darkMatter: L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png', {
-            attribution: cartoAttribution,
-            maxZoom: 18
-        }),
-
-        toner: L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.png', {
-            attribution: 'Map tiles by <a href="https://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',
-            maxZoom: 18
-        }),
-
-        watercolor: L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.png', {
-            attribution: 'Map tiles by <a href="https://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.',
-            maxZoom: 18
-        }),
-        terrain: L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png', {
-            attribution: 'Map tiles by <a href="https://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',
-            maxZoom: 18
-        })
-    };
-
-    var layersControl = L.control.layers({
-        'Carto Positron': mapLayers.positron,
-        'Carto Dark Matter': mapLayers.darkMatter,
-        'Stamen Toner': mapLayers.toner,
-        'Stamen Watercolor': mapLayers.watercolor,
-        'Stamen Terrain': mapLayers.terrain
-    });
-
-    mapLayers.positron.addTo(map);
-    layersControl.addTo(map);
-
-    var trackLatLong = [];
+    var map;
+    let layersControl;
+    let mapLayers;
     var timePositionMarker;
-    L.AwesomeMarkers.Icon.prototype.options.prefix = 'fa';
-    var planeIcon = L.AwesomeMarkers.icon({
-        icon: 'plane',
-        iconColor: 'white',
-        markerColor: 'red'
-    });
-    let layerGroups = {}
-    let layerGroup = L.layerGroup().addTo(map);
+    var planeIcon;
+    let layerGroups;
+    let layerGroup;
+    var trackLatLong = [];
+
+    function createMap (){
+        if(map) map.remove();
+        map = L.map(elementName);
+        let cartoAttribution = '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>';
+        mapLayers = {
+            positron: L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
+                attribution: cartoAttribution,
+                maxZoom: 18
+            }),
+
+            darkMatter: L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png', {
+                attribution: cartoAttribution,
+                maxZoom: 18
+            }),
+
+            toner: L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.png', {
+                attribution: 'Map tiles by <a href="https://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',
+                maxZoom: 18
+            }),
+
+            watercolor: L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.png', {
+                attribution: 'Map tiles by <a href="https://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.',
+                maxZoom: 18
+            }),
+            terrain: L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png', {
+                attribution: 'Map tiles by <a href="https://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',
+                maxZoom: 18
+            })
+        };
+
+        layersControl = L.control.layers({
+            'Carto Positron': mapLayers.positron,
+            'Carto Dark Matter': mapLayers.darkMatter,
+            'Stamen Toner': mapLayers.toner,
+            'Stamen Watercolor': mapLayers.watercolor,
+            'Stamen Terrain': mapLayers.terrain
+        });
+
+        mapLayers.positron.addTo(map);
+        layersControl.addTo(map);
+
+        L.AwesomeMarkers.Icon.prototype.options.prefix = 'fa';
+        planeIcon = L.AwesomeMarkers.icon({
+            icon: 'plane',
+            iconColor: 'white',
+            markerColor: 'red'
+        });
+        layerGroups = {}
+        layerGroup = L.layerGroup().addTo(map);
+
+        return map;
+    }
+
+    createMap();
 
     return {
+        initMap: function () {
+            // (re-)initialize the map
+            createMap();
+        },
+
         reset: function () {
             // Clear any existing track data so that a new file can be loaded.
             if (mapLayers.track) {

@@ -26,11 +26,12 @@ function dropHandler(ev, callback) {
         for (let i = 0; i < ev.dataTransfer.items.length; i++) {
             // If dropped items aren't files, reject them
             if (ev.dataTransfer.items[i].kind === 'file') {
-                var file = ev.dataTransfer.items[i].getAsFile();
-                console.log('... file[' + i + '].name = ' + file.name);
+                mapControl.initMap();
+                const file = ev.dataTransfer.items[i].getAsFile();
+                console.log('parsing ' + file.name);
+                callback(file);
             }
         }
-        callback(file);
     } else {
         // Use DataTransfer interface to access the file(s)
         for (let i = 0; i < ev.dataTransfer.files.length; i++) {

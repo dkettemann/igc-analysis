@@ -3,7 +3,7 @@ html {
     font-family: sans-serif;
 }
 
-.content{
+.igc-content{
     margin: auto;
     padding: 10px;
     width: 50vw;
@@ -20,6 +20,7 @@ canvas {
 
 #map {
     width: 100%;
+    /*height: calc(100% - 115px);*/
     padding-top: 100%; /* 1:1 Aspect Ratio */
     margin-bottom: 15px;
 }
@@ -52,10 +53,8 @@ canvas {
     margin-right: auto;
 }
 
-/*#barogram {*/
-/*    display: none !important;*/
-/*    cursor: crosshair;*/
-/*}*/
+#mapWrapper {
+}
 
 #mapWrapper, #barogram {
     width: 100%;
@@ -88,11 +87,11 @@ canvas {
     font-weight: bold;
 }
 
-.container {
+.igc-container {
     display: none;
 }
 
-.container.algorithm-buttons {
+.igc-container.algorithm-buttons {
     display: flex !important;
 }
 

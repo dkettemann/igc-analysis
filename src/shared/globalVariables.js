@@ -10,5 +10,6 @@ const circleAlgorithmProgressBar = document.querySelector('#circle-progress');
 
 let latLong = [];
 let distances = [];
+let circleIndices = [];
 
 let handleFileInput;

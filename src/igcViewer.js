@@ -215,7 +215,7 @@
         }).then(async response => {
             response = await response.json();
             console.log(response);
-            $('.container').css("display", "flex");
+            $('.igc-container').css("display", "flex");
             $('#download-p').text("The file is available here: ");
             $('#download-url').text(response.url);
             $('#download-url').attr("href", response.url)
@@ -262,7 +262,7 @@
                     await displayResults(results, mapControl);
                     return resolve();
                 };
-                $('.container').hide();
+                $('.igc-container').hide();
                 reader.readAsText(file);
 
             })
@@ -295,7 +295,7 @@
                         console.log(results);
                         displayResults(results, mapControl);
                     };
-                    $('.container').hide();
+                    $('.igc-container').hide();
                     reader.readAsText(blob);
                 });
         }

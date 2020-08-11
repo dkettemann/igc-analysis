@@ -10,6 +10,8 @@ async function circleDetection() {
     const start = window.performance.now();
     console.time("circleDetection");
 
+    // latLong = latLong.slice(0,1000)
+    // distances = distances.slice(0,1000)
     const circles = await findCircles(latLong, distances);
 
     console.timeEnd("circleDetection");
@@ -23,6 +25,7 @@ async function circleDetection() {
 
 async function findCircles(latLong, distances) {
     let circles = [];
+    circleIndices = [];
     let circlesFound = false;
     for (let p0 = 0; p0 < latLong.length; p0++) {
         if (p0 % numberOfCalculations === 0) {
@@ -35,7 +38,12 @@ async function findCircles(latLong, distances) {
         }
         for (let p1 = nextPointInDistance(0.1, p0, distances); p1 < latLong.length; p1++) {
             if (p1 < 0) break;
-            if (circleCondition1(p0, p1) && circleCondition2(latLong, distances, p0, p1)) circles.push([latLong[p0], latLong[p1]]);
+            if (circleCondition1(p0, p1) && circleCondition2(latLong, distances, p0, p1)){
+                circles.push([latLong[p0], latLong[p1]]);
+                circleIndices.push([p0, p1]);
+                p0 = p1-1;
+                break;
+            }
         }
     }
     closeModal();
@@ -55,7 +63,7 @@ function getProgressValue(currentIndex, arrayLength) {
  * @returns {boolean}
  */
 function circleCondition1(p0, p1) {
-    return distance(p0, p1) < 0.015;
+    return distance(p0, p1) < circleMaxGap;
 }
 
 /**
@@ -66,13 +74,17 @@ function circleCondition2(latLong, distances, p0, p1) {
     const circumference = coveredDistance(distances, p0, p1);
     const radius = circumference / (2 * Math.PI);
     for (let px = p0 + 1; px < p1; px++) {
-        const opposite = nextPointInDistance(circumference / 2, px, distances);
-        if (opposite < 0) return true; // circle end is reached
+        const opposite = getOppositeCirclePoint(circumference, px, );
+        if (opposite < 0) return true; // end of circle is reached
         const oppositeDistance = distance(px, opposite);
-        if (oppositeDistance < 1.99 * radius) {
-            // console.log("opposite distance to low: " + oppositeDistance);
+        if (oppositeDistance < (1 - circleDiameterMaxDeviation) * radius * 2) {
             return false;
         }
     }
     return true;
+}
+
+function getOppositeCirclePoint(circumference, px){
+    // console.log(distances)
+    return nextPointInDistance(circumference / 2, px, distances);
 }

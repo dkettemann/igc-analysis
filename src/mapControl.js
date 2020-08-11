@@ -157,6 +157,15 @@ function createMapControl(elementName) {
             ]).addTo(map);
         },
 
+        addCurve: function (latLong) {
+            trackLatLong = latLong;
+            var trackLine = L.polyline(latLong, { color: 'green', weight: 3 });
+            timePositionMarker = L.marker(latLong[0], { icon: planeIcon });
+            mapLayers.track = L.layerGroup([
+                trackLine
+            ]).addTo(map);
+        },
+
         addTask: function (coordinates, names) {
             //Clearer if we don't show track to and from start line and finish line, as we are going to show lines
             var taskLayers = [L.polyline(coordinates, { color: 'blue', weight: 3 })];

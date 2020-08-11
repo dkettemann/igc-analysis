@@ -223,7 +223,7 @@
     }
 
     $(document).ready(function () {
-        var mapControl = createMapControl('map');
+        mapControl = createMapControl('map');
 
         var timeZoneSelect = $('#timeZoneSelect');
         $.each(moment.tz.names(), function (index, name) {

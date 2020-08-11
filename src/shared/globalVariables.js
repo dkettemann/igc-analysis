@@ -13,3 +13,4 @@ let distances = [];
 let circleIndices = [];
 
 let handleFileInput;
+let mapControl;

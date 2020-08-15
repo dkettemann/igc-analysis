@@ -28,14 +28,14 @@ function dropHandler(ev, callback) {
             if (ev.dataTransfer.items[i].kind === 'file') {
                 mapControl.initMap();
                 const file = ev.dataTransfer.items[i].getAsFile();
-                console.log('parsing ' + file.name);
+                console.log('%cfile received:', 'color: gray', file.name);
                 callback(file);
             }
         }
     } else {
         // Use DataTransfer interface to access the file(s)
         for (let i = 0; i < ev.dataTransfer.files.length; i++) {
-            console.log('... file[' + i + '].name = ' + ev.dataTransfer.files[i].name);
+            console.log('%c using DataTransfer interface for:', 'color: gray', ev.dataTransfer.files[i].name);
         }
     }
 }

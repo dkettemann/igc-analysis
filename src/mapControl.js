@@ -153,6 +153,15 @@ function createMapControl(elementName) {
             }
         },
 
+        clearLayer: function (layerName) {
+            if(layerGroups[layerName] !== undefined) map.removeLayer(layerGroups[layerName]);
+            layerGroups[layerName] = undefined;
+        },
+
+        clearLayers: function () {
+            layerGroup.clearLayers();
+        },
+
         addTrack: function (latLong) {
             trackLatLong = latLong;
             var trackLine = L.polyline(latLong, { color: 'red', weight: 3 });
@@ -167,18 +176,14 @@ function createMapControl(elementName) {
         },
 
         addCircle: function (latLong) {
-            trackLatLong = latLong;
             var trackLine = L.polyline(latLong, { color: 'blue', weight: 3 });
-            timePositionMarker = L.marker(latLong[0], { icon: planeIcon });
             mapLayers.track = L.layerGroup([
                 trackLine
             ]).addTo(map);
         },
 
         addCurve: function (latLong) {
-            trackLatLong = latLong;
             var trackLine = L.polyline(latLong, { color: 'green', weight: 3 });
-            timePositionMarker = L.marker(latLong[0], { icon: planeIcon });
             mapLayers.track = L.layerGroup([
                 trackLine
             ]).addTo(map);
@@ -253,23 +258,12 @@ function createMapControl(elementName) {
 
         addMarkerTo: function (layerName, markerLatLng) {
             if(layerGroups[layerName] === undefined) layerGroups[layerName] = L.layerGroup().addTo(map);
-            // if(layerGroups[layerName] === undefined) layerGroups[layerName] = L.markerClusterGroup().addTo(map);
             if (markerLatLng) {
-                // let marker = L.marker(markerLatLng); //.addTo(layerGroups[layerName]);
                 L.marker(markerLatLng).addTo(layerGroups[layerName]);
                 if (!map.getBounds().contains(markerLatLng)) {
                     map.panTo(markerLatLng);
                 }
             }
-        },
-
-        clearLayer: function (layerName) {
-            if(layerGroups[layerName] !== undefined) map.removeLayer(layerGroups[layerName]);
-            layerGroups[layerName] = undefined;
-        },
-
-        clearLayers: function () {
-            layerGroup.clearLayers();
         },
     };
 }

@@ -14,3 +14,4 @@ let circleIndices = [];
 
 let handleFileInput;
 let mapControl;
+let updateTimeline;

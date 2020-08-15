@@ -102,7 +102,6 @@ async function findCurves(latLong, distances, stepSize, radius) {
             curve180PreviousScore = score;
         }
     }
-    console.log(curves)
     return curves;
 }
 

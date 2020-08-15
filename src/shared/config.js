@@ -6,4 +6,4 @@ let numberOfCalculations = 1000;
 const showCpuUsageWarning = false;
 const curveAllowedDeviation = false;
 const circleMaxGap = 0.015; // maximum distance between start- and endPoint
-const circleDiameterMaxDeviation = 0.1;
+const circleDiameterMaxDeviation = 0.2;

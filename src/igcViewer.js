@@ -111,7 +111,7 @@
         return baro;
     }
 
-    function updateTimeline(timeIndex, mapControl) {
+    updateTimeline = (timeIndex, mapControl) => {
         var currentPosition = igcFile.latLong[timeIndex];
         var positionText = positionDisplay(currentPosition);
         var unitName = $('#altitudeUnits').val();
@@ -200,7 +200,7 @@
             try {
                 localStorage.setItem(name, value);
             } catch (e) {
-                // If permission is denied, ignore the error.
+                console.log('%ccould not save preferences into local storage:', 'color: gray', e);
             }
         }
     }
@@ -289,8 +289,7 @@
                         }
 
                         igcFile = parseIGC(this.result);
-                        const value = displayIgc(mapControl);
-                        // console.log(value);
+                        displayIgc(mapControl);
                         const results = await runAlgorithms(igcFile);
                         console.log(results);
                         displayResults(results, mapControl);
@@ -359,7 +358,6 @@
         });
 
         $('#barogram').on('plotclick', function (event, pos, item) {
-            console.log('plot click');
             if (item) {
                 updateTimeline(item.dataIndex, mapControl);
                 $('#timeSlider').val(item.dataIndex);

@@ -26,8 +26,14 @@ function getBarogramData(igcFile) {
 }
 
 function getPruningFactor(recordLength) {
-    return recordLength > 1000 ? Math.round(recordLength / 100) : 1;
+    return recordLength > 200 ? Math.round(recordLength / 50) : 1;
 }
+
+chartElement.onclick = function (evt) {
+    const point = myChart.getElementsAtEventForMode(evt, 'point', myChart.options)[0];
+    if (!point) return; // no point was focused, just the chart background was clicked
+    setTimelineValue(point._index * pruningFactor, mapControl);
+};
 
 function getChartConfig() {
     return {
@@ -85,9 +91,3 @@ function getChartConfig() {
 
     };
 }
-
-chartElement.onclick = function (evt) {
-    const point = myChart.getElementsAtEventForMode(evt, 'point', myChart.options)[0];
-    if (!point) return; // no point was focused, just the chart background was clicked
-    setTimelineValue(point._index * pruningFactor, mapControl);
-};

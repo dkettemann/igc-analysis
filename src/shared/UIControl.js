@@ -23,5 +23,5 @@ function setCheckboxValue(checkbox, value) { checkbox.checked = value; }
 
 function setTimelineValue(timeIndex, mapControl) {
     updateTimeline(timeIndex, mapControl);
-    $('#timeSlider').val(timeIndex);
+    timeSliderElement.value = timeIndex;
 }

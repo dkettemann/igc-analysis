@@ -4,7 +4,7 @@
  */
 function errorHandler(e){
     if (e instanceof IGCException) {
-        $('#errorMessage').text(e.message);
+        errorMessageElement.innerHTML = e.message;
     } else {
         throw e;
     }

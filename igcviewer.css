@@ -21,10 +21,6 @@ canvas {
     margin-bottom: 15px;
 }
 
-#slider {
-    height: 100px;
-}
-
 
 #slider label {
     width: 6em;
@@ -41,47 +37,29 @@ canvas {
     padding-bottom: 0px; /* Default padding is huge in Internet Explorer.*/
 }
 
-#mapWrapper, #barogram {
+#mapWrapper {
     max-height: 110vw;
     margin-top: 30px;
-    margin-bottom: 30px;
     margin-left: auto;
     margin-right: auto;
 }
 
-#mapWrapper {
-}
-
-#barogram {
-    cursor: crosshair;
-}
-
 @media print, screen and (max-width: 1100px) {
-    #mapWrapper, #barogram {
+    #mapWrapper {
         width: 90%;
         display: inline-block;
         position: relative;
     }
-
-    #barogram {
-        height: calc(90vh - 130px);
-    }
 }
 
 @media screen and (min-width: 1100px) {
-    #mapWrapper, #barogram {
+    #mapWrapper {
         display: inline-block;
         width: calc(50% - 30px);
     }
 
     #mapWrapper {
         margin-left: 30px;
-    }
-
-    #barogram {
-        position: absolute;
-        right: 0px;
-        height: 90vh;
     }
 }
 

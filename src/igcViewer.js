@@ -1,8 +1,7 @@
 (function ($) {
     'use strict';
 
-    var igcFile = null;
-    var barogramPlot = null;
+    let igcFile = null;
     altitudeConversionFactor = 1.0; // Conversion from metres to required units
 
     function positionDisplay(position) {
@@ -27,90 +26,6 @@
         return positionLatitude + ",   " + positionLongitude;
     }
 
-    function pad(n) {
-        return (n < 10) ? ("0" + n.toString()) : n.toString();
-    }
-
-    function plotBarogram() {
-        var nPoints = igcFile.recordTime.length;
-        var pressureBarogramData = [];
-        var gpsBarogramData = [];
-        var j;
-        var timestamp;
-
-        for (j = 0; j < nPoints; j++) {
-            timestamp = igcFile.recordTime[j].getTime();
-            pressureBarogramData.push([timestamp, igcFile.pressureAltitude[j] * altitudeConversionFactor]);
-            gpsBarogramData.push([timestamp, igcFile.gpsAltitude[j] * altitudeConversionFactor]);
-        }
-
-        var baro = $.plot($('#barogram'), [{
-            label: 'Pressure altitude',
-            data: pressureBarogramData
-        }, {
-            label: 'GPS altitude',
-            data: gpsBarogramData
-        }], {
-            axisLabels: {
-                show: true
-            },
-            xaxis: {
-                axisLabel: 'Time',
-                tickFormatter: function (t, axis) {
-                    return moment(t).format('HH:mm');
-                },
-                ticks: function (axis) {
-                    var ticks = [];
-                    var startMoment = moment(axis.min);
-                    var endMoment = moment(axis.max);
-                    var durationMinutes = endMoment.diff(startMoment, 'minutes');
-                    var interval;
-                    if (durationMinutes <= 10) {
-                        interval = 1;
-                    }
-                    if (durationMinutes <= 50) {
-                        interval = 5;
-                    } else if (durationMinutes <= 100) {
-                        interval = 10;
-                    } else if (durationMinutes <= 150) {
-                        interval = 15;
-                    } else if (durationMinutes <= 300) {
-                        interval = 30;
-                    } else if (durationMinutes <= 600) {
-                        interval = 60;
-                    } else {
-                        interval = 120;
-                    }
-
-                    var tick = startMoment.clone();
-                    tick.minutes(0).seconds(0);
-                    while (tick < endMoment) {
-                        if (tick > startMoment) {
-                            ticks.push(tick.valueOf());
-                        }
-                        tick.add(interval, 'minutes');
-                    }
-
-                    return ticks;
-                }
-            },
-            yaxis: {
-                axisLabel: 'Altitude / ' + $('#altitudeUnits').val()
-            },
-
-            crosshair: {
-                mode: 'xy'
-            },
-
-            grid: {
-                clickable: true,
-                autoHighlight: false
-            }
-        });
-
-        return baro;
-    }
-
     updateTimeline = (timeIndex, mapControl) => {
         var currentPosition = igcFile.latLong[timeIndex];
         var positionText = positionDisplay(currentPosition);
@@ -125,11 +40,6 @@
         );
 
         mapControl.setTimeMarker(timeIndex);
-
-        barogramPlot.lockCrosshair({
-            x: igcFile.recordTime[timeIndex].getTime(),
-            y: igcFile.pressureAltitude[timeIndex] * altitudeConversionFactor
-        });
     }
 
     function displayIgc(mapControl) {
@@ -188,7 +98,6 @@
         $('#igcFileDisplay').show();
 
         mapControl.addTrack(igcFile.latLong);
-        barogramPlot = plotBarogram(igcFile);
 
         $('#timeSlider').prop('max', igcFile.recordTime.length - 1);
         updateTimeline(0, mapControl);
@@ -235,7 +144,6 @@
             var selectedZone = $(this).val();
             moment.tz.setDefault(selectedZone);
             if (igcFile !== null) {
-                barogramPlot = plotBarogram();
                 updateTimeline($('#timeSlider').val(), mapControl);
                 $('#headerInfo td').first().text(moment(igcFile.recordTime[0]).format('LL'));
             }
@@ -314,7 +222,6 @@
             }
 
             if (igcFile !== null) {
-                barogramPlot = plotBarogram();
                 updateTimeline($('#timeSlider').val(), mapControl);
             }
 

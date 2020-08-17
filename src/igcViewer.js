@@ -6,13 +6,13 @@
 
     function positionDisplay(position) {
         function toDegMins(degreevalue) {
-            var wholedegrees = Math.floor(degreevalue);
-            var minutevalue = (60 * (degreevalue - wholedegrees)).toFixed(3);
+            let wholedegrees = Math.floor(degreevalue);
+            let minutevalue = (60 * (degreevalue - wholedegrees)).toFixed(3);
             return wholedegrees + '\u00B0\u00A0' + minutevalue + '\u00B4';
         }
 
-        var positionLatitude = toDegMins(Math.abs(position[0]));
-        var positionLongitude = toDegMins(Math.abs(position[1]));
+        let positionLatitude = toDegMins(Math.abs(position[0]));
+        let positionLongitude = toDegMins(Math.abs(position[1]));
         if (position[0] > 0) {
             positionLatitude += "N";
         } else {
@@ -27,9 +27,10 @@
     }
 
     updateTimeline = (timeIndex, mapControl) => {
-        var currentPosition = igcFile.latLong[timeIndex];
-        var positionText = positionDisplay(currentPosition);
-        var unitName = $('#altitudeUnits').val();
+        let currentPosition = igcFile.latLong[timeIndex];
+        console.log(timeIndex)
+        let positionText = positionDisplay(currentPosition);
+        let unitName = $('#altitudeUnits').val();
         $('#timePositionDisplay').text(
             moment(igcFile.recordTime[timeIndex]).format('HH:mm:ss') + ': ' +
             (igcFile.pressureAltitude[timeIndex] * altitudeConversionFactor).toFixed(0) + ' ' +
@@ -44,15 +45,15 @@
 
     function displayIgc(mapControl) {
         // Display the headers.
-        var displayDate = moment(igcFile.recordTime[0]).format('LL');
-        var headerTable = $('#headerInfo tbody');
+        let displayDate = moment(igcFile.recordTime[0]).format('LL');
+        let headerTable = $('#headerInfo tbody');
         headerTable.html('')
             .append(
                 $('<tr></tr>').append($('<th></th>').text('Date'))
                     .append($('<td></td>').text(displayDate))
             );
-        var headerName;
-        var headerIndex;
+        let headerName;
+        let headerIndex;
         for (headerIndex = 0; headerIndex < igcFile.headers.length; headerIndex++) {
             headerTable.append(
                 $('<tr></tr>').append($('<th></th>').text(igcFile.headers[headerIndex].name))
@@ -66,8 +67,8 @@
             //eliminate anything with empty start line coordinates
             if (igcFile.task.coordinates[0][0] !== 0) {
                 $('#task').show();
-                var taskList = $('#task ul').first().html('');
-                var j;
+                let taskList = $('#task ul').first().html('');
+                let j;
                 //Now add TP numbers.  Change to unordered list
                 if (igcFile.task.takeoff.length > 0) {
                     taskList.append($('<li> </li>').text("Takeoff: " + igcFile.task.takeoff));
@@ -134,14 +135,14 @@
     $(document).ready(function () {
         mapControl = createMapControl('map');
 
-        var timeZoneSelect = $('#timeZoneSelect');
+        let timeZoneSelect = $('#timeZoneSelect');
         $.each(moment.tz.names(), function (index, name) {
             timeZoneSelect.append(
                 $('<option></option>', {value: name}).text(name));
         });
 
         timeZoneSelect.change(function () {
-            var selectedZone = $(this).val();
+            let selectedZone = $(this).val();
             moment.tz.setDefault(selectedZone);
             if (igcFile !== null) {
                 updateTimeline($('#timeSlider').val(), mapControl);
@@ -187,7 +188,7 @@
             fetch(serverAddress + 'api/igc/getFile.php')
                 .then(res => res.blob())
                 .then(blob => {
-                    var reader = new FileReader();
+                    let reader = new FileReader();
                     reader.onload = async function (e) {
                         try {
                             $('#errorMessage').text('');
@@ -214,7 +215,7 @@
 
 
         $('#altitudeUnits').change(function (e, raisedProgrammatically) {
-            var altitudeUnit = $(this).val();
+            let altitudeUnit = $(this).val();
             if (altitudeUnit === 'feet') {
                 altitudeConversionFactor = 3.2808399;
             } else {
@@ -234,17 +235,17 @@
         // 'input' for Chrome and Firefox in order to update smoothly
         // as the range input is dragged.
         $('#timeSlider').on('input', function () {
-            var t = parseInt($(this).val(), 10);
+            let t = parseInt($(this).val(), 10);
             updateTimeline(t, mapControl);
         });
         $('#timeSlider').on('change', function () {
-            var t = parseInt($(this).val(), 10);
+            let t = parseInt($(this).val(), 10);
             updateTimeline(t, mapControl);
         });
 
         $('#timeBack').click(function () {
-            var slider = $('#timeSlider');
-            var curTime = parseInt(slider.val(), 10);
+            let slider = $('#timeSlider');
+            let curTime = parseInt(slider.val(), 10);
             curTime--;
             if (curTime < 0) {
                 curTime = 0;
@@ -254,9 +255,9 @@
         });
 
         $('#timeForward').click(function () {
-            var slider = $('#timeSlider');
-            var curTime = parseInt(slider.val(), 10);
-            var maxval = slider.prop('max');
+            let slider = $('#timeSlider');
+            let curTime = parseInt(slider.val(), 10);
+            let maxval = slider.prop('max');
             curTime++;
             if (curTime > maxval) {
                 curTime = maxval;
@@ -273,8 +274,8 @@
 
         // Load preferences from local storage, if available.
 
-        var altitudeUnit = '';
-        var timeZone = '';
+        let altitudeUnit = '';
+        let timeZone = '';
 
         if (window.localStorage) {
             try {

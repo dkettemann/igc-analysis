@@ -152,6 +152,12 @@ input[type=checkbox] {
     margin-top: 20px;
 }
 
+#barogram-chart{
+    width: calc(50% - 30px);
+    margin-left: 30px;
+    margin-top: 30px;
+}
+
 /* The Modal (background) */
 .modal {
     display: none; /* Hidden by default */

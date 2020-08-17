@@ -7,6 +7,7 @@ const circleDetectionContainer = document.querySelector('.circle-detection');
 const circleCheckbox = document.querySelector('#circle-checkbox');
 const circlesTimeSpent = document.querySelector('#time-spent-circles');
 const circleAlgorithmProgressBar = document.querySelector('#circle-progress');
+let chartElement = document.getElementById("barogram-chart");
 
 let latLong = [];
 let distances = [];
@@ -15,3 +16,4 @@ let circleIndices = [];
 let handleFileInput;
 let mapControl;
 let updateTimeline;
+let altitudeConversionFactor = 1.0; // Conversion from metres to required units

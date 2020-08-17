@@ -43,7 +43,7 @@
 
         window.onload = async () => {
             await loadFileByURL(fileURL);
-            // runCircleDetection();
+            runCircleDetection();
         }
 
         async function runCircleDetection() {
@@ -168,6 +168,10 @@
                 </ul>
             </div>
 
+            <div id="barogram-chart">
+                <canvas id="canvas"></canvas>
+            </div>
+
             <div id="mapWrapper">
                 <div id="map"></div>
                 <div id="slider">
@@ -184,7 +188,9 @@
         <link rel="stylesheet" href="lib/leaflet/leaflet.css"/>
         <link rel="stylesheet" href="lib/leaflet-awesome-markers/leaflet.awesome-markers.css"/>
         <link rel="stylesheet" href="igcviewer.css"/>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
         <script src="lib/moment.min.js"></script>
         <script src="lib/moment-timezone-with-data.min.js"></script>
         <script src="lib/jquery-2.1.3.min.js"></script>
@@ -197,14 +203,15 @@
         <script src="lib/leaflet-awesome-markers/leaflet.awesome-markers.min.js"></script>
         <!--    Import of source files:    -->
         <!--    For a production environment, the number of files should be significantly reduced    -->
+        <script src="src/shared/globalVariables.js"></script>
         <script src="src/shared/config.js"></script>
+        <script src="src/shared/UIControl.js"></script>
+        <script src="src/shared/modal.js"></script>
+        <script src="src/shared/chart.js"></script>
         <script src="src/utils/readFile.js"></script>
         <script src="src/utils/dropFile.js"></script>
         <script src="src/utils/wait.js"></script>
         <script src="src/utils/distance.js"></script>
-        <script src="src/shared/UIControl.js"></script>
-        <script src="src/shared/globalVariables.js"></script>
-        <script src="src/shared/modal.js"></script>
         <script src="src/parseIGC.js"></script>
         <script src="src/mapControl.js"></script>
         <script src="src/igcViewer.js"></script>

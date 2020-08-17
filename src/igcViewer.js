@@ -3,7 +3,7 @@
 
     var igcFile = null;
     var barogramPlot = null;
-    var altitudeConversionFactor = 1.0; // Conversion from metres to required units
+    altitudeConversionFactor = 1.0; // Conversion from metres to required units
 
     function positionDisplay(position) {
         function toDegMins(degreevalue) {
@@ -260,6 +260,7 @@
                     const results = await runAlgorithms(igcFile);
                     console.log(results);
                     await displayResults(results, mapControl);
+                    plotBarogramChart(igcFile);
                     return resolve();
                 };
                 $('.igc-container').hide();
@@ -359,8 +360,7 @@
 
         $('#barogram').on('plotclick', function (event, pos, item) {
             if (item) {
-                updateTimeline(item.dataIndex, mapControl);
-                $('#timeSlider').val(item.dataIndex);
+                setTimelineValue(item.dataIndex, mapControl);
             }
         });
 

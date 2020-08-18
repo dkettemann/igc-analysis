@@ -4,10 +4,10 @@ let igcFile = null;
 altitudeConversionFactor = 1.0; // Conversion from metres to required units
 
 function positionDisplay(position) {
-    function toDegMins(degreevalue) {
-        let wholedegrees = Math.floor(degreevalue);
-        let minutevalue = (60 * (degreevalue - wholedegrees)).toFixed(3);
-        return wholedegrees + '\u00B0\u00A0' + minutevalue + '\u00B4';
+    function toDegMins(degreeValue) {
+        let wholeDegrees = Math.floor(degreeValue);
+        let minuteValue = (60 * (degreeValue - wholeDegrees)).toFixed(3);
+        return wholeDegrees + '\u00B0\u00A0' + minuteValue + '\u00B4';
     }
 
     let positionLatitude = toDegMins(Math.abs(position[0]));

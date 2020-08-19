@@ -10,8 +10,6 @@ async function circleDetection() {
     const start = window.performance.now();
     console.time("circleDetection");
 
-    // latLong = latLong.slice(0,1000)
-    // distances = distances.slice(0,1000)
     const circles = await findCircles(latLong, distances);
 
     console.timeEnd("circleDetection");
@@ -24,6 +22,7 @@ async function circleDetection() {
 }
 
 async function findCircles(latLong, distances) {
+    let circleCandidates = [];
     let circles = [];
     circleIndices = [];
     let circlesFound = false;
@@ -38,16 +37,41 @@ async function findCircles(latLong, distances) {
         }
         for (let p1 = nextPointInDistance(0.1, p0, distances); p1 < latLong.length; p1++) {
             if (p1 < 0) break;
-            if (circleCondition1(p0, p1) && circleCondition2(latLong, distances, p0, p1)){
-                circles.push([latLong[p0], latLong[p1]]);
-                circleIndices.push([p0, p1]);
-                p0 = p1-1;
+            // here, the order of conditions is set to reduce runtime
+            if (circleCondition1(p0, p1) && minDistanceCondition(p0, p1) && circleCondition2(latLong, distances, p0, p1)){
+                circleCandidates.push([p0, p1]);
                 break;
+            } else if(p1 >= latLong.length-1){
+                if(circleCandidates.length > 0){ // There have been circles in this loop
+                    const bestCandidate = getBestCircle(circleCandidates);
+                    circles.push([latLong[bestCandidate[0]], bestCandidate[1]]);
+                    circleIndices.push(bestCandidate);
+                    p0 = bestCandidate[1]-1;
+                    circleCandidates = [];
+                }
             }
         }
     }
     closeModal();
     return circles;
+}
+
+/**
+ * Finds the best circle in a given array of circles.
+ * @param candidatesArray
+ * @returns {*} the best circle.
+ */
+function getBestCircle(candidatesArray){
+    let minimalGap = circleMaxGap;
+    let optimalCircle;
+    for(let key in candidatesArray){
+        const value = distance(candidatesArray[key][0], candidatesArray[key][1]);
+        if(value < minimalGap) {
+            minimalGap = value;
+            optimalCircle = candidatesArray[key];
+        }
+    }
+    return optimalCircle;
 }
 
 /**
@@ -67,6 +91,27 @@ function circleCondition1(p0, p1) {
 }
 
 /**
+ * Checks if there is a better circle starting at p0 and ending with the succeeding point of p1.
+ * Whether a circle is better or not, is determined by the distance gap between start and end point.
+ * @returns {boolean} whether the circle including the next point p1+1 is better or not.
+ */
+function minDistanceCondition(p0, p1){
+    if(p0 > 290 && p0 < 300){
+        console.log('%cp0 p1:', 'color: red', p0, p1,
+            '==> ', distance(p0, p1) <= distance(p0, p1 + 1) || !isCircle(p0, p1+1));
+    }
+    return distance(p0, p1) <= distance(p0, p1 + 1) || !isCircle(p0, p1+1);
+}
+
+/**
+ * Checks whether the track between two points is a circle or not.
+ * @returns {boolean}
+ */
+function isCircle(p0, p1){
+    return circleCondition1(p0, p1) && circleCondition2(latLong, distances, p0, p1)
+}
+
+/**
  * Every point in the circle should have a distance of at least 1.8 * radius to it's opposing point.
  * @returns {boolean}
  */
@@ -74,7 +119,7 @@ function circleCondition2(latLong, distances, p0, p1) {
     const circumference = coveredDistance(distances, p0, p1);
     const radius = circumference / (2 * Math.PI);
     for (let px = p0 + 1; px < p1; px++) {
-        const opposite = getOppositeCirclePoint(circumference, px, );
+        const opposite = getOppositeCirclePoint(circumference, px);
         if (opposite < 0) return true; // end of circle is reached
         const oppositeDistance = distance(px, opposite);
         if (oppositeDistance < (1 - circleDiameterMaxDeviation) * radius * 2) {
@@ -85,6 +130,5 @@ function circleCondition2(latLong, distances, p0, p1) {
 }
 
 function getOppositeCirclePoint(circumference, px){
-    // console.log(distances)
     return nextPointInDistance(circumference / 2, px, distances);
 }

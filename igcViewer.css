@@ -25,10 +25,6 @@ canvas {
     margin-bottom: 15px;
 }
 
-#slider {
-    height: 100px;
-}
-
 
 #slider label {
     width: 6em;
@@ -45,10 +41,9 @@ canvas {
     padding-bottom: 0px; /* Default padding is huge in Internet Explorer.*/
 }
 
-#mapWrapper, #barogram {
+#mapWrapper {
     max-height: 110vw;
     margin-top: 30px;
-    margin-bottom: 30px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -74,7 +69,7 @@ canvas {
     /*margin-bottom: 30px;*/
 }
 
-#igcFileDisplay, #barogram, table#headerInfo{
+#igcFileDisplay {
     display: none;
 }
 
@@ -136,6 +131,12 @@ input[type=checkbox] {
 
 #circle-progress {
     margin-top: 20px;
+}
+
+#barogram-chart{
+    /*width: calc(50% - 30px);*/
+    /*margin-left: 30px;*/
+    margin-top: 30px;
 }
 
 /* The Modal (background) */

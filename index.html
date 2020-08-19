@@ -32,60 +32,6 @@
 <button id="run-algorithms-btn" onclick="runCircleDetection()">Run Algorithms</button>
 
 <div class="igc-content">
-    <script>
-        async function loadFileByURL(fileURL) {
-            const res = await fetch(fileURL);
-            const blob = await res.blob();
-            await handleFileInput(blob);
-        }
-
-        const fileURL = 'https://api.igc.onestudies.com/api/igc/getFile.php';
-
-        window.onload = async () => {
-            await loadFileByURL(fileURL);
-            // runCircleDetection();
-        }
-
-        async function runCircleDetection() {
-            console.log("running circle detection");
-            if (showCpuUsageWarning) openModal();
-            const circles = await circleDetection();
-            const results = {
-                igcHeader: {
-                    date: "August 21, 2019",
-                    pilotName: "Uli",
-                    gliderType: "BGD Cure",
-                    startLocation: "Bremm",
-                    country: "DE",
-                    gpsTracker: "",
-                    flightRecorder: ""
-                },
-                shapeDetection: {
-                    curve90: curve90,
-                    curve180: curve180,
-                    circle: circles,
-                    eight: ""
-                },
-                additionalData: {
-                    flightTime: "6:03",
-                    totalDistance: "223.1",
-                    maxSpeed: "76.1",
-                    maxAltitude: "1223",
-                    minAltitude: "201",
-                    maxAltitudeAboveStart: "1022",
-                    startLocation: "Bremmer Calmont",
-                    landingLocation: "Nehren",
-                    startLandingDistance: "7500"
-                }
-            }
-            console.group('algorithm results');
-            console.log('%c IGC Header', 'color: gray', results.igcHeader)
-            console.log('%c Shape Detection', 'color: blue', results.shapeDetection)
-            console.log('%c Additional Data', 'color: green', results.additionalData)
-            console.groupEnd();
-        }
-    </script>
-
     <div id="drop_zone" ondrop="dropHandler(event, handleFileInput);" ondragover="dragOverHandler(event);">
         <label for="fileControl">Select a file to view:</label>
         <input id="fileControl" type="file"/>
@@ -137,26 +83,25 @@
 
         </div>
 
-        <div id="errorMessage">
-        </div>
+        <div id="errorMessage"></div>
 
-        <!--        <h2> Preferences </h2>-->
-        <!--        <p>-->
-        <!--            <label for="altitudeUnits">Altitude units:</label>-->
-        <!--            <select id="altitudeUnits" autocomplete="off">-->
-        <!--                <option value="metres">Metres</option>-->
-        <!--                <option value="feet">Feet</option>-->
-        <!--            </select>-->
-        <!--        </p>-->
+        <h2> Preferences </h2>
+        <p>
+            <label for="altitudeUnits">Altitude units:</label>
+            <select id="altitudeUnits" autocomplete="off">
+                <option value="metres">Metres</option>
+                <option value="feet">Feet</option>
+            </select>
+        </p>
 
-        <!--        <p>-->
-        <!--            <label for="timeZoneSelect">Time zone:</label>-->
-        <!--            <select id="timeZoneSelect">-->
-        <!--            </select>-->
-        <!--        </p>-->
+        <p>
+            <label for="timeZoneSelect">Time zone:</label>
+            <select id="timeZoneSelect">
+            </select>
+        </p>
 
         <div id="igcFileDisplay">
-            <!--            <h2> Flight Information </h2>-->
+            <h2> Flight Information </h2>
 
             <table id="headerInfo">
                 <tbody></tbody>
@@ -164,8 +109,7 @@
 
             <div id="task">
                 <h2> Task </h2>
-                <ul>
-                </ul>
+                <ul></ul>
             </div>
 
             <div id="mapWrapper">
@@ -178,33 +122,35 @@
                     <p id="timePositionDisplay"></p>
                 </div>
             </div>
-            <div id="barogram"></div>
+
+            <div id="barogram-chart">
+                <canvas id="canvas"></canvas>
+            </div>
         </div>
 
-        <link rel="stylesheet" href="igcviewer.css"/>
-        <link rel="stylesheet" href="lib/leaflet/leaflet.css"/>
-        <link rel="stylesheet" href="lib/leaflet-awesome-markers/leaflet.awesome-markers.css"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.6.0/leaflet.css"/>
+        <link rel="stylesheet"
+              href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+        <link rel="stylesheet" href="igcViewer.css"/>
+
+        <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/lvoogdt/Leaflet.awesome-markers@2.0.2/dist/leaflet.awesome-markers.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 
         <script src="lib/moment.min.js"></script>
         <script src="lib/moment-timezone-with-data.min.js"></script>
-        <script src="lib/jquery-2.1.3.min.js"></script>
-        <script src="lib/jquery.flot.min.js"></script>
-        <script src="lib/jquery.flot.axislabels.js"></script>
-        <script src="lib/jquery.flot.resize.min.js"></script>
-        <script src="lib/jquery.flot.crosshair.js"></script>
-        <script src="lib/leaflet/leaflet.js"></script>
-        <script src="lib/leaflet/Semicircle.js"></script>
-        <script src="lib/leaflet-awesome-markers/leaflet.awesome-markers.min.js"></script>
         <!--    Import of source files:    -->
         <!--    For a production environment, the number of files should be significantly reduced    -->
+        <script src="index.js"></script>
+        <script src="src/shared/globalVariables.js"></script>
         <script src="src/shared/config.js"></script>
+        <script src="src/shared/UIControl.js"></script>
+        <script src="src/shared/modal.js"></script>
+        <script src="src/shared/chart.js"></script>
         <script src="src/utils/readFile.js"></script>
         <script src="src/utils/dropFile.js"></script>
         <script src="src/utils/wait.js"></script>
         <script src="src/utils/distance.js"></script>
-        <script src="src/shared/UIControl.js"></script>
-        <script src="src/shared/globalVariables.js"></script>
-        <script src="src/shared/modal.js"></script>
         <script src="src/parseIGC.js"></script>
         <script src="src/mapControl.js"></script>
         <script src="src/igcViewer.js"></script>
@@ -212,10 +158,8 @@
         <script src="src/algorithms/curve.js"></script>
         <script src="src/algorithms/circle.js"></script>
         <script src="src/displayResults.js"></script>
-
-        <script>
-        </script>
     </div>
+
 </div>
 </body>
 

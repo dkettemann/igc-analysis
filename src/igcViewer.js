@@ -1,396 +1,264 @@
-(function ($) {
-    'use strict';
+'use strict';
 
-    var igcFile = null;
-    var barogramPlot = null;
-    var altitudeConversionFactor = 1.0; // Conversion from metres to required units
+let igcFile = null;
+altitudeConversionFactor = 1.0; // Conversion from metres to required units
 
-    function positionDisplay(position) {
-        function toDegMins(degreevalue) {
-            var wholedegrees = Math.floor(degreevalue);
-            var minutevalue = (60 * (degreevalue - wholedegrees)).toFixed(3);
-            return wholedegrees + '\u00B0\u00A0' + minutevalue + '\u00B4';
-        }
-
-        var positionLatitude = toDegMins(Math.abs(position[0]));
-        var positionLongitude = toDegMins(Math.abs(position[1]));
-        if (position[0] > 0) {
-            positionLatitude += "N";
-        } else {
-            positionLatitude += "S";
-        }
-        if (position[1] > 0) {
-            positionLongitude += "E";
-        } else {
-            positionLongitude += "W";
-        }
-        return positionLatitude + ",   " + positionLongitude;
+function positionDisplay(position) {
+    function toDegMins(degreeValue) {
+        let wholeDegrees = Math.floor(degreeValue);
+        let minuteValue = (60 * (degreeValue - wholeDegrees)).toFixed(3);
+        return wholeDegrees + '\u00B0\u00A0' + minuteValue + '\u00B4';
     }
 
-    function pad(n) {
-        return (n < 10) ? ("0" + n.toString()) : n.toString();
+    let positionLatitude = toDegMins(Math.abs(position[0]));
+    let positionLongitude = toDegMins(Math.abs(position[1]));
+    if (position[0] > 0) {
+        positionLatitude += "N";
+    } else {
+        positionLatitude += "S";
+    }
+    if (position[1] > 0) {
+        positionLongitude += "E";
+    } else {
+        positionLongitude += "W";
+    }
+    return positionLatitude + ",   " + positionLongitude;
+}
+
+updateTimeline = (timeIndex, mapControl) => {
+    let currentPosition = igcFile.latLong[timeIndex];
+    console.log(timeIndex)
+    let positionText = positionDisplay(currentPosition);
+    let unitName = altitudeUnits.value;
+    timePositionDisplay.innerHTML = moment(igcFile.recordTime[timeIndex]).format('HH:mm:ss') + ': ' +
+        (igcFile.pressureAltitude[timeIndex] * altitudeConversionFactor).toFixed(0) + ' ' +
+        unitName + ' (barometric) / ' +
+        (igcFile.gpsAltitude[timeIndex] * altitudeConversionFactor).toFixed(0) + ' ' +
+        unitName + ' (GPS); ' +
+        positionText;
+
+    mapControl.setTimeMarker(timeIndex);
+}
+
+function displayIgc(mapControl) {
+    // Display the headers.
+    let displayDate = moment(igcFile.recordTime[0]).format('LL');
+    headerTableElement.innerHTML = '<tr></tr>' + '<th>Date</th>'
+        + '<td>' + displayDate + '</td>';
+    for (let headerIndex = 0; headerIndex < igcFile.headers.length; headerIndex++) {
+        headerTableElement.innerHTML += '<tr></tr>' + '<th>' + igcFile.headers[headerIndex].name + '</th>'
+            + '<td>' + igcFile.headers[headerIndex].value + '</td>';
     }
 
-    function plotBarogram() {
-        var nPoints = igcFile.recordTime.length;
-        var pressureBarogramData = [];
-        var gpsBarogramData = [];
-        var j;
-        var timestamp;
+    // Show the task declaration if it is present.
 
-        for (j = 0; j < nPoints; j++) {
-            timestamp = igcFile.recordTime[j].getTime();
-            pressureBarogramData.push([timestamp, igcFile.pressureAltitude[j] * altitudeConversionFactor]);
-            gpsBarogramData.push([timestamp, igcFile.gpsAltitude[j] * altitudeConversionFactor]);
-        }
-
-        var baro = $.plot($('#barogram'), [{
-            label: 'Pressure altitude',
-            data: pressureBarogramData
-        }, {
-            label: 'GPS altitude',
-            data: gpsBarogramData
-        }], {
-            axisLabels: {
-                show: true
-            },
-            xaxis: {
-                axisLabel: 'Time',
-                tickFormatter: function (t, axis) {
-                    return moment(t).format('HH:mm');
-                },
-                ticks: function (axis) {
-                    var ticks = [];
-                    var startMoment = moment(axis.min);
-                    var endMoment = moment(axis.max);
-                    var durationMinutes = endMoment.diff(startMoment, 'minutes');
-                    var interval;
-                    if (durationMinutes <= 10) {
-                        interval = 1;
-                    }
-                    if (durationMinutes <= 50) {
-                        interval = 5;
-                    } else if (durationMinutes <= 100) {
-                        interval = 10;
-                    } else if (durationMinutes <= 150) {
-                        interval = 15;
-                    } else if (durationMinutes <= 300) {
-                        interval = 30;
-                    } else if (durationMinutes <= 600) {
-                        interval = 60;
-                    } else {
-                        interval = 120;
-                    }
-
-                    var tick = startMoment.clone();
-                    tick.minutes(0).seconds(0);
-                    while (tick < endMoment) {
-                        if (tick > startMoment) {
-                            ticks.push(tick.valueOf());
-                        }
-                        tick.add(interval, 'minutes');
-                    }
-
-                    return ticks;
-                }
-            },
-            yaxis: {
-                axisLabel: 'Altitude / ' + $('#altitudeUnits').val()
-            },
-
-            crosshair: {
-                mode: 'xy'
-            },
-
-            grid: {
-                clickable: true,
-                autoHighlight: false
+    if (igcFile.task.coordinates.length > 0) {
+        //eliminate anything with empty start line coordinates
+        if (igcFile.task.coordinates[0][0] !== 0) {
+            taskElement.style.display = 'block';
+            //Now add TP numbers.  Change to unordered list
+            if (igcFile.task.takeoff.length > 0) {
+                taskListElement.innerHTML = '<li>' + 'Takeoff: ' + igcFile.task.takeoff + '</li>';
             }
-        });
-
-        return baro;
-    }
-
-    function updateTimeline(timeIndex, mapControl) {
-        var currentPosition = igcFile.latLong[timeIndex];
-        var positionText = positionDisplay(currentPosition);
-        var unitName = $('#altitudeUnits').val();
-        $('#timePositionDisplay').text(
-            moment(igcFile.recordTime[timeIndex]).format('HH:mm:ss') + ': ' +
-            (igcFile.pressureAltitude[timeIndex] * altitudeConversionFactor).toFixed(0) + ' ' +
-            unitName + ' (barometric) / ' +
-            (igcFile.gpsAltitude[timeIndex] * altitudeConversionFactor).toFixed(0) + ' ' +
-            unitName + ' (GPS); ' +
-            positionText
-        );
-
-        mapControl.setTimeMarker(timeIndex);
-
-        barogramPlot.lockCrosshair({
-            x: igcFile.recordTime[timeIndex].getTime(),
-            y: igcFile.pressureAltitude[timeIndex] * altitudeConversionFactor
-        });
-    }
-
-    function displayIgc(mapControl) {
-        // Display the headers.
-        var displayDate = moment(igcFile.recordTime[0]).format('LL');
-        var headerTable = $('#headerInfo tbody');
-        headerTable.html('')
-            .append(
-                $('<tr></tr>').append($('<th></th>').text('Date'))
-                    .append($('<td></td>').text(displayDate))
-            );
-        var headerName;
-        var headerIndex;
-        for (headerIndex = 0; headerIndex < igcFile.headers.length; headerIndex++) {
-            headerTable.append(
-                $('<tr></tr>').append($('<th></th>').text(igcFile.headers[headerIndex].name))
-                    .append($('<td></td>').text(igcFile.headers[headerIndex].value))
-            );
-        }
-
-        // Show the task declaration if it is present.
-
-        if (igcFile.task.coordinates.length > 0) {
-            //eliminate anything with empty start line coordinates
-            if (igcFile.task.coordinates[0][0] !== 0) {
-                $('#task').show();
-                var taskList = $('#task ul').first().html('');
-                var j;
-                //Now add TP numbers.  Change to unordered list
-                if (igcFile.task.takeoff.length > 0) {
-                    taskList.append($('<li> </li>').text("Takeoff: " + igcFile.task.takeoff));
+            for (let j = 0; j < igcFile.task.names.length; j++) {
+                switch (j) {
+                    case 0:
+                        taskListElement.innerHTML += '<li>' + 'Start: ' + igcFile.task.names[j] + '</li>';
+                        break;
+                    case (igcFile.task.names.length - 1):
+                        taskListElement.innerHTML += '<li>' + 'Finish: ' + igcFile.task.names[j] + '</li>';
+                        break;
+                    default:
+                        taskListElement.innerHTML += '<li>' + 'TP' + (j).toString() + ": " + igcFile.task.names[j] + '</li>';
                 }
-                for (j = 0; j < igcFile.task.names.length; j++) {
-                    switch (j) {
-                        case 0:
-                            taskList.append($('<li> </li>').text("Start: " + igcFile.task.names[j]));
-                            break;
-                        case (igcFile.task.names.length - 1):
-                            taskList.append($('<li> </li>').text("Finish: " + igcFile.task.names[j]));
-                            break;
-                        default:
-                            taskList.append($('<li></li>').text("TP" + (j).toString() + ": " + igcFile.task.names[j]));
-                    }
-                }
-                if (igcFile.task.landing.length > 0) {
-                    taskList.append($('<li> </li>').text("Landing: : " + igcFile.task.landing));
-                }
-                mapControl.addTask(igcFile.task.coordinates, igcFile.task.names);
             }
-        } else {
-            $('#task').hide();
-        }
-
-        // Reveal the map and graph. We have to do this before
-        // setting the zoom level of the map or plotting the graph.
-        $('#igcFileDisplay').show();
-
-        mapControl.addTrack(igcFile.latLong);
-        barogramPlot = plotBarogram(igcFile);
-
-        $('#timeSlider').prop('max', igcFile.recordTime.length - 1);
-        updateTimeline(0, mapControl);
-        return "done";
-    }
-
-    function storePreference(name, value) {
-        if (window.localStorage) {
-            try {
-                localStorage.setItem(name, value);
-            } catch (e) {
-                // If permission is denied, ignore the error.
+            if (igcFile.task.landing.length > 0) {
+                taskListElement.innerHTML += '<li>' + 'Landing: ' + igcFile.task.landing + '</li>';
             }
+            mapControl.addTask(igcFile.task.coordinates, igcFile.task.names);
         }
+    } else {
+        taskElement.style.display = 'none';
     }
 
-    function sendData(file) {
-        let data = new FormData();
-        data.append("igcfile", file);
+    // Reveal the map and graph. We have to do this before
+    // setting the zoom level of the map or plotting the graph.
+    igcFileDisplay.style.display = 'block';
 
-        fetch(serverAddress + "api/igc/readFromForm.php?XDEBUG_SESSION_START=TRUE", {
-            method: 'post',
-            body: data,
-        }).then(async response => {
-            response = await response.json();
-            console.log(response);
-            $('.igc-container').css("display", "flex");
-            $('#download-p').text("The file is available here: ");
-            $('#download-url').text(response.url);
-            $('#download-url').attr("href", response.url)
+    mapControl.addTrack(igcFile.latLong);
+
+    timeSliderElement.setAttribute('max', `${igcFile.recordTime.length - 1}`);
+    updateTimeline(0, mapControl);
+    return "done";
+}
+
+function storePreference(name, value) {
+    if (window.localStorage) {
+        try {
+            localStorage.setItem(name, value);
+        } catch (e) {
+            console.log('%ccould not save preferences into local storage:', 'color: gray', e);
+        }
+    }
+}
+
+function sendData(file) {
+    let data = new FormData();
+    data.append("igcfile", file);
+
+    fetch(serverAddress + "api/igc/readFromForm.php?XDEBUG_SESSION_START=TRUE", {
+        method: 'post',
+        body: data,
+    }).then(async response => {
+        response = await response.json();
+        console.log(response);
+        igcContainer.style.display = 'flex';
+        downloadParagraph.innerHTML = "The file is available here: ";
+        downloadURL.innerHTML = response.url;
+        downloadURL.setAttribute("href", response.url)
+    })
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    mapControl = createMapControl('map');
+
+    moment.tz.names().forEach((name, index) => {
+        timeZoneSelect.innerHTML += `<option value="${name}">` + name + '</option>';
+
+    });
+
+    timeZoneSelect.onchange = () => {
+        let selectedZone = timeZoneSelect.value;
+        moment.tz.setDefault(selectedZone);
+        if (igcFile !== null) {
+            updateTimeline(timeSliderElement.value, mapControl);
+            let headerTD = document.querySelector('#headerInfo td');
+            headerTD.innerHTML = moment(igcFile.recordTime[0]).format('LL');
+        }
+
+        storePreference('timeZone', selectedZone);
+    }
+
+    handleFileInput = async (file) => {
+        return new Promise(resolve => {
+            const reader = new FileReader();
+            reader.onload = async function (e) {
+                try {
+                    errorMessageElement.innerHTML = '';
+                    mapControl.reset();
+                    timeSliderElement.value = 0
+                } catch (ex) {
+                    errorHandler(ex);
+                }
+
+                igcFile = parseIGC(reader.result);
+                displayIgc(mapControl);
+                const results = await runAlgorithms(igcFile);
+                console.log(results);
+                await displayResults(results, mapControl);
+                plotBarogramChart(igcFile);
+                return resolve();
+            };
+            igcContainer.style.display = 'none';
+            reader.readAsText(file);
+
         })
+    };
+
+    fileControl.onchange = function () {
+        if (this.files.length < 1) return;
+        sendData(this.files[0]);
+        handleFileInput(this.files[0]);
     }
 
-    $(document).ready(function () {
-        var mapControl = createMapControl('map');
-
-        var timeZoneSelect = $('#timeZoneSelect');
-        $.each(moment.tz.names(), function (index, name) {
-            timeZoneSelect.append(
-                $('<option></option>', {value: name}).text(name));
-        });
-
-        timeZoneSelect.change(function () {
-            var selectedZone = $(this).val();
-            moment.tz.setDefault(selectedZone);
-            if (igcFile !== null) {
-                barogramPlot = plotBarogram();
-                updateTimeline($('#timeSlider').val(), mapControl);
-                $('#headerInfo td').first().text(moment(igcFile.recordTime[0]).format('LL'));
-            }
-
-            storePreference('timeZone', selectedZone);
-        });
-
-        handleFileInput = async (file) => {
-            return new Promise(resolve => {
-                const reader = new FileReader();
+    function displayDefaultFile() {
+        fetch(serverAddress + 'api/igc/getFile.php')
+            .then(res => res.blob())
+            .then(blob => {
+                let reader = new FileReader();
                 reader.onload = async function (e) {
                     try {
-                        $('#errorMessage').text('');
+                        errorMessageElement.innerHTML = '';
                         mapControl.reset();
-                        $('#timeSlider').val(0);
+                        timeSliderElement.value = 0;
                     } catch (ex) {
                         errorHandler(ex);
                     }
 
-                    igcFile = parseIGC(reader.result);
+                    igcFile = parseIGC(this.result);
                     displayIgc(mapControl);
                     const results = await runAlgorithms(igcFile);
                     console.log(results);
-                    await displayResults(results, mapControl);
-                    return resolve();
+                    displayResults(results, mapControl);
                 };
-                $('.igc-container').hide();
-                reader.readAsText(file);
+                igcContainer.style.display = 'none';
+                reader.readAsText(blob);
+            });
+    }
 
-            })
-        };
-
-        $('#fileControl').change(async function () {
-            if (this.files.length < 1) return;
-            sendData(this.files[0]);
-            handleFileInput(this.files[0]);
-        });
-
-        function displayDefaultFile() {
-            fetch(serverAddress + 'api/igc/getFile.php')
-                .then(res => res.blob())
-                .then(blob => {
-                    var reader = new FileReader();
-                    reader.onload = async function (e) {
-                        try {
-                            $('#errorMessage').text('');
-                            mapControl.reset();
-                            $('#timeSlider').val(0);
-                        } catch (ex) {
-                            errorHandler(ex);
-                        }
-
-                        igcFile = parseIGC(this.result);
-                        const value = displayIgc(mapControl);
-                        // console.log(value);
-                        const results = await runAlgorithms(igcFile);
-                        console.log(results);
-                        displayResults(results, mapControl);
-                    };
-                    $('.igc-container').hide();
-                    reader.readAsText(blob);
-                });
-        }
-
-        $("#display-default-file").click(function () {
-            displayDefaultFile();
-        });
+    displayDefaultFileButton.addEventListener("click", displayDefaultFile);
 
 
-        $('#altitudeUnits').change(function (e, raisedProgrammatically) {
-            var altitudeUnit = $(this).val();
-            if (altitudeUnit === 'feet') {
-                altitudeConversionFactor = 3.2808399;
-            } else {
-                altitudeConversionFactor = 1.0;
-            }
+    altitudeUnits.onchange = function (e) {
+        let altitudeUnit = this.value;
 
-            if (igcFile !== null) {
-                barogramPlot = plotBarogram();
-                updateTimeline($('#timeSlider').val(), mapControl);
-            }
+        if (this.value === 'feet') altitudeConversionFactor = 3.2808399;
+        else altitudeConversionFactor = 1.0;
 
-            if (!raisedProgrammatically) {
-                storePreference("altitudeUnit", altitudeUnit);
-            }
-        });
+        if (igcFile !== null) updateTimeline(timeSliderElement.value, mapControl);
+        storePreference("altitudeUnit", altitudeUnit);
+    };
 
-        // We need to handle the 'change' event for IE, but
-        // 'input' for Chrome and Firefox in order to update smoothly
-        // as the range input is dragged.
-        $('#timeSlider').on('input', function () {
-            var t = parseInt($(this).val(), 10);
-            updateTimeline(t, mapControl);
-        });
-        $('#timeSlider').on('change', function () {
-            var t = parseInt($(this).val(), 10);
-            updateTimeline(t, mapControl);
-        });
+    // We need to handle the 'change' event for IE, but
+    // 'input' for Chrome and Firefox in order to update smoothly
+    // as the range input is dragged.
+    function timeSliderChangeHandler() {
+        const index = parseInt(timeSliderElement.value, 10);
+        updateTimeline(index, mapControl)
+    }
 
-        $('#timeBack').click(function () {
-            var slider = $('#timeSlider');
-            var curTime = parseInt(slider.val(), 10);
-            curTime--;
-            if (curTime < 0) {
-                curTime = 0;
-            }
-            slider.val(curTime);
-            updateTimeline(curTime, mapControl);
-        });
+    timeSliderElement.oninput = timeSliderChangeHandler;
+    timeSliderElement.onchange = timeSliderChangeHandler;
 
-        $('#timeForward').click(function () {
-            var slider = $('#timeSlider');
-            var curTime = parseInt(slider.val(), 10);
-            var maxval = slider.prop('max');
-            curTime++;
-            if (curTime > maxval) {
-                curTime = maxval;
-            }
-            slider.val(curTime);
-            updateTimeline(curTime, mapControl);
-        });
-
-        $('#barogram').on('plotclick', function (event, pos, item) {
-            console.log('plot click');
-            if (item) {
-                updateTimeline(item.dataIndex, mapControl);
-                $('#timeSlider').val(item.dataIndex);
-            }
-        });
-
-        // Load preferences from local storage, if available.
-
-        var altitudeUnit = '';
-        var timeZone = '';
-
-        if (window.localStorage) {
-            try {
-                altitudeUnit = localStorage.getItem('altitudeUnit');
-                if (altitudeUnit) {
-                    $('#altitudeUnits').val(altitudeUnit).trigger('change', true);
-                }
-
-                timeZone = localStorage.getItem('timeZone');
-            } catch (e) {
-                // If permission is denied, ignore the error.
-            }
-        }
-
-        if (!timeZone) {
-            timeZone = 'UTC';
-        }
-
-        timeZoneSelect.val(timeZone);
-        moment.tz.setDefault(timeZone);
-
-        if (displayDefaultFileOnStartup) displayDefaultFile();
+    timeBackButton.addEventListener("click", () => {
+        let curTime = parseInt(timeSliderElement.value, 10);
+        curTime--;
+        if (curTime < 0) curTime = 0;
+        setTimelineValue(curTime, mapControl);
     });
-}(jQuery));
+
+    timeForwardButton.addEventListener("click", () => {
+        let curTime = parseInt(timeSliderElement.value, 10);
+        curTime--;
+        if (curTime < 0) curTime = 0;
+        setTimelineValue(curTime, mapControl);
+    });
+
+    // Load preferences from local storage, if available.
+
+    let altitudeUnit = '';
+    let timeZone = '';
+
+    if (window.localStorage) {
+        try {
+            altitudeUnit = localStorage.getItem('altitudeUnit');
+            if (altitudeUnit) {
+                altitudeUnits.value = altitudeUnit;
+                altitudeUnits.onchange();
+            }
+
+            timeZone = localStorage.getItem('timeZone');
+        } catch (e) {
+            // If permission is denied, ignore the error.
+        }
+    }
+
+    if (!timeZone) {
+        timeZone = 'UTC';
+    }
+
+    timeZoneSelect.value = timeZone;
+    moment.tz.setDefault(timeZone);
+
+    if (displayDefaultFileOnStartup) displayDefaultFile();
+});

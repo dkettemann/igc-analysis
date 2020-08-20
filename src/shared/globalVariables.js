@@ -25,11 +25,13 @@ const timeBackButton = document.querySelector('#timeBack');
 const timeForwardButton = document.querySelector('#timeForward');
 const fileControl = document.querySelector('#fileControl');
 
-let latLong = [];
-let distances = [];
-let circleIndices = [];
-
 let handleFileInput;
 let mapControl;
 let updateTimeline;
-let altitudeConversionFactor = 1.0; // Conversion from metres to required units
+let altitudeConversionFactor; // Conversion from metres to required units
+
+let igcFile;
+let latLong = [];
+let distances = [];
+let circleIndices = [];
+let results;

@@ -96,10 +96,6 @@ function circleCondition1(p0, p1) {
  * @returns {boolean} whether the circle including the next point p1+1 is better or not.
  */
 function minDistanceCondition(p0, p1){
-    if(p0 > 290 && p0 < 300){
-        console.log('%cp0 p1:', 'color: red', p0, p1,
-            '==> ', distance(p0, p1) <= distance(p0, p1 + 1) || !isCircle(p0, p1+1));
-    }
     return distance(p0, p1) <= distance(p0, p1 + 1) || !isCircle(p0, p1+1);
 }
 

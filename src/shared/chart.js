@@ -22,7 +22,6 @@ function getBarogramData(igcFile) {
         pressureBarogramData.push(igcFile.pressureAltitude[i] * altitudeConversionFactor);
         gpsBarogramData.push(igcFile.gpsAltitude[i] * altitudeConversionFactor);
     }
-    console.log(dataLabels)
 }
 
 function getPruningFactor(recordLength) {

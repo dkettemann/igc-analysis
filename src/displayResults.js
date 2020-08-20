@@ -6,20 +6,16 @@ let curve90 = [],
 async function displayResults(results, mapCtrl) {
     mapControl = mapCtrl;
     setOutput("curve detection completed.");
-    for (const [algorithmName, algorithmResults] of Object.entries(results)) {
-        if (algorithmName === 'curveDetection') {
-            curve90 = algorithmResults[0];
-            curve180 = algorithmResults[1];
-            if (curve90.length > 0) {
-                setCheckboxValue(curve90Checkbox, true);
-                displayCurves(curve90, "curve90")
-            } else curve90Checkbox.disabled = true;
-            if (curve180.length > 0) {
-                setCheckboxValue(curve180Checkbox, true);
-                displayCurves(curve180, "curve180");
-            } else curve180Checkbox.disabled = true;
-        }
-    }
+    curve90 = results.shapeDetection.curve90;
+    curve180 = results.shapeDetection.curve180;
+    if (curve90.length > 0) {
+        setCheckboxValue(curve90Checkbox, true);
+        displayCurves(curve90, "curve90")
+    } else curve90Checkbox.disabled = true;
+    if (curve180.length > 0) {
+        setCheckboxValue(curve180Checkbox, true);
+        displayCurves(curve180, "curve180");
+    } else curve180Checkbox.disabled = true;
 }
 
 function displayCurves(positionArray, layerName = "") {

@@ -37,7 +37,7 @@ canvas {
     padding-bottom: 0px; /* Default padding is huge in Internet Explorer.*/
 }
 
-#mapWrapper {
+#mapWrapper, #barogram-chart {
     max-height: 110vw;
     margin-top: 30px;
     margin-left: auto;
@@ -45,7 +45,7 @@ canvas {
 }
 
 @media print, screen and (max-width: 1100px) {
-    #mapWrapper {
+    #mapWrapper, #barogram-chart {
         width: 90%;
         display: inline-block;
         position: relative;
@@ -53,12 +53,9 @@ canvas {
 }
 
 @media screen and (min-width: 1100px) {
-    #mapWrapper {
+    #mapWrapper, #barogram-chart {
         display: inline-block;
         width: calc(50% - 30px);
-    }
-
-    #mapWrapper {
         margin-left: 30px;
     }
 }
@@ -128,12 +125,6 @@ input[type=checkbox] {
 
 #circle-progress {
     margin-top: 20px;
-}
-
-#barogram-chart{
-    width: calc(50% - 30px);
-    margin-left: 30px;
-    margin-top: 30px;
 }
 
 /* The Modal (background) */

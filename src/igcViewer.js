@@ -1,6 +1,5 @@
 'use strict';
 
-let igcFile = null;
 altitudeConversionFactor = 1.0; // Conversion from metres to required units
 
 function positionDisplay(position) {

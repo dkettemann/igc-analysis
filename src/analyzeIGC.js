@@ -2,14 +2,9 @@
 
 async function runAlgorithms(track) {
     latLong = track.latLong;
-    results = formatResults();
     distances = calcDistances(latLong);
-    let result = await curveDetection(track.latLong, distances, 0.3);
-    results.shapeDetection.curve90 = result[0];
-    results.shapeDetection.curve180 = result[1];
-    fetchIGCData();
-
-    updateResultHeaders();
+    let curves = await curveDetection(track.latLong, distances, 0.3);
+    results = getResultObject(curves);
     return results;
 }
 
@@ -26,22 +21,14 @@ async function pauseCalculations(){
     await sleep(calculationSlowdown);
 }
 
-function formatResults(){
+function getResultObject(curves){
     return {
-        igcHeader: {
-            date: null,
-            pilotName: null,
-            gliderType: null,
-            startLocation: "Bremmer Calmont",
-            country: "DE",
-            gpsTracker: "",
-            flightRecorder: ""
-        },
+        igcHeader: getIGCHeader(),
         shapeDetection: {
-            curve90: curve90,
-            curve180: curve180,
-            circle: circles,
-            eight: ""
+            curve90: curves[0],
+            curve180: curves[1],
+            circle: null,
+            eight: null
         },
         additionalData: {
             flightTime: "6:03",
@@ -57,19 +44,60 @@ function formatResults(){
     };
 }
 
-function updateResultHeaders(){
-    results.igcHeader.date = moment(igcFile.recordTime[0]).format('LL');
+function getIGCHeader(){
+    let igcHeader = getIGCHeaderFrame();
+    return setHeaderData(igcHeader);
+}
+
+function getIGCHeaderFrame(){
+    return {
+        date: moment(igcFile.recordTime[0]).format('LL'),
+        pilotName: null,
+        gliderType: null,
+        gliderID: null,
+        gpsDatum: null,
+        firmwareVersion: null,
+        hardwareVersion: null,
+        flightRecorderType: null,
+        gpsTracker: null,
+        pressureSensor: null
+    };
+}
+
+function setHeaderData(igcHeader) {
     for (let headerIndex = 0; headerIndex < igcFile.headers.length; headerIndex++) {
         const name = igcFile.headers[headerIndex].name;
         const value = igcFile.headers[headerIndex].value;
         console.log(name + " --> " + value);
         switch (name) {
             case "Pilot":
-                results.igcHeader.pilotName = value;
+                igcHeader.pilotName = value;
                 break;
             case "Glider type":
-                results.igcHeader.gliderType = value;
+                igcHeader.gliderType = value;
+                break;
+            case "Glider ID":
+                igcHeader.gliderID = value;
+                break;
+            case "GPS Datum":
+                igcHeader.gpsDatum = value;
+                break;
+            case "Firmware version":
+                igcHeader.firmwareVersion = value;
+                break;
+            case "Hardware version":
+                igcHeader.hardwareVersion = value;
+                break;
+            case "Flight recorder type":
+                igcHeader.flightRecorderType = value;
+                break;
+            case "GPS":
+                igcHeader.gpsTracker = value;
+                break;
+            case "Pressure sensor":
+                igcHeader.pressureSensor = value;
                 break;
         }
     }
+    return igcHeader;
 }

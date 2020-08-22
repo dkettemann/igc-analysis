@@ -8,7 +8,7 @@ const fileURL = 'https://api.igc.onestudies.com/api/igc/getFile.php';
 
 window.onload = async () => {
     await loadFileByURL(fileURL);
-    runCircleDetection();
+    // runCircleDetection();
 }
 
 async function runCircleDetection() {

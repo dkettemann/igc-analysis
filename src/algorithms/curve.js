@@ -34,7 +34,7 @@ async function curveDetection(latLong, distances, radius) {
 function calcDistances(latLong, stepSize = 1) {
     let distances = [];
     for (let i = stepSize; i < latLong.length; i += stepSize) {
-        const dist = distance(i, i-stepSize);
+        const dist = distance(i, i - stepSize);
         distances.push(dist);
     }
     return distances;
@@ -44,8 +44,8 @@ function calcDistances(latLong, stepSize = 1) {
  * Measures the traveled distance through all points of the track log from p0 to and including p1.
  * @returns {*}
  */
-function coveredDistance(distances, p0, p1){
-    const p0ToP1 = distances.slice(p0, p1+1);
+function coveredDistance(distances, p0, p1) {
+    const p0ToP1 = distances.slice(p0, p1 + 1);
     return p0ToP1.reduce((a, b) => a + b, 0);
 }
 
@@ -65,29 +65,29 @@ async function findCurves(latLong, distances, stepSize, radius) {
     for (i = 0; i < distances.length; i += stepSize) {
         // get three successive points with one radius distance
         const p0 = i, p1 = nextPointInDistance(radius, i, distances), p2 = nextPointInDistance(radius, p1, distances);
-        if(p2 < 0) break; // point would be outside of the track log
+        if (p2 < 0) break; // point would be outside of the track log
         if (p0 % 2000 === 0) {
-            await domUpdate();
+            await pauseCalculations();
         }
         const distP1P0 = distance(p1, p0),
             distP2P1 = distance(p2, p1),
             distP2P0 = distance(p2, p0),
-            sum = distP1P0 + distP2P1,
-            deviation = 0.2;
-        if(sum > 1.875 * radius && distP2P0 < (1.44 + deviation) * radius && distP2P0 > (1.44 - deviation) * radius) {
+            sum = distP1P0 + distP2P1;
+
+        if (sum > 2 * (1 - curveAllowedDeviation) * radius
+            && distP2P0 > (1.44 * (1 - curveAllowedDeviation)) * radius
+            && distP2P0 < (1.44 * (1 + curveAllowedDeviation)) * radius) {
             const score = (1.44 * radius - distP2P0) * (1.44 * radius - distP2P0) - (distP1P0 - distP2P1) * (distP1P0 - distP2P1);
-            // console.log("new maximum with dist " + distP2P0 + " and score " + score);
             curves.curve90.push(i);
             const c90 = curves.curve90;
-            if(c90.length > 1) removeDuplicateCurves(latLong, radius, curve90PreviousScore, score, c90[c90.length-2], c90[c90.length-1], c90);
+            if (c90.length > 1) removeDuplicateCurves(latLong, radius, curve90PreviousScore, score, c90[c90.length - 2], c90[c90.length - 1], c90);
             curve90PreviousScore = score;
         }
-        if(sum > 1.86 * radius && distP2P0 < 0.2 * radius) {
-            // console.log("180 curve with p2p0 " + distP2P0);
+        if (sum > 1.86 * radius && distP2P0 < 0.2 * radius) {
             const score = radius - distP2P0;
             curves.curve180.push(i);
             const c180 = curves.curve180;
-            if(c180.length > 1) removeDuplicateCurves(latLong, radius, curve180PreviousScore, score, c180[c180.length-2], c180[c180.length-1], c180);
+            if (c180.length > 1) removeDuplicateCurves(latLong, radius, curve180PreviousScore, score, c180[c180.length - 2], c180[c180.length - 1], c180);
             curve180PreviousScore = score;
         }
     }
@@ -98,8 +98,8 @@ async function findCurves(latLong, distances, stepSize, radius) {
  * Verify that one curve is not detected twice. If that is the case, remove the one with the lower score
  */
 function removeDuplicateCurves(latLong, radius, previousScore, currentScore, p0, p1, arr) {
-    if(distance(p1, p0) > radius) return false;
-    if(previousScore > currentScore) arr.splice(-1, 1) // remove the current element (last element in the array)
+    if (distance(p1, p0) > radius) return false;
+    if (previousScore > currentScore) arr.splice(-1, 1) // remove the current element (last element in the array)
     else arr.splice(-2, 1) // remove the previous element (second last in the array)
     return true;
 }

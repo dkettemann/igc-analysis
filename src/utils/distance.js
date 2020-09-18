@@ -28,3 +28,14 @@ function nextPointInDistance(dist, idx, distances) {
     }
     return -1;
 }
+
+/**
+ * Calculates the mean of an array of numbers.
+ * @param values numbers for which the mean should be calculated.
+ */
+function average(values) {
+    const sum = values.reduce((a, b) => a + b, 0);
+    const avg = (sum / values.length) || 0;
+
+    console.log(`The sum is: ${sum}. The average is: ${avg}.`);
+}

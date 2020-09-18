@@ -24,22 +24,12 @@ async function pauseCalculations(){
 function getResultObject(curves){
     return {
         igcHeader: getIGCHeader(),
+        additionalData: getKeyFigures(),
         shapeDetection: {
             curve90: curves[0],
             curve180: curves[1],
             circle: null,
             eight: null
-        },
-        additionalData: {
-            flightTime: "6:03",
-            totalDistance: "223.1",
-            maxSpeed: "76.1",
-            maxAltitude: "1223",
-            minAltitude: "201",
-            maxAltitudeAboveStart: "1022",
-            startLocation: "Bremmer Calmont",
-            landingLocation: "Nehren",
-            startLandingDistance: "7500"
         }
     };
 }

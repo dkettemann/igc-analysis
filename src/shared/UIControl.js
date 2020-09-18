@@ -21,7 +21,12 @@ function setCircleDetectionProgress(currentIndex, arrayLength) {
 
 function setCheckboxValue(checkbox, value) { checkbox.checked = value; }
 
-function setTimelineValue(timeIndex, mapControl) {
+function getTimeLineValue() {
+    return parseInt(timeSliderElement.value, 10);
+}
+
+function setTimelineValue(timeIndex) {
+    if(timeIndex < 0) return;
     updateTimeline(timeIndex, mapControl);
     timeSliderElement.value = timeIndex;
 }

@@ -31,7 +31,7 @@ function getPruningFactor(recordLength) {
 chartElement.onclick = function (evt) {
     const point = myChart.getElementsAtEventForMode(evt, 'point', myChart.options)[0];
     if (!point) return; // no point was focused, just the chart background was clicked
-    setTimelineValue(point._index * pruningFactor, mapControl);
+    setTimelineValue(point._index * pruningFactor);
 };
 
 function getChartConfig() {

@@ -24,7 +24,7 @@ function positionDisplay(position) {
     return positionLatitude + ",   " + positionLongitude;
 }
 
-updateTimeline = (timeIndex, mapControl) => {
+updateTimeline = (timeIndex) => {
     let currentPosition = igcFile.latLong[timeIndex];
     console.log(timeIndex)
     let positionText = positionDisplay(currentPosition);
@@ -208,30 +208,29 @@ document.addEventListener("DOMContentLoaded", function () {
         storePreference("altitudeUnit", altitudeUnit);
     };
 
+    function timeSliderChangeHandler() {
+        updateTimeline(getTimeLineValue(), mapControl)
+    }
+
     // We need to handle the 'change' event for IE, but
     // 'input' for Chrome and Firefox in order to update smoothly
     // as the range input is dragged.
-    function timeSliderChangeHandler() {
-        const index = parseInt(timeSliderElement.value, 10);
-        updateTimeline(index, mapControl)
-    }
-
     timeSliderElement.oninput = timeSliderChangeHandler;
     timeSliderElement.onchange = timeSliderChangeHandler;
 
-    timeBackButton.addEventListener("click", () => {
-        let curTime = parseInt(timeSliderElement.value, 10);
-        curTime--;
-        if (curTime < 0) curTime = 0;
-        setTimelineValue(curTime, mapControl);
-    });
+    function timeLineButtonEventHandler(valueUpdateHandler) {
+        setTimelineValue(
+            valueUpdateHandler(getTimeLineValue())
+        );
+    }
 
-    timeForwardButton.addEventListener("click", () => {
-        let curTime = parseInt(timeSliderElement.value, 10);
-        curTime--;
-        if (curTime < 0) curTime = 0;
-        setTimelineValue(curTime, mapControl);
-    });
+    timeBackButton.addEventListener("click", () => timeLineButtonEventHandler(
+        (val) => val - 1
+    ));
+
+    timeForwardButton.addEventListener("click", () => timeLineButtonEventHandler(
+        (val) => val + 1
+    ));
 
     // Load preferences from local storage, if available.
 

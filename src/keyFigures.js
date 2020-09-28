@@ -21,7 +21,6 @@ function getFlightTime() {
 }
 
 function getTotalDistance() {
-    console.log(latLong[0])
     return distances.reduce((a, b) => a + b, 0);
 }
 
@@ -57,7 +56,6 @@ function getMaxAltitude() {
 }
 
 function getMaxAltitudeAboveStart() {
-    console.log(igcFile.gpsAltitude[igcFile.gpsAltitude.length-1])
     return getMaxAltitude() - igcFile.gpsAltitude[0];
 }
 

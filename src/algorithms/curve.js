@@ -67,7 +67,7 @@ async function findCurves(latLong, distances, stepSize, radius) {
         const p0 = i, p1 = nextPointInDistance(radius, i, distances), p2 = nextPointInDistance(radius, p1, distances);
         if (p2 < 0) break; // point would be outside of the track log
         if (p0 % 2000 === 0) {
-            await pauseCalculations();
+            await domUpdate();
         }
         const distP1P0 = distance(p1, p0),
             distP2P1 = distance(p2, p1),
@@ -77,7 +77,7 @@ async function findCurves(latLong, distances, stepSize, radius) {
         if (sum > 2 * (1 - curveAllowedDeviation) * radius
             && distP2P0 > (1.44 * (1 - curveAllowedDeviation)) * radius
             && distP2P0 < (1.44 * (1 + curveAllowedDeviation)) * radius) {
-            const score = (1.44 * radius - distP2P0) * (1.44 * radius - distP2P0) - (distP1P0 - distP2P1) * (distP1P0 - distP2P1);
+            const score = (1.44 * radius - distP2P0) ** 2 - (distP1P0 - distP2P1) ** 2;
             curves.curve90.push(i);
             const c90 = curves.curve90;
             if (c90.length > 1) removeDuplicateCurves(latLong, radius, curve90PreviousScore, score, c90[c90.length - 2], c90[c90.length - 1], c90);

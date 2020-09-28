@@ -5,6 +5,7 @@ async function loadFileByURL(fileURL) {
 }
 
 const fileURL = 'https://api.igc.onestudies.com/api/igc/getFile.php';
+// const fileURL = 'https://jsigc.test/data/example.igc';
 
 window.onload = async () => {
     await loadFileByURL(fileURL);

@@ -44,7 +44,7 @@ async function findCircles(latLong, distances) {
             } else if(p1 >= latLong.length-1){
                 if(circleCandidates.length > 0){ // There have been circles in this loop
                     const bestCandidate = getBestCircle(circleCandidates);
-                    circles.push([latLong[bestCandidate[0]], bestCandidate[1]]);
+                    circles.push([bestCandidate[0], bestCandidate[1]]);
                     circleIndices.push(bestCandidate);
                     p0 = bestCandidate[1]-1;
                     circleCandidates = [];

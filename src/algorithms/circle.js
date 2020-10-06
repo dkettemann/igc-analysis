@@ -21,6 +21,12 @@ async function circleDetection() {
     return circles;
 }
 
+/**
+ * Finds optimal circles in the track log.
+ * @param latLong
+ * @param distances
+ * @returns {Promise<[]>}
+ */
 async function findCircles(latLong, distances) {
     let circleCandidates = [];
     let circles = [];

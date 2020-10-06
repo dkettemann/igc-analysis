@@ -38,6 +38,14 @@ function displayCircles(algorithmOutput) {
     else circleCheckbox.disabled = false;
 }
 
+function displayEights(algorithmOutput) {
+    for (let i = 0; i < algorithmOutput.length; i++) {
+        const points = latLong.slice(algorithmOutput[i][0], algorithmOutput[i][1]+1);
+        mapControl.addMarkerTo("eights", latLong[algorithmOutput[i][0]]);
+        mapControl.addCircle(points);
+    }
+}
+
 circleCheckbox.addEventListener('change', () => {
     if (circleCheckbox.checked)
         displayCircles(circles);

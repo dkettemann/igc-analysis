@@ -51,6 +51,7 @@ function displayIgc(mapControl) {
 
     // Show the task declaration if it is present.
 
+    // TODO: integrate algorithm results as tasks?
     if (igcFile.task.coordinates.length > 0) {
         //eliminate anything with empty start line coordinates
         if (igcFile.task.coordinates[0][0] !== 0) {

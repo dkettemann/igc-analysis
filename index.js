@@ -15,6 +15,7 @@ window.onload = async () => {
 async function runCircleDetection() {
     if (showCpuUsageWarning) openModal();
     results.shapeDetection.circle = await circleDetection();
+    let eights = await eightDetection();
 
     console.group('algorithm results');
     console.log('%c IGC Header', 'color: gray', results.igcHeader)

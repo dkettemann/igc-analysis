@@ -1,12 +1,32 @@
 /**
- * Calculates the distance between two geographic coordinates in kilometers.
- * @param p1
- * @param p2
- * @returns {number}
+ * Calculates the distance between two geographic coordinates, given through track indices, in kilometers.
+ * @param {number} p0 A track index.
+ * @param {number} p1 A track index.
+ * @returns {number} The distance in kilometers.
  */
-function distance(p1, p2) {
-    if(latLong[p1]===undefined || latLong[p2]===undefined) console.log("distance(" + p1 + ", " + p2 + "): invalid coordinates passed");
-    const lat1 = latLong[p2][0], lon1 = latLong[p2][1], lat2 = latLong[p1][0], lon2 = latLong[p1][1];
+function distance(p0, p1) {
+    if(latLong[p0]===undefined || latLong[p1]===undefined) console.log("distance(" + p0 + ", " + p1 + "): invalid coordinates passed");
+    const lat1 = latLong[p1][0], lon1 = latLong[p1][1], lat2 = latLong[p0][0], lon2 = latLong[p0][1];
+    const p = 0.017453292519943295;    // Math.PI / 180
+    const c = Math.cos;
+    const a = 0.5 - c((lat2 - lat1) * p)/2 +
+        c(lat1 * p) * c(lat2 * p) *
+        (1 - c((lon2 - lon1) * p))/2;
+
+    return 12742 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
+}
+
+/**
+ * Calculates the distance between two geographic coordinates, given through latitude and longitude, in kilometers.
+ * @param {number[]} p0 A coordinate with lat and lon.
+ * @param {number[]} p1 A coordinate with lat and lon.
+ * @returns {number} The distance in kilometers.
+ */
+function geographicDistance(p0, p1) {
+    const lat1 = p0[0];
+    const lon1 = p0[1];
+    const lat2 = p1[0];
+    const lon2 = p1[1];
     const p = 0.017453292519943295;    // Math.PI / 180
     const c = Math.cos;
     const a = 0.5 - c((lat2 - lat1) * p)/2 +

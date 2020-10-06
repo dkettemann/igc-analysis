@@ -175,6 +175,7 @@ function createMapControl(elementName) {
             map.fitBounds(trackLine.getBounds());
         },
 
+        // TODO: generic implementation
         addCircle: function (latLong) {
             let trackLine = L.polyline(latLong, { color: 'blue', weight: 3 });
             mapLayers.track = L.layerGroup([
@@ -230,6 +231,7 @@ function createMapControl(elementName) {
                         taskLayers.push(tpsector);
                 }
             }
+            console.log(taskLayers)
             mapLayers.task = L.layerGroup(taskLayers).addTo(map);
             layersControl.addOverlay(mapLayers.task, 'Task');
         },

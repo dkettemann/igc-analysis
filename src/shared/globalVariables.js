@@ -33,5 +33,6 @@ let altitudeConversionFactor; // Conversion from metres to required units
 let igcFile;
 let latLong = [];
 let distances = [];
+let maxPointDistance = NaN;
 let circleIndices = [];
 let results;

@@ -3,6 +3,7 @@
 async function runAlgorithms(track) {
     latLong = track.latLong;
     distances = calcDistances(latLong);
+    maxPointDistance = Math.max(...distances);
     let curves = await curveDetection(track.latLong, distances, 0.3);
     results = getResultObject(curves);
     return results;

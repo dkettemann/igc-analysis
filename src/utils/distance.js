@@ -41,8 +41,8 @@ function geographicDistance(p0, p1) {
  * @returns {number}
  */
 function nextPointInDistance(dist, idx, distances) {
-    for (let i = idx+1; i < distances.length; i++) {
-        const arr = distances.slice(idx, i);
+    for (let i = idx; i < distances.length - 1; i++) {
+        const arr = distances.slice(idx, i + 1);
         const sum = arr.reduce((a, b) => a + b, 0);
         if (sum > dist) return i;
     }

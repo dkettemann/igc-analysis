@@ -1,3 +1,5 @@
+let circlesFound = false;
+
 /**
  A circle curve should be defined as a broken line of at least 300m length, while start- and end point
  have a distance of at max 30m between themselves. Also, the distance from every point to it's opposing point
@@ -28,38 +30,51 @@ async function circleDetection() {
  * @returns {Promise<[]>}
  */
 async function findCircles(latLong, distances) {
-    let circleCandidates = [];
-    let circles = [];
+    let currentCircleCandidates = [];
     circleIndices = [];
-    let circlesFound = false;
+    circlesFound = false;
+
     for (let p0 = 0; p0 < latLong.length; p0++) {
-        if (p0 % numberOfCalculations === 0) {
-            if (!circlesFound && circles.length > 0) {
-                circlesFound = true;
-                setCheckboxValue(circleCheckbox, true);
-            }
-            await setCircleDetectionProgress(p0, latLong.length);
-            await pauseCalculations();
-        }
+        if (p0 % numberOfCalculations === 0) await updateProgressBar(p0);
         for (let p1 = nextPointInDistance(0.1, p0, distances); p1 < latLong.length; p1++) {
-            if (p1 < 0) break;
-            // here, the order of conditions is set to reduce runtime
-            if (circleCondition1(p0, p1) && minDistanceCondition(p0, p1) && circleCondition2(latLong, distances, p0, p1)){
-                circleCandidates.push([p0, p1]);
+            if (p1 < 0) break; // nextPointInDistance did not find a point
+            const distP0P1 = distance(p0, p1);
+            const circleCondition1 = distP0P1 < circleMaxGap;
+
+            // check for a circle - the order of conditions minimizes the runtime
+            if (circleCondition1 && optimalP1(p0, p1) && circleCondition2(latLong, distances, p0, p1)){
+                currentCircleCandidates.push([p0, p1]);
                 break;
-            } else if(p1 >= latLong.length-1){
-                if(circleCandidates.length > 0){ // There have been circles in this loop
-                    const bestCandidate = getBestCircle(circleCandidates);
+            }
+            // skip as many points as necessary so that the next iteration could possibly close the circle gap
+            const skipIndices = Math.floor((distP0P1 - circleMaxGap) / maxPointDistance ) - 1;
+            if(skipIndices > 0) p1 = p1 + skipIndices;
+
+            if(p1 >= latLong.length-1 && currentCircleCandidates.length > 0){ // end of loop and there are circle candidates
+                    const bestCandidate = getBestCircle(currentCircleCandidates);
                     circles.push([bestCandidate[0], bestCandidate[1]]);
                     circleIndices.push(bestCandidate);
-                    p0 = bestCandidate[1]-1;
-                    circleCandidates = [];
-                }
+                    p0 = bestCandidate[1]-1; // fast-forward to the end of the chosen circle
+                    currentCircleCandidates = [];
             }
         }
     }
     closeModal();
     return circles;
+}
+
+/**
+ * Awaits the updating of the circle detection progress bar.
+ * @param p0
+ * @returns {Promise<void>}
+ */
+async function updateProgressBar(p0){
+        if (!circlesFound && circles.length > 0) {
+            circlesFound = true;
+            setCheckboxValue(circleCheckbox, true);
+        }
+        await setCircleDetectionProgress(p0, latLong.length);
+        await pauseCalculations();
 }
 
 /**
@@ -101,7 +116,7 @@ function circleCondition1(p0, p1) {
  * Whether a circle is better or not, is determined by the distance gap between start and end point.
  * @returns {boolean} whether the circle including the next point p1+1 is better or not.
  */
-function minDistanceCondition(p0, p1){
+function optimalP1(p0, p1){
     return distance(p0, p1) <= distance(p0, p1 + 1) || !isCircle(p0, p1+1);
 }
 

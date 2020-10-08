@@ -15,7 +15,6 @@ function plotBarogramChart(igcFile) {
 
 function getBarogramData(igcFile) {
     pruningFactor = getPruningFactor(igcFile.recordTime.length);
-    console.log(pruningFactor)
     for (let i = 0; i < igcFile.recordTime.length; i += pruningFactor) {
         timestamp = moment(igcFile.recordTime[i]).format('HH:mm');
         dataLabels.push(timestamp);
@@ -72,7 +71,7 @@ function getChartConfig() {
                     afterTickToLabelConversion: function (data) {
                         let xLabels = data.ticks;
                         xLabels.forEach(function (labels, i) {
-                            if (i % 2 == 1) {
+                            if (i % 2 === 1) {
                                 xLabels[i] = '';
                             }
                         });

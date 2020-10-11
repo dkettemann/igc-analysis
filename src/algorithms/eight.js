@@ -23,8 +23,8 @@ async function findEights() {
             const radius2 = geographicDistance(latLong[circles[i + 1][0]], center2);
             const gap = geographicDistance(center1, center2);
             if (gap >= (radius1 + radius2) || i >= circles.length - 2) {
-                console.log('%c eight found: ', 'color: gray', 'idx ' + circles[i][0] + ' to ' + circles[i + 1][1] + ': ' +
-                    (radius1 + radius2) + ' <= ' + geographicDistance(center1, center2));
+                // console.log('%c eight found: ', 'color: gray', 'idx ' + circles[i][0] + ' to ' + circles[i + 1][1] + ': ' +
+                //     (radius1 + radius2) + ' <= ' + geographicDistance(center1, center2));
                 eights.push([circles[i][0], circles[i+1][1]])
             }
         }

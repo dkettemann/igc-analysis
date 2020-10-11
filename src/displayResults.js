@@ -7,7 +7,7 @@ async function displayResults(results, mapCtrl) {
     mapControl = mapCtrl;
     setOutput("curve detection completed.");
     curve90 = results.shapeDetection.curve90;
-    curve180 = results.shapeDetection.curve180;
+    curve180 = results.shapeDetection.c180;
     if (curve90.length > 0) {
         setCheckboxValue(curve90Checkbox, true);
         displayCurves(curve90, "curve90")

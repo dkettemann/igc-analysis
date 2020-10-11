@@ -3,18 +3,18 @@
  have a distance of 1.3km to 1.5km between themselves and at least 0.9km to the turning point.
  */
 async function curveDetection(latLong, distances, radius) {
-    let curves = [[], []];
+    const curves = [[], []];
     console.time("curveDetection");
     // console.log(Math.max(...distances));
     const result = await findCurves(latLong, distances, 1, radius);
-    result.curve90.forEach(idx => {
+    result.c90.forEach(idx => {
         curves[0].push([
             idx,
             nextPointInDistance(radius, idx, distances),
             nextPointInDistance(2 * radius, idx, distances)
         ]);
     })
-    result.curve180.forEach(idx => {
+    result.c180.forEach(idx => {
         curves[1].push([
             idx,
             nextPointInDistance(radius, idx, distances),
@@ -29,10 +29,11 @@ async function curveDetection(latLong, distances, radius) {
  * measure distances in km from every nth track log point to point n + stepSize
  * @returns {[]}
  * @param {[number, number]} latLong latitude and longitude of every track log point in an array
- * @param {number} stepSize define if subsequent points should be used (stepSize = 1) or every nth point (stepSize = n)
+ * @param {number} stepSize define if subsequent points should be used (stepSize = 1) or every nth
+ * point (stepSize = n)
  */
 function calcDistances(latLong, stepSize = 1) {
-    let distances = [];
+    const distances = [];
     for (let i = stepSize; i < latLong.length; i += stepSize) {
         const dist = distance(i, i - stepSize);
         distances.push(dist);
@@ -57,14 +58,16 @@ function coveredDistance(distances, p0, p1) {
  * @returns {{curve180: [], curve90: []}}
  */
 async function findCurves(latLong, distances, stepSize, radius) {
-    let curves = {
-        curve90: [],
-        curve180: []
+    const curves = {
+        c90: [],
+        c180: []
     };
     let i = 0, curve90PreviousScore = 0, curve180PreviousScore = 0;
     for (i = 0; i < distances.length; i += stepSize) {
         // get three successive points with one radius distance
-        const p0 = i, p1 = nextPointInDistance(radius, i, distances), p2 = nextPointInDistance(radius, p1, distances);
+        const p0 = i,
+            p1 = nextPointInDistance(radius, i, distances),
+            p2 = nextPointInDistance(radius, p1, distances);
         if (p2 < 0) break; // point would be outside of the track log
         if (p0 % 2000 === 0) {
             await domUpdate();
@@ -74,20 +77,22 @@ async function findCurves(latLong, distances, stepSize, radius) {
             distP2P0 = distance(p2, p0),
             sum = distP1P0 + distP2P1;
 
-        if (sum > 2 * (1 - curveAllowedDeviation) * radius
-            && distP2P0 > (1.44 * (1 - curveAllowedDeviation)) * radius
-            && distP2P0 < (1.44 * (1 + curveAllowedDeviation)) * radius) {
+        if (sum > 2 * (1 - curveMaxDeviation) * radius
+            && distP2P0 > (1.44 * (1 - curveMaxDeviation)) * radius
+            && distP2P0 < (1.44 * (1 + curveMaxDeviation)) * radius) {
             const score = (1.44 * radius - distP2P0) ** 2 - (distP1P0 - distP2P1) ** 2;
-            curves.curve90.push(i);
-            const c90 = curves.curve90;
-            if (c90.length > 1) removeDuplicateCurves(latLong, radius, curve90PreviousScore, score, c90[c90.length - 2], c90[c90.length - 1], c90);
+            curves.c90.push(i);
+
+            if (curves.c90.length > 1)
+                removeDuplicateCurves(latLong, radius, curve90PreviousScore, score, curves.c90);
             curve90PreviousScore = score;
         }
         if (sum > 1.86 * radius && distP2P0 < 0.2 * radius) {
             const score = radius - distP2P0;
-            curves.curve180.push(i);
-            const c180 = curves.curve180;
-            if (c180.length > 1) removeDuplicateCurves(latLong, radius, curve180PreviousScore, score, c180[c180.length - 2], c180[c180.length - 1], c180);
+            curves.c180.push(i);
+            if (curves.c180.length > 1)
+                removeDuplicateCurves(latLong, radius, curve180PreviousScore, score, curves.c180);
+
             curve180PreviousScore = score;
         }
     }
@@ -95,11 +100,13 @@ async function findCurves(latLong, distances, stepSize, radius) {
 }
 
 /**
- * Verify that one curve is not detected twice. If that is the case, remove the one with the lower score
+ * Verify that one curve is not detected twice. If that is the case, remove the one with the lower score.
  */
-function removeDuplicateCurves(latLong, radius, previousScore, currentScore, p0, p1, arr) {
+function removeDuplicateCurves(latLong, radius, previousScore, currentScore, arr) {
+    const p0 = arr[arr.length - 2];
+    const p1 = arr[arr.length - 1];
     if (distance(p1, p0) > radius) return false;
-    if (previousScore > currentScore) arr.splice(-1, 1) // remove the current element (last element in the array)
-    else arr.splice(-2, 1) // remove the previous element (second last in the array)
+    if (previousScore > currentScore) arr.splice(-1, 1) // remove current element
+    else arr.splice(-2, 1) // remove previous element
     return true;
 }

@@ -4,43 +4,43 @@ async function runAlgorithms(track) {
     latLong = track.latLong;
     distances = calcDistances(latLong);
     maxPointDistance = Math.max(...distances);
-    let curves = await curveDetection(track.latLong, distances, 0.3);
+    const curves = await curveDetection(track.latLong, distances, 0.3);
     results = getResultObject(curves);
     return results;
 }
 
 function fetchIGCData() {
     fetch(serverAddress + 'api/igc/getIGCDocuments.php')
-        .then( async response => {
+        .then(async response => {
             if (!response.ok) throw new Error("HTTP error " + response.status);
             response = await response.json();
         })
 }
 
-async function pauseCalculations(){
+async function pauseCalculations() {
     await domUpdate();
     await sleep(calculationSlowdown);
 }
 
-function getResultObject(curves){
+function getResultObject(curves) {
     return {
         igcHeader: getIGCHeader(),
         additionalData: getKeyFigures(),
         shapeDetection: {
             curve90: curves[0],
-            curve180: curves[1],
+            c180: curves[1],
             circle: null,
             eight: null
         }
     };
 }
 
-function getIGCHeader(){
-    let igcHeader = getIGCHeaderFrame();
+function getIGCHeader() {
+    const igcHeader = getIGCHeaderFrame();
     return setHeaderData(igcHeader);
 }
 
-function getIGCHeaderFrame(){
+function getIGCHeaderFrame() {
     return {
         date: moment(igcFile.recordTime[0]).format('LL'),
         pilotName: null,

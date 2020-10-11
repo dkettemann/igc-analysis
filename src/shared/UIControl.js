@@ -3,20 +3,20 @@ function setOutput(text) {
     algorithmButtons.style.display = 'inline-block';
 }
 
-function circleDetectionOutput(timeSpent, circlesCount) {
+function setCircleDetectionOutput(timeSpent, circlesCount) {
     const msg = circlesCount > 0 ? circlesCount + " circles found!" : "no circles were detected"
     circlesTimeSpent.textContent = "circle detection finished in " + timeSpent + " seconds: " + msg;
     if (circlesCount > 0) setCheckboxValue(circleCheckbox, true);
 }
 
-function circleDetectionProgress(value) {
+function applyCircleDetectionProgress(value) {
     circleAlgorithmProgressBar.value = value;
     circleDetectionContainer.style.display = 'block';
 }
 
 function setCircleDetectionProgress(currentIndex, arrayLength) {
     const value = getProgressValue(currentIndex, arrayLength);
-    circleDetectionProgress(value);
+    applyCircleDetectionProgress(value);
 }
 
 function setCheckboxValue(checkbox, value) { checkbox.checked = value; }

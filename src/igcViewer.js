@@ -4,8 +4,8 @@ altitudeConversionFactor = 1.0; // Conversion from metres to required units
 
 function positionDisplay(position) {
     function toDegMins(degreeValue) {
-        let wholeDegrees = Math.floor(degreeValue);
-        let minuteValue = (60 * (degreeValue - wholeDegrees)).toFixed(3);
+        const wholeDegrees = Math.floor(degreeValue);
+        const minuteValue = (60 * (degreeValue - wholeDegrees)).toFixed(3);
         return wholeDegrees + '\u00B0\u00A0' + minuteValue + '\u00B4';
     }
 
@@ -25,23 +25,22 @@ function positionDisplay(position) {
 }
 
 updateTimeline = (timeIndex) => {
-    let currentPosition = igcFile.latLong[timeIndex];
-    console.log(timeIndex)
-    let positionText = positionDisplay(currentPosition);
-    let unitName = altitudeUnits.value;
+    const currentPosition = igcFile.latLong[timeIndex];
+    if (timeIndex > 0) console.log(timeIndex);
+    const positionText = positionDisplay(currentPosition);
+    const unitName = altitudeUnits.value;
     timePositionDisplay.innerHTML = moment(igcFile.recordTime[timeIndex]).format('HH:mm:ss') + ': ' +
         (igcFile.pressureAltitude[timeIndex] * altitudeConversionFactor).toFixed(0) + ' ' +
         unitName + ' (barometric) / ' +
         (igcFile.gpsAltitude[timeIndex] * altitudeConversionFactor).toFixed(0) + ' ' +
-        unitName + ' (GPS); ' +
-        positionText;
+        unitName + ' (GPS); ' + positionText;
 
     mapControl.setTimeMarker(timeIndex);
 }
 
 function displayIgc(mapControl) {
     // Display the headers.
-    let displayDate = moment(igcFile.recordTime[0]).format('LL');
+    const displayDate = moment(igcFile.recordTime[0]).format('LL');
     headerTableElement.innerHTML = '<tr></tr>' + '<th>Date</th>'
         + '<td>' + displayDate + '</td>';
     for (let headerIndex = 0; headerIndex < igcFile.headers.length; headerIndex++) {
@@ -103,7 +102,7 @@ function storePreference(name, value) {
 }
 
 function sendData(file) {
-    let data = new FormData();
+    const data = new FormData();
     data.append("igcfile", file);
 
     fetch(serverAddress + "api/igc/readFromForm.php?XDEBUG_SESSION_START=TRUE", {
@@ -119,20 +118,20 @@ function sendData(file) {
     })
 }
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
     mapControl = createMapControl('map');
 
-    moment.tz.names().forEach((name, index) => {
+    moment.tz.names().forEach((name) => {
         timeZoneSelect.innerHTML += `<option value="${name}">` + name + '</option>';
 
     });
 
     timeZoneSelect.onchange = () => {
-        let selectedZone = timeZoneSelect.value;
+        const selectedZone = timeZoneSelect.value;
         moment.tz.setDefault(selectedZone);
         if (igcFile !== null) {
             updateTimeline(timeSliderElement.value, mapControl);
-            let headerTD = document.querySelector('#headerInfo td');
+            const headerTD = document.querySelector('#headerInfo td');
             headerTD.innerHTML = moment(igcFile.recordTime[0]).format('LL');
         }
 
@@ -175,7 +174,7 @@ document.addEventListener("DOMContentLoaded", function () {
         fetch(serverAddress + 'api/igc/getFile.php')
             .then(res => res.blob())
             .then(blob => {
-                let reader = new FileReader();
+                const reader = new FileReader();
                 reader.onload = async function (e) {
                     try {
                         errorMessageElement.innerHTML = '';
@@ -199,8 +198,8 @@ document.addEventListener("DOMContentLoaded", function () {
     displayDefaultFileButton.addEventListener("click", displayDefaultFile);
 
 
-    altitudeUnits.onchange = function (e) {
-        let altitudeUnit = this.value;
+    altitudeUnits.onchange = function () {
+        const altitudeUnit = this.value;
 
         if (this.value === 'feet') altitudeConversionFactor = 3.2808399;
         else altitudeConversionFactor = 1.0;

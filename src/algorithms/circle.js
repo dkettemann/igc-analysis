@@ -29,7 +29,7 @@ async function findCircles(latLong, distances) {
 
     for (let p0 = 0; p0 < latLong.length; p0++) {
         if (p0 % numberOfCalculations === 0) await updateProgressBar(p0);
-        for (let p1 = nextPointInDistance(0.1, p0, distances); p1 < latLong.length; p1++) {
+        for (let p1 = getNextPointRecursive(0.1, p0, distances); p1 < latLong.length; p1++) {
             if (p1 < 0) break; // nextPointInDistance could not find a point
             const distP0P1 = distance(p0, p1);
             const circleCondition1 = distP0P1 < circleMaxGap;

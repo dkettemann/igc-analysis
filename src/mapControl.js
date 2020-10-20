@@ -193,7 +193,7 @@ function createMapControl(elementName) {
         addTask: (coordinates, names) => {
             //Clearer if we don't show track to and from start line and finish line, as we are going to show lines
             const taskLayers = [L.polyline(coordinates, {color: 'blue', weight: 3})];
-            const lineDrawOptions = {
+            const lineOptions = {
                 fillColor: 'green',
                 color: 'black',
                 weight: 2,
@@ -218,16 +218,17 @@ function createMapControl(elementName) {
                 taskLayers.push(L.marker(coordinates[j]).bindPopup(names[j]));
                 switch (j) {
                     case 0:
-                        const startLine = getLine(coordinates[0], coordinates[1], startLineRadius, lineDrawOptions);
+                        const startLine = getLine(coordinates[0], coordinates[1], startLineRadius, lineOptions);
                         taskLayers.push(startLine);
                         break;
                     case (coordinates.length - 1):
-                        const finishLine = getLine(coordinates[j], coordinates[j - 1], finishLineRadius, lineDrawOptions);
+                        const finishLine = getLine(coordinates[j], coordinates[j - 1], finishLineRadius, lineOptions);
                         taskLayers.push(finishLine);
                         break;
                     default:
                         taskLayers.push(L.circle(coordinates[j], tpCircleRadius, sectorDrawOptions));
-                        const tpSector = getTpSector(coordinates[j], coordinates[j - 1], coordinates[j + 1], tpSectorRadius, tpSectorAngle, sectorDrawOptions);
+                        const tpSector = getTpSector(coordinates[j], coordinates[j - 1],
+                            coordinates[j + 1], tpSectorRadius, tpSectorAngle, sectorDrawOptions);
                         taskLayers.push(tpSector);
                 }
             }

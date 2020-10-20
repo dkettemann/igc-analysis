@@ -147,6 +147,6 @@ function circleCondition2(latLong, distances, p0, p1) {
  * @param px
  * @returns {number}
  */
-function getOppositeCirclePoint(circumference, px){
-    return nextPointInDistance(circumference / 2, px, distances);
+function getOppositeCirclePoint(circumference, px) {
+    return getNextPointRecursive(circumference / 2, px, distances);
 }

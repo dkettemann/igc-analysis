@@ -5,7 +5,8 @@
  * @returns {number} The distance in kilometers.
  */
 function distance(p0, p1) {
-    if(latLong[p0]===undefined || latLong[p1]===undefined) console.log("distance(" + p0 + ", " + p1 + "): invalid coordinates passed");
+    if(latLong[p0]===undefined || latLong[p1]===undefined)
+        console.log("distance(" + p0 + ", " + p1 + "): invalid coordinates passed");
     const lat1 = latLong[p1][0], lon1 = latLong[p1][1], lat2 = latLong[p0][0], lon2 = latLong[p0][1];
     const p = 0.017453292519943295;    // Math.PI / 180
     const c = Math.cos;
@@ -47,6 +48,18 @@ function nextPointInDistance(dist, idx, distances) {
         if (sum > dist) return i;
     }
     return -1;
+}
+
+function getNextPointRecursive(dist, idx, distances) {
+    return increaseIndexRecursive(dist, idx, distances, 0);
+}
+
+function increaseIndexRecursive(dist, idx, distances, sum){
+    if(sum > dist) return idx-1;
+    if(idx >= distances.length-1) return -1;
+
+    sum += distances[idx];
+    return increaseIndexRecursive(dist, idx+1, distances, sum)
 }
 
 /**

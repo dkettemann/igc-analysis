@@ -9,14 +9,14 @@ function createMapControl(elementName) {
         // Get bearing from pt1 to pt2 in degrees
         // Formula from: http://www.movable-type.co.uk/scripts/latlong.html
         // Start by converting to radians.
-        let degToRad = Math.PI / 180.0;
-        let lat1 = pt1[0] * degToRad;
-        let lon1 = pt1[1] * degToRad;
-        let lat2 = pt2[0] * degToRad;
-        let lon2 = pt2[1] * degToRad;
+        const degToRad = Math.PI / 180.0;
+        const lat1 = pt1[0] * degToRad;
+        const lon1 = pt1[1] * degToRad;
+        const lat2 = pt2[0] * degToRad;
+        const lon2 = pt2[1] * degToRad;
 
-        let y = Math.sin(lon2 - lon1) * Math.cos(lat2);
-        let x = Math.cos(lat1) * Math.sin(lat2) -
+        const y = Math.sin(lon2 - lon1) * Math.cos(lat2);
+        const x = Math.cos(lat1) * Math.sin(lat2) -
             Math.sin(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1);
 
         let bearing = Math.atan2(y, x) / degToRad;
@@ -24,47 +24,47 @@ function createMapControl(elementName) {
         return bearing;
     }
 
-    function getLine(pt1, pt2, linerad, drawOptions) {
-        //returns line through pt1, at right angles to line between pt1 and pt2, length linerad.
+    function getLine(pt1, pt2, lineRad, drawOptions) {
+        //returns line through pt1, at right angles to line between pt1 and pt2, length lineRad.
         //Use Pythogoras- accurate enough on this scale
-        let latdiff = pt2[0] - pt1[0];
+        const latDiff = pt2[0] - pt1[0];
         //need radians for cosine function
-        let northmean = (pt1[0] + pt2[0]) * Math.PI / 360;
-        let startrads = pt1[0] * Math.PI / 180;
-        let longdiff = (pt1[1] - pt2[1]) * Math.cos(northmean);
-        let hypotenuse = Math.sqrt(latdiff * latdiff + longdiff * longdiff);
+        const northMean = (pt1[0] + pt2[0]) * Math.PI / 360;
+        const startRads = pt1[0] * Math.PI / 180;
+        const longDiff = (pt1[1] - pt2[1]) * Math.cos(northMean);
+        const hypotenuse = Math.sqrt(latDiff * latDiff + longDiff * longDiff);
         //assume earth is a sphere circumference 40030 Km
-        let latdelta = linerad * longdiff / hypotenuse / 111.1949269;
-        let longdelta = linerad * latdiff / hypotenuse / 111.1949269 / Math.cos(startrads);
-        let linestart = L.latLng(pt1[0] - latdelta, pt1[1] - longdelta);
-        let lineend = L.latLng(pt1[0] + latdelta, longdelta + pt1[1]);
-        let polylinePoints = [linestart, lineend];
-        let polylineOptions = {
-            color: 'green',
-            weight: 3,
-            opacity: 0.8
-        };
+        const latDelta = lineRad * longDiff / hypotenuse / 111.1949269;
+        const longDelta = lineRad * latDiff / hypotenuse / 111.1949269 / Math.cos(startRads);
+        const lineStart = L.latLng(pt1[0] - latDelta, pt1[1] - longDelta);
+        const lineEnd = L.latLng(pt1[0] + latDelta, longDelta + pt1[1]);
+        const polylinePoints = [lineStart, lineEnd];
+        // const polylineOptions = {
+        //     color: 'green',
+        //     weight: 3,
+        //     opacity: 0.8
+        // };
 
         return L.polyline(polylinePoints, drawOptions);
     }
 
     function getTpSector(centrept, pt1, pt2, sectorRadius, sectorAngle, drawOptions) {
-        let headingIn = getBearing(pt1, centrept);
-        let bearingOut = getBearing(pt2, centrept);
+        const headingIn = getBearing(pt1, centrept);
+        const bearingOut = getBearing(pt2, centrept);
         let bisector = headingIn + (bearingOut - headingIn) / 2;
 
         if (Math.abs(bearingOut - headingIn) > 180) {
             bisector = (bisector + 180) % 360;
         }
 
-        let beginangle = bisector - sectorAngle / 2;
+        let beginAngle = bisector - sectorAngle / 2;
 
-        if (beginangle < 0) {
-            beginangle += 360;
+        if (beginAngle < 0) {
+            beginAngle += 360;
         }
 
-        let endangle = (bisector + sectorAngle / 2) % 360;
-        let sectorOptions = jQuery.extend({}, drawOptions, { startAngle: beginangle, stopAngle: endangle });
+        const endAngle = (bisector + sectorAngle / 2) % 360;
+        const sectorOptions = jQuery.extend({}, drawOptions, {startAngle: beginAngle, stopAngle: endAngle});
         return L.circle(centrept, sectorRadius, sectorOptions);
     }
 
@@ -79,18 +79,18 @@ function createMapControl(elementName) {
     let layerGroup;
     let trackLatLong = [];
 
-    function createMap (){
-        if(map) map.remove();
+    function createMap() {
+        if (map) map.remove();
         map = L.map(elementName);
-        let cartoAttribution = '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>';
+        const attribution = '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>';
         mapLayers = {
             positron: L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
-                attribution: cartoAttribution,
+                attribution: attribution,
                 maxZoom: 18
             }),
 
             darkMatter: L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png', {
-                attribution: cartoAttribution,
+                attribution: attribution,
                 maxZoom: 18
             }),
 
@@ -135,12 +135,12 @@ function createMapControl(elementName) {
     createMap();
 
     return {
-        initMap: function () {
+        initMap: () => {
             // (re-)initialize the map
             createMap();
         },
 
-        reset: function () {
+        reset: () => {
             // Clear any existing track data so that a new file can be loaded.
             if (mapLayers.track) {
                 map.removeLayer(mapLayers.track);
@@ -153,19 +153,19 @@ function createMapControl(elementName) {
             }
         },
 
-        clearLayer: function (layerName) {
-            if(layerGroups[layerName] !== undefined) map.removeLayer(layerGroups[layerName]);
+        clearLayer: layerName => {
+            if (layerGroups[layerName] !== undefined) map.removeLayer(layerGroups[layerName]);
             layerGroups[layerName] = undefined;
         },
 
-        clearLayers: function () {
+        clearLayers: () => {
             layerGroup.clearLayers();
         },
 
-        addTrack: function (latLong) {
+        addTrack: latLong => {
             trackLatLong = latLong;
-            let trackLine = L.polyline(latLong, { color: 'red', weight: 3 });
-            timePositionMarker = L.marker(latLong[0], { icon: planeIcon });
+            const trackLine = L.polyline(latLong, {color: 'red', weight: 3});
+            timePositionMarker = L.marker(latLong[0], {icon: planeIcon});
             mapLayers.track = L.layerGroup([
                 trackLine,
                 timePositionMarker
@@ -176,30 +176,30 @@ function createMapControl(elementName) {
         },
 
         // TODO: generic implementation
-        addCircle: function (latLong) {
-            let trackLine = L.polyline(latLong, { color: 'blue', weight: 3 });
+        addCircle: latLong => {
+            const trackLine = L.polyline(latLong, {color: 'blue', weight: 3});
             mapLayers.track = L.layerGroup([
                 trackLine
             ]).addTo(map);
         },
 
-        addCurve: function (latLong) {
-            let trackLine = L.polyline(latLong, { color: 'green', weight: 3 });
+        addCurve: latLong => {
+            const trackLine = L.polyline(latLong, {color: 'green', weight: 3});
             mapLayers.track = L.layerGroup([
                 trackLine
             ]).addTo(map);
         },
 
-        addTask: function (coordinates, names) {
+        addTask: (coordinates, names) => {
             //Clearer if we don't show track to and from start line and finish line, as we are going to show lines
-            let taskLayers = [L.polyline(coordinates, { color: 'blue', weight: 3 })];
-            let lineDrawOptions = {
+            const taskLayers = [L.polyline(coordinates, {color: 'blue', weight: 3})];
+            const lineDrawOptions = {
                 fillColor: 'green',
                 color: 'black',
                 weight: 2,
                 opacity: 0.8
             };
-            let sectorDrawOptions = {
+            const sectorDrawOptions = {
                 fillColor: 'green',
                 fillOpacity: 0.1,
                 color: 'black',
@@ -208,27 +208,27 @@ function createMapControl(elementName) {
             };
             //definitions from BGA rules
             //defined here as any future changes will be easier
-            let startLineRadius = 5;
-            let finishLineRadius = 1;
-            let tpCircleRadius = 500;
-            let tpSectorRadius = 20000;
-            let tpSectorAngle = 90;
+            const startLineRadius = 5;
+            const finishLineRadius = 1;
+            const tpCircleRadius = 500;
+            const tpSectorRadius = 20000;
+            const tpSectorAngle = 90;
             let j;
             for (j = 0; j < coordinates.length; j++) {
                 taskLayers.push(L.marker(coordinates[j]).bindPopup(names[j]));
                 switch (j) {
                     case 0:
-                        let startline = getLine(coordinates[0], coordinates[1], startLineRadius, lineDrawOptions);
-                        taskLayers.push(startline);
+                        const startLine = getLine(coordinates[0], coordinates[1], startLineRadius, lineDrawOptions);
+                        taskLayers.push(startLine);
                         break;
                     case (coordinates.length - 1):
-                        let finishline = getLine(coordinates[j], coordinates[j - 1], finishLineRadius, lineDrawOptions);
-                        taskLayers.push(finishline);
+                        const finishLine = getLine(coordinates[j], coordinates[j - 1], finishLineRadius, lineDrawOptions);
+                        taskLayers.push(finishLine);
                         break;
                     default:
                         taskLayers.push(L.circle(coordinates[j], tpCircleRadius, sectorDrawOptions));
-                        let tpsector = getTpSector(coordinates[j], coordinates[j - 1], coordinates[j + 1], tpSectorRadius, tpSectorAngle, sectorDrawOptions);
-                        taskLayers.push(tpsector);
+                        const tpSector = getTpSector(coordinates[j], coordinates[j - 1], coordinates[j + 1], tpSectorRadius, tpSectorAngle, sectorDrawOptions);
+                        taskLayers.push(tpSector);
                 }
             }
             console.log(taskLayers)
@@ -236,8 +236,8 @@ function createMapControl(elementName) {
             layersControl.addOverlay(mapLayers.task, 'Task');
         },
 
-        setTimeMarker: function (timeIndex) {
-            let markerLatLng = trackLatLong[timeIndex];
+        setTimeMarker: timeIndex => {
+            const markerLatLng = trackLatLong[timeIndex];
             if (markerLatLng) {
                 timePositionMarker.setLatLng(markerLatLng);
 
@@ -247,7 +247,7 @@ function createMapControl(elementName) {
             }
         },
 
-        addMarker: function (markerLatLng) {
+        addMarker: markerLatLng => {
             if (markerLatLng) {
                 L.marker(markerLatLng).addTo(layerGroup);
 
@@ -258,8 +258,8 @@ function createMapControl(elementName) {
             // L.marker(latLong[100]).addTo(map);
         },
 
-        addMarkerTo: function (layerName, markerLatLng) {
-            if(layerGroups[layerName] === undefined) layerGroups[layerName] = L.layerGroup().addTo(map);
+        addMarkerTo: (layerName, markerLatLng) => {
+            if (layerGroups[layerName] === undefined) layerGroups[layerName] = L.layerGroup().addTo(map);
             if (markerLatLng) {
                 L.marker(markerLatLng).addTo(layerGroups[layerName]);
                 if (!map.getBounds().contains(markerLatLng)) {

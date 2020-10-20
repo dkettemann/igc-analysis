@@ -19,8 +19,8 @@ async function displayResults(results, mapCtrl) {
 }
 
 function displayCurves(positionArray, layerName = "") {
-    for (let key in positionArray) {
-        let array = positionArray[key];
+    for (const key in positionArray) {
+        const array = positionArray[key];
         mapControl.addMarkerTo(layerName, latLong[array[1]]); // position 1 is the center of a curve
         const curvePoints = latLong.slice(array[0], array[2]);
         mapControl.addCurve(curvePoints);
@@ -29,7 +29,7 @@ function displayCurves(positionArray, layerName = "") {
 
 function displayCircles(algorithmOutput) {
     circles = algorithmOutput;
-    for (let circle in circleIndices) {
+    for (const circle in circleIndices) {
         const circlePoints = latLong.slice(circleIndices[circle][0], circleIndices[circle][1]+1);
         mapControl.addMarkerTo("circles", latLong[circleIndices[circle][0]]);
         mapControl.addCircle(circlePoints);

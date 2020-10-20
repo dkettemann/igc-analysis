@@ -62,34 +62,32 @@ async function findCurves(latLong, distances, stepSize, radius) {
         c90: [],
         c180: []
     };
-    let i = 0, curve90PreviousScore = 0, curve180PreviousScore = 0;
-    for (i = 0; i < distances.length; i += stepSize) {
-        // get three successive points with one radius distance
-        const p0 = i,
-            p1 = nextPointInDistance(radius, i, distances),
+    let p0 = 0, curve90PreviousScore = 0, curve180PreviousScore = 0;
+    for (p0; p0 < distances.length; p0 += stepSize) {
+        const p1 = nextPointInDistance(radius, p0, distances),
             p2 = nextPointInDistance(radius, p1, distances);
+
         if (p2 < 0) break; // point would be outside of the track log
         if (p0 % 2000 === 0) {
             await domUpdate();
         }
-        const distP1P0 = distance(p1, p0),
-            distP2P1 = distance(p2, p1),
-            distP2P0 = distance(p2, p0),
-            sum = distP1P0 + distP2P1;
+        const distP0P1 = distance(p1, p0),
+            distP1P2 = distance(p2, p1),
+            distP0P2 = distance(p2, p0),
+            sum = distP0P1 + distP1P2;
 
         if (sum > 2 * (1 - curveMaxDeviation) * radius
-            && distP2P0 > (1.44 * (1 - curveMaxDeviation)) * radius
-            && distP2P0 < (1.44 * (1 + curveMaxDeviation)) * radius) {
-            const score = (1.44 * radius - distP2P0) ** 2 - (distP1P0 - distP2P1) ** 2;
-            curves.c90.push(i);
-
+            && distP0P2 > (1.44 * (1 - curveMaxDeviation)) * radius
+            && distP0P2 < (1.44 * (1 + curveMaxDeviation)) * radius) {
+            const score = (1.44 * radius - distP0P2) ** 2 - (distP0P1 - distP1P2) ** 2;
+            curves.c90.push(p0);
             if (curves.c90.length > 1)
                 removeDuplicateCurves(latLong, radius, curve90PreviousScore, score, curves.c90);
             curve90PreviousScore = score;
         }
-        if (sum > 1.86 * radius && distP2P0 < 0.2 * radius) {
-            const score = radius - distP2P0;
-            curves.c180.push(i);
+        if (sum > 1.86 * radius && distP0P2 < 0.2 * radius) {
+            const score = radius - distP0P2;
+            curves.c180.push(p0);
             if (curves.c180.length > 1)
                 removeDuplicateCurves(latLong, radius, curve180PreviousScore, score, curves.c180);
 

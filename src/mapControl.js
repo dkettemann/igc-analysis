@@ -1,74 +1,5 @@
-// Wrapper for the leaflet.js map control with methods
-// to manage the map layers.
 function createMapControl(elementName) {
     'use strict';
-
-    // Private methods for drawing turn point sectors and start / finish lines
-
-    function getBearing(pt1, pt2) {
-        // Get bearing from pt1 to pt2 in degrees
-        // Formula from: http://www.movable-type.co.uk/scripts/latlong.html
-        // Start by converting to radians.
-        const degToRad = Math.PI / 180.0;
-        const lat1 = pt1[0] * degToRad;
-        const lon1 = pt1[1] * degToRad;
-        const lat2 = pt2[0] * degToRad;
-        const lon2 = pt2[1] * degToRad;
-
-        const y = Math.sin(lon2 - lon1) * Math.cos(lat2);
-        const x = Math.cos(lat1) * Math.sin(lat2) -
-            Math.sin(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1);
-
-        let bearing = Math.atan2(y, x) / degToRad;
-        bearing = (bearing + 360.0) % 360.0;
-        return bearing;
-    }
-
-    function getLine(pt1, pt2, lineRad, drawOptions) {
-        //returns line through pt1, at right angles to line between pt1 and pt2, length lineRad.
-        //Use Pythogoras- accurate enough on this scale
-        const latDiff = pt2[0] - pt1[0];
-        //need radians for cosine function
-        const northMean = (pt1[0] + pt2[0]) * Math.PI / 360;
-        const startRads = pt1[0] * Math.PI / 180;
-        const longDiff = (pt1[1] - pt2[1]) * Math.cos(northMean);
-        const hypotenuse = Math.sqrt(latDiff * latDiff + longDiff * longDiff);
-        //assume earth is a sphere circumference 40030 Km
-        const latDelta = lineRad * longDiff / hypotenuse / 111.1949269;
-        const longDelta = lineRad * latDiff / hypotenuse / 111.1949269 / Math.cos(startRads);
-        const lineStart = L.latLng(pt1[0] - latDelta, pt1[1] - longDelta);
-        const lineEnd = L.latLng(pt1[0] + latDelta, longDelta + pt1[1]);
-        const polylinePoints = [lineStart, lineEnd];
-        // const polylineOptions = {
-        //     color: 'green',
-        //     weight: 3,
-        //     opacity: 0.8
-        // };
-
-        return L.polyline(polylinePoints, drawOptions);
-    }
-
-    function getTpSector(centrept, pt1, pt2, sectorRadius, sectorAngle, drawOptions) {
-        const headingIn = getBearing(pt1, centrept);
-        const bearingOut = getBearing(pt2, centrept);
-        let bisector = headingIn + (bearingOut - headingIn) / 2;
-
-        if (Math.abs(bearingOut - headingIn) > 180) {
-            bisector = (bisector + 180) % 360;
-        }
-
-        let beginAngle = bisector - sectorAngle / 2;
-
-        if (beginAngle < 0) {
-            beginAngle += 360;
-        }
-
-        const endAngle = (bisector + sectorAngle / 2) % 360;
-        const sectorOptions = jQuery.extend({}, drawOptions, {startAngle: beginAngle, stopAngle: endAngle});
-        return L.circle(centrept, sectorRadius, sectorOptions);
-    }
-
-    // End of private methods
 
     let map;
     let layersControl;
@@ -78,6 +9,8 @@ function createMapControl(elementName) {
     let layerGroups;
     let layerGroup;
     let trackLatLong = [];
+
+    createMap();
 
     function createMap() {
         if (map) map.remove();
@@ -132,7 +65,66 @@ function createMapControl(elementName) {
         return map;
     }
 
-    createMap();
+    // Private methods for drawing turn point sectors and start / finish lines
+
+    function getBearing(pt1, pt2) {
+        // Get bearing from pt1 to pt2 in degrees
+        // Formula from: http://www.movable-type.co.uk/scripts/latlong.html
+        // Start by converting to radians.
+        const degToRad = Math.PI / 180.0;
+        const lat1 = pt1[0] * degToRad;
+        const lon1 = pt1[1] * degToRad;
+        const lat2 = pt2[0] * degToRad;
+        const lon2 = pt2[1] * degToRad;
+
+        const y = Math.sin(lon2 - lon1) * Math.cos(lat2);
+        const x = Math.cos(lat1) * Math.sin(lat2) -
+            Math.sin(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1);
+
+        let bearing = Math.atan2(y, x) / degToRad;
+        bearing = (bearing + 360.0) % 360.0;
+        return bearing;
+    }
+
+    function getLine(pt1, pt2, lineRad, drawOptions) {
+        //returns line through pt1, at right angles to line between pt1 and pt2, length lineRad.
+        //Use Pythogoras- accurate enough on this scale
+        const latDiff = pt2[0] - pt1[0];
+        //need radians for cosine function
+        const northMean = (pt1[0] + pt2[0]) * Math.PI / 360;
+        const startRads = pt1[0] * Math.PI / 180;
+        const longDiff = (pt1[1] - pt2[1]) * Math.cos(northMean);
+        const hypotenuse = Math.sqrt(latDiff * latDiff + longDiff * longDiff);
+        //assume earth is a sphere circumference 40030 Km
+        const latDelta = lineRad * longDiff / hypotenuse / 111.1949269;
+        const longDelta = lineRad * latDiff / hypotenuse / 111.1949269 / Math.cos(startRads);
+        const lineStart = L.latLng(pt1[0] - latDelta, pt1[1] - longDelta);
+        const lineEnd = L.latLng(pt1[0] + latDelta, longDelta + pt1[1]);
+        const polylinePoints = [lineStart, lineEnd];
+
+        return L.polyline(polylinePoints, drawOptions);
+    }
+
+    function getTpSector(centrept, pt1, pt2, sectorRadius, sectorAngle, drawOptions) {
+        const headingIn = getBearing(pt1, centrept);
+        const bearingOut = getBearing(pt2, centrept);
+        let bisector = headingIn + (bearingOut - headingIn) / 2;
+
+        if (Math.abs(bearingOut - headingIn) > 180) {
+            bisector = (bisector + 180) % 360;
+        }
+
+        let beginAngle = bisector - sectorAngle / 2;
+
+        if (beginAngle < 0) {
+            beginAngle += 360;
+        }
+
+        const endAngle = (bisector + sectorAngle / 2) % 360;
+        const sectorOptions = {...drawOptions, startAngle: beginAngle, stopAngle: endAngle};
+        return L.circle(centrept, sectorRadius, sectorOptions);
+    }
+
 
     return {
         initMap: () => {

@@ -19,8 +19,8 @@ function distance(p0, p1) {
 
 /**
  * Calculates the distance between two geographic coordinates, given through latitude and longitude, in kilometers.
- * @param {number[]} p0 A coordinate with lat and lon.
- * @param {number[]} p1 A coordinate with lat and lon.
+ * @param {number[]} p0 Coordinate - with lat and lon.
+ * @param {number[]} p1 Coordinate - with lat and lon.
  * @returns {number} The distance in kilometers.
  */
 function geographicDistance(p0, p1) {
@@ -28,7 +28,7 @@ function geographicDistance(p0, p1) {
     const lon1 = p0[1];
     const lat2 = p1[0];
     const lon2 = p1[1];
-    const p = 0.017453292519943295;    // Math.PI / 180
+    const p = 0.017453292519943295; // Math.PI / 180
     const c = Math.cos;
     const a = 0.5 - c((lat2 - lat1) * p)/2 +
         c(lat1 * p) * c(lat2 * p) *
@@ -55,7 +55,7 @@ function getNextPointRecursive(dist, idx, distances) {
 }
 
 function increaseIndexRecursive(dist, idx, distances, sum){
-    if(sum > dist) return idx-1;
+    if(sum > dist) return idx;
     if(idx >= distances.length-1) return -1;
 
     sum += distances[idx];

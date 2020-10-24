@@ -54,10 +54,14 @@ function parseIGC(igcFile) {
     // Extracts the flight date from the IGC file.
     function extractDate(igcFile) {
         // Date is recorded as: HFDTEddmmyy (where HFDTE is a literal and dddmmyy are digits).
-        const dateRecord = igcFile.match(/H[FO]DTE([\d]{2})([\d]{2})([\d]{2})/);
-        if (dateRecord === null) {
+        const dateFormat1 = /H[FO]DTE([\d]{2})([\d]{2})([\d]{2})/,
+            dateFormat2 = /H[FO]DTEDATE:([\d]{2})([\d]{2})([\d]{2})/;
+
+        const dateRecord = igcFile.match(dateFormat1) != null ?
+            igcFile.match(dateFormat1) : igcFile.match(dateFormat2);
+
+        if (dateRecord === null)
             throw new IGCException('The file does not contain a date header.');
-        }
 
         const day = parseInt(dateRecord[1], 10);
         // Javascript numbers months from zero, not 1!

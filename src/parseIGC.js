@@ -15,7 +15,7 @@ function parseIGC(igcFile) {
     // the three letter code in the first line of the IGC file
     // (the 'A' record).
     function parseManufacturer(aRecord) {
-        let manufacturers = {
+        const manufacturers = {
             'GCS': 'Garrecht',
             'CAM': 'Cambridge Aero Instruments',
             'DSX': 'Data Swan',
@@ -38,7 +38,7 @@ function parseIGC(igcFile) {
             'ZAN': 'Zander'
         };
 
-        let manufacturerInfo = {
+        const manufacturerInfo = {
             manufacturer: 'Unknown',
             serial: aRecord.substring(4, 7)
         };
@@ -91,11 +91,11 @@ function parseIGC(igcFile) {
             'CCL': 'Competition class'
         };
 
-        let headerName = headerSubtypes[headerRecord.substring(2, 5)];
+        const headerName = headerSubtypes[headerRecord.substring(2, 5)];
         if (headerName !== undefined) {
-            let colonIndex = headerRecord.indexOf(':');
+            const colonIndex = headerRecord.indexOf(':');
             if (colonIndex !== -1) {
-                let headerValue = headerRecord.substring(colonIndex + 1);
+                const headerValue = headerRecord.substring(colonIndex + 1);
                 if (headerValue.length > 0 && /([^\s]+)/.test(headerValue)) {
                     return {
                         name: headerName,
@@ -133,12 +133,12 @@ function parseIGC(igcFile) {
         // Latitude and longitude are in degrees and minutes, with the minutes
         // value multiplied by 1000 so that no decimal point is needed.
         //                      hours    minutes  seconds  latitude    longitude        press alt  gps alt
-        let positionRegex = /^B([\d]{2})([\d]{2})([\d]{2})([\d]{7}[NS][\d]{8}[EW])([AV])([\d]{5})([\d]{5})/;
-        let positionMatch = positionRecord.match(positionRegex);
+        const positionRegex = /^B([\d]{2})([\d]{2})([\d]{2})([\d]{7}[NS][\d]{8}[EW])([AV])([\d]{5})([\d]{5})/;
+        const positionMatch = positionRecord.match(positionRegex);
         if (positionMatch) {
             // Convert the time to a date and time. Start by making a clone of the date
             // object that represents the date given in the headers:
-            let positionTime = new Date(flightDate.getTime());
+            const positionTime = new Date(flightDate.getTime());
             positionTime.setUTCHours(parseInt(positionMatch[1], 10), parseInt(positionMatch[2], 10), parseInt(positionMatch[3], 10));
             // If the flight crosses midnight (UTC) then we now have a time that is 24 hours out.
             // We know that this is the case if the time is earlier than the first position fix.
@@ -157,9 +157,9 @@ function parseIGC(igcFile) {
     }
 
     function parseTask(taskRecord) {
-        let taskRegex = /^C([\d]{7}[NS][\d]{8}[EW])(.*)/;
-        let taskMatch = taskRecord.match(taskRegex);
-        let degreeSymbol = '\u00B0';
+        const taskRegex = /^C([\d]{7}[NS][\d]{8}[EW])(.*)/;
+        const taskMatch = taskRecord.match(taskRegex);
+        const degreeSymbol = '\u00B0';
 
         if (taskMatch) {
             let name = taskMatch[2];
@@ -192,8 +192,8 @@ function parseIGC(igcFile) {
 
     // ---- Start of IGC parser code ----
 
-    let invalidFileMessage = 'This does not appear to be an IGC file.';
-    let igcLines = igcFile.split('\n');
+    const invalidFileMessage = 'This does not appear to be an IGC file.';
+    const igcLines = igcFile.split('\n');
     if (igcLines.length < 2) {
         throw new IGCException(invalidFileMessage);
     }
@@ -201,7 +201,7 @@ function parseIGC(igcFile) {
     // Declare the model object that is to be returned;
     // this contains the position and altitude data and the header
     // values.
-    let model = {
+    const model = {
         headers: [],
         recordTime: [],
         latLong: [],
@@ -217,11 +217,16 @@ function parseIGC(igcFile) {
 
     // The first line should begin with 'A' followed by
     // a 3-character manufacturer Id and a 3-character serial number.
-    if (!(/^A[\w]{6}/).test(igcLines[0])) {
+    if (/^A[\w]{6}/.test(igcLines[0])) {
+        // this is a valid 6 character code
+    } else if (/^A[\w]{3}/.test(igcLines[0])) {
+        // the serial number is missing
+        console.log("The serial number is missing. ")
+    } else {
         throw new IGCException(invalidFileMessage);
     }
 
-    let manufacturerInfo = parseManufacturer(igcLines[0]);
+    const manufacturerInfo = parseManufacturer(igcLines[0]);
     model.headers.push({
         name: 'Logger manufacturer',
         value: manufacturerInfo.manufacturer
@@ -232,7 +237,7 @@ function parseIGC(igcFile) {
         value: manufacturerInfo.serial
     });
 
-    let flightDate = extractDate(igcFile);
+    const flightDate = extractDate(igcFile);
 
     let lineIndex;
     let positionData;
@@ -274,18 +279,18 @@ function parseIGC(igcFile) {
 // Extract takeoff and landing  names from model.task and reduce model.task.coordinates to what we want to plot
 // Throw away takeoff and landing coordinates as we won't be using them
 if(model.task.names.length > 0)  {
-    let takeoffname=model.task.takeoff=model.task.names.shift();
-   if  (model.task.coordinates[0][0]!==0)  {
-       model.task.takeoff=takeoffname;
+    const takeoffName = model.task.takeoff = model.task.names.shift();
+    if  (model.task.coordinates[0][0]!==0)  {
+       model.task.takeoff=takeoffName;
    }
 else {
             model.task.takeoff="";
    }
 
 model.task.coordinates.shift();
-    let landingname=model.task.names.pop();
+    const landingName = model.task.names.pop();
     if  (model.task.coordinates[model.task.coordinates.length-1][0]!==0)  {
-       model.task.landing=landingname;
+       model.task.landing=landingName;
    }
    else     {
             model.task.landing="";

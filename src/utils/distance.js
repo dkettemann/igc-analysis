@@ -1,20 +1,16 @@
 /**
- * Calculates the distance between two geographic coordinates, given through track indices, in kilometers.
+ * Calculates the distance between track points, in kilometers.
  * @param {number} p0 A track index.
  * @param {number} p1 A track index.
  * @returns {number} The distance in kilometers.
  */
 function distance(p0, p1) {
-    if(latLong[p0]===undefined || latLong[p1]===undefined)
+    if (latLong[p0] === undefined || latLong[p1] === undefined)
         console.log("distance(" + p0 + ", " + p1 + "): invalid coordinates passed");
+    if(p1 >= latLong.length)
+        console.log(p1 + " >= " + latLong.length + ": p1 >= latLong.length")
     const lat1 = latLong[p1][0], lon1 = latLong[p1][1], lat2 = latLong[p0][0], lon2 = latLong[p0][1];
-    const p = 0.017453292519943295;    // Math.PI / 180
-    const c = Math.cos;
-    const a = 0.5 - c((lat2 - lat1) * p)/2 +
-        c(lat1 * p) * c(lat2 * p) *
-        (1 - c((lon2 - lon1) * p))/2;
-
-    return 12742 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
+    return distanceBetweenCoordinates(latLong[p0], latLong[p1])
 }
 
 /**
@@ -23,16 +19,13 @@ function distance(p0, p1) {
  * @param {number[]} p1 Coordinate - with lat and lon.
  * @returns {number} The distance in kilometers.
  */
-function geographicDistance(p0, p1) {
-    const lat1 = p0[0];
-    const lon1 = p0[1];
-    const lat2 = p1[0];
-    const lon2 = p1[1];
+function distanceBetweenCoordinates(p0, p1) {
+    const lat1 = p0[0], lon1 = p0[1], lat2 = p1[0], lon2 = p1[1];
     const p = 0.017453292519943295; // Math.PI / 180
     const c = Math.cos;
-    const a = 0.5 - c((lat2 - lat1) * p)/2 +
+    const a = 0.5 - c((lat2 - lat1) * p) / 2 +
         c(lat1 * p) * c(lat2 * p) *
-        (1 - c((lon2 - lon1) * p))/2;
+        (1 - c((lon2 - lon1) * p)) / 2;
 
     return 12742 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
 }
@@ -50,16 +43,28 @@ function nextPointInDistance(dist, idx, distances) {
     return -1;
 }
 
+let recursionExceptionHappened = false;
+/**
+ * Finds the next index in range of the dist parameter.
+ */
 function getNextPointRecursive(dist, idx, distances) {
-    return increaseIndexRecursive(dist, idx, distances, 0);
+    if(recursionExceptionHappened) return nextPointInDistance(dist, idx, distances);
+    try {
+        return increaseIndexRecursive(dist, idx, distances, 0);
+    } catch (e) {
+        recursionExceptionHappened = true;
+        return nextPointInDistance(dist, idx, distances);
+    }
 }
 
+/**
+ * Increase idx until sum is greater than dist.
+ */
 function increaseIndexRecursive(dist, idx, distances, sum){
     if(sum > dist) return idx;
     if(idx >= distances.length-1) return -1;
-
     sum += distances[idx];
-    return increaseIndexRecursive(dist, idx+1, distances, sum)
+    return increaseIndexRecursive(dist, idx + 1, distances, sum)
 }
 
 /**
@@ -71,4 +76,12 @@ function average(values) {
     const avg = (sum / values.length) || 0;
 
     console.log(`The sum is: ${sum}. The average is: ${avg}.`);
+}
+
+/**
+ * Calculates the length of a path starting from p0 to p1 in the IGC graph.
+ */
+function pathLength(distances, p0, p1) {
+    const p0ToP1 = distances.slice(p0, p1 + 1); // include p1 into the path
+    return p0ToP1.reduce((a, b) => a + b, 0);
 }

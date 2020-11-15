@@ -1,9 +1,9 @@
 // const serverAddress = "http://php.test/";
 const serverAddress = "https://api.igc.onestudies.com/";
 const displayDefaultFileOnStartup = false;
+let domUpdateInterval = 2000; // Every n iterations of an algorithm, the DOM is updated
 let calculationSlowdown = 100;
-let numberOfCalculations = 1000;
 const showCpuUsageWarning = false;
 const curveMaxDeviation = 0.05;
 const circleMaxGap = 0.015; // maximum distance between start- and endPoint
-const circleDiameterMaxDeviation = 0.2;
+const circleDiameterMaxDeviation = 0.25;

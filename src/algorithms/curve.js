@@ -7,14 +7,9 @@ const _curves = {
 let _curve90PreviousScore = 0,
     _curve180PreviousScore = 0;
 
-/**
- A 90-degree curve should be defined as a broken line of 2km length, while start- and end point
- have a distance of 1.3km to 1.5km between themselves and at least 0.9km to the turning point.
- */
 async function curveDetection(latLong, distances, radius) {
     const curves = [[], []];
     console.time("curveDetection");
-    // console.log(Math.max(...distances));
     const result = await findCurves(latLong, distances, 1, radius);
     result.c90.forEach(idx => {
         curves[0].push([
@@ -34,29 +29,21 @@ async function curveDetection(latLong, distances, radius) {
     return curves;
 }
 
-/**
- * Identifies both 90-degree and 180-degree curves.
- * @param {[number, number]} latLong
- * @param {number[]} distances
- * @param {number} stepSize
- * @param radius
- * @returns {{curve180: [], curve90: []}} The curve detection result object with 90-degree and 180-degree curves.
- */
 async function findCurves(latLong, distances, stepSize, radius) {
-    let p0 = 0;
-    for (p0; p0 < distances.length; p0 += stepSize) {
+    for (let p0 = 0; p0 < distances.length; p0 += stepSize) {
         const p1 = getNextPointRecursive(radius, p0, distances),
             p2 = getNextPointRecursive(radius, p1, distances);
 
         if (p2 < 0) break; // no next point exists
-        if (p0 % 2000 === 0) await domUpdate();
+        if (p0 % domUpdateInterval === 0) await domUpdate();
 
         const distP0P1 = distance(p1, p0),
             distP1P2 = distance(p2, p1),
             distP0P2 = distance(p2, p0);
-        if (curve90Criterion(distP0P1, distP1P2, distP0P2, radius)) {
+        // TODO: common straight-line check
+        if (isCurve90(distP0P1, distP1P2, distP0P2, radius)) {
             onCurve90Detected(p0, distP0P1, distP1P2, distP0P2, radius);
-        } else if (curve180Criterion(distP0P1, distP1P2, distP0P2, radius)) {
+        } else if (isCurve180(distP0P1, distP1P2, distP0P2, radius)) {
             onCurve180Detected(p0, distP0P2, radius);
         }
 
@@ -68,64 +55,43 @@ async function findCurves(latLong, distances, stepSize, radius) {
     return _curves;
 }
 
-/**
- * Handles a 90-degree curve.
- */
-function onCurve90Detected(p0, distP0P1, distP1P2, distP0P2, radius){
+function onCurve90Detected(p0, distP0P1, distP1P2, distP0P2, radius) {
     const score = get90DegreeScore(distP0P1, distP1P2, distP0P2, radius);
     _curves.c90.push(p0);
     if (_curves.c90.length > 1)
-        removeDuplicateCurves(latLong, radius, _curve90PreviousScore, score, _curves.c90);
+        removeDuplicates(latLong, radius, _curve90PreviousScore, score, _curves.c90);
     _curve90PreviousScore = score;
 }
 
-/**
- * Handles a 180-degree curve.
- */
-function onCurve180Detected(p0, distP0P2, radius){
+function onCurve180Detected(p0, distP0P2, radius) {
     const score = get180DegreeScore(distP0P2, radius);
     _curves.c180.push(p0);
     if (_curves.c180.length > 1)
-        removeDuplicateCurves(latLong, radius, _curve180PreviousScore, score, _curves.c180);
+        removeDuplicates(latLong, radius, _curve180PreviousScore, score, _curves.c180);
     _curve180PreviousScore = score;
 }
 
-/**
- * Checks if a line through p0, p1 and p2 is a 90-degree curve.
- * @returns {boolean} True if the points form a 90-degree curve.
- */
-function curve90Criterion(distP0P1, distP1P2, distP0P2, radius) {
+// TODO: radius is not a very good variable name
+function isCurve90(distP0P1, distP1P2, distP0P2, radius) {
     return (distP0P1 + distP1P2) > 2 * (1 - curveMaxDeviation) * radius
         && distP0P2 > (1.44 * (1 - curveMaxDeviation)) * radius
         && distP0P2 < (1.44 * (1 + curveMaxDeviation)) * radius;
 }
 
-/**
- * Checks if a line through p0, p1 and p2 is a 180-degree curve.
- * @returns {boolean} True if the points form a 180-degree curve.
- */
-function curve180Criterion(distP0P1, distP1P2, distP0P2, radius) {
+// TODO: use maximum deviation parameter
+function isCurve180(distP0P1, distP1P2, distP0P2, radius) {
     return (distP0P1 + distP1P2) > 1.86 * radius && distP0P2 < 0.2 * radius;
 }
 
-/**
- * Calculates the score for a 90-degree curve.
- * @returns {number}
- */
-const get90DegreeScore = (distP0P1, distP1P2, distP0P2, radius) =>
-    (1.44 * radius - distP0P2) ** 2 - (distP0P1 - distP1P2) ** 2;
+function get90DegreeScore(distP0P1, distP1P2, distP0P2, radius) {
+    return (1.44 * radius - distP0P2) ** 2 - (distP0P1 - distP1P2) ** 2;
+}
 
-/**
- * Calculates the score for a 90-degree curve.
- * @returns {number}
- */
-const get180DegreeScore = (distP0P2, radius) => radius - distP0P2;
+function get180DegreeScore(distP0P2, radius) {
+    return radius - distP0P2;
+}
 
-
-/**
- * Verify that one curve is not detected twice. If that is the case, remove the one with the lower score.
- */
-function removeDuplicateCurves(latLong, radius, previousScore, currentScore, arr) {
+function removeDuplicates(latLong, radius, previousScore, currentScore, arr) {
     const p0 = arr[arr.length - 2];
     const p1 = arr[arr.length - 1];
     if (distance(p1, p0) > radius) return false;
@@ -134,13 +100,6 @@ function removeDuplicateCurves(latLong, radius, previousScore, currentScore, arr
     return true;
 }
 
-/**
- * Measures distance in km from every nth track point up to point n + stepSize.
- * @returns {[]}
- * @param {[number, number]} latLong latitude and longitude of every track log point in an array
- * @param {number} stepSize define if subsequent points should be used (stepSize = 1) or every nth
- * point (stepSize = n)
- */
 function calcDistances(latLong, stepSize = 1) {
     const distances = [];
     for (let i = stepSize; i < latLong.length; i += stepSize) {
@@ -148,13 +107,4 @@ function calcDistances(latLong, stepSize = 1) {
         distances.push(dist);
     }
     return distances;
-}
-
-/**
- * Measures the traveled distance through all points of the track log from p0 to and including p1.
- * @returns {*}
- */
-function coveredDistance(distances, p0, p1) {
-    const p0ToP1 = distances.slice(p0, p1 + 1);
-    return p0ToP1.reduce((a, b) => a + b, 0);
 }

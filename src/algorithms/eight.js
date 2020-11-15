@@ -16,12 +16,12 @@ async function findEights() {
     const eights = [];
     for (let i = 0; i < circles.length - 1; i++) {
         const diff = circles[i + 1][0] - circles[i][1];
-        if (diff < 10) {
+        if (diff < 5) {
             const center1 = getCenterPoint(circles[i][0], circles[i][1]);
-            const radius1 = geographicDistance(latLong[circles[i][0]], center1);
+            const radius1 = distanceBetweenCoordinates(latLong[circles[i][0]], center1);
             const center2 = getCenterPoint(circles[i + 1][0], circles[i + 1][1]);
-            const radius2 = geographicDistance(latLong[circles[i + 1][0]], center2);
-            const gap = geographicDistance(center1, center2);
+            const radius2 = distanceBetweenCoordinates(latLong[circles[i + 1][0]], center2);
+            const gap = distanceBetweenCoordinates(center1, center2);
             if (gap >= (radius1 + radius2) || i >= circles.length - 2) {
                 // console.log('%c eight found: ', 'color: gray', 'idx ' + circles[i][0] + ' to ' + circles[i + 1][1] + ': ' +
                 //     (radius1 + radius2) + ' <= ' + geographicDistance(center1, center2));

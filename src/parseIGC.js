@@ -2,7 +2,6 @@
 // being parsed is not in a valid IGC format.
 function IGCException(message) {
     'use strict';
-
     this.message = message;
     this.name = "IGCException";
 }
@@ -247,7 +246,7 @@ function parseIGC(igcFile) {
     let positionData;
     let recordType;
     let currentLine;
-    let turnpoint; // for task declaration lines
+    let turnPoint; // for task declaration lines
     let headerData;
     for (lineIndex = 0; lineIndex < igcLines.length; lineIndex++) {
         currentLine = igcLines[lineIndex];
@@ -264,10 +263,10 @@ function parseIGC(igcFile) {
                 break;
 
             case 'C': // Task declaration
-                turnpoint = parseTask(currentLine);
-                if (turnpoint) {
-                    model.task.coordinates.push(turnpoint.latLong);
-                    model.task.names.push(turnpoint.name);
+                turnPoint = parseTask(currentLine);
+                if (turnPoint) {
+                    model.task.coordinates.push(turnPoint.latLong);
+                    model.task.names.push(turnPoint.name);
                 }
                 break;
 

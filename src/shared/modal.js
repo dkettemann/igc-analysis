@@ -13,7 +13,7 @@ window.onclick = (event) => {
 async function reduceCalculationSpeed(){
     closeModal();
     console.log("reducing the calculation speed")
-    console.log("now waiting " + calculationSlowdown + "ms every " + numberOfCalculations + " operations");
+    console.log("now waiting " + calculationSlowdown + "ms every " + domUpdateInterval + " operations");
     calculationSlowdown = 300;
     await domUpdate();
 }

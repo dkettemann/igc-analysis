@@ -2,28 +2,6 @@
 
 altitudeConversionFactor = 1.0; // Conversion from metres to required units
 
-function positionDisplay(position) {
-    function toDegMins(degreeValue) {
-        const wholeDegrees = Math.floor(degreeValue);
-        const minuteValue = (60 * (degreeValue - wholeDegrees)).toFixed(3);
-        return wholeDegrees + '\u00B0\u00A0' + minuteValue + '\u00B4';
-    }
-
-    let positionLatitude = toDegMins(Math.abs(position[0]));
-    let positionLongitude = toDegMins(Math.abs(position[1]));
-    if (position[0] > 0) {
-        positionLatitude += "N";
-    } else {
-        positionLatitude += "S";
-    }
-    if (position[1] > 0) {
-        positionLongitude += "E";
-    } else {
-        positionLongitude += "W";
-    }
-    return positionLatitude + ",   " + positionLongitude;
-}
-
 updateTimeline = (timeIndex) => {
     const currentPosition = igcFile.latLong[timeIndex];
     if (timeIndex > 0) console.log(timeIndex);
@@ -49,8 +27,6 @@ function displayIgc(mapControl) {
     }
 
     // Show the task declaration if it is present.
-
-    // TODO: integrate algorithm results as tasks?
     if (igcFile.task.coordinates.length > 0) {
         //eliminate anything with empty start line coordinates
         if (igcFile.task.coordinates[0][0] !== 0) {
@@ -101,29 +77,34 @@ function storePreference(name, value) {
     }
 }
 
-function sendData(file) {
-    const data = new FormData();
-    data.append("igcfile", file);
+function positionDisplay(position) {
+    function toDegMins(degreeValue) {
+        const wholeDegrees = Math.floor(degreeValue);
+        const minuteValue = (60 * (degreeValue - wholeDegrees)).toFixed(3);
+        return wholeDegrees + '\u00B0\u00A0' + minuteValue + '\u00B4';
+    }
 
-    fetch(serverAddress + "api/igc/readFromForm.php?XDEBUG_SESSION_START=TRUE", {
-        method: 'post',
-        body: data,
-    }).then(async response => {
-        response = await response.json();
-        console.log(response);
-        igcContainer.style.display = 'flex';
-        downloadParagraph.innerHTML = "The file is available here: ";
-        downloadURL.innerHTML = response.url;
-        downloadURL.setAttribute("href", response.url)
-    })
+    let positionLatitude = toDegMins(Math.abs(position[0]));
+    let positionLongitude = toDegMins(Math.abs(position[1]));
+    if (position[0] > 0) {
+        positionLatitude += "N";
+    } else {
+        positionLatitude += "S";
+    }
+    if (position[1] > 0) {
+        positionLongitude += "E";
+    } else {
+        positionLongitude += "W";
+    }
+    return positionLatitude + ",   " + positionLongitude;
 }
+
 
 document.addEventListener("DOMContentLoaded", () => {
     mapControl = createMapControl('map');
 
     moment.tz.names().forEach((name) => {
         timeZoneSelect.innerHTML += `<option value="${name}">` + name + '</option>';
-
     });
 
     timeZoneSelect.onchange = () => {
@@ -138,17 +119,28 @@ document.addEventListener("DOMContentLoaded", () => {
         storePreference('timeZone', selectedZone);
     }
 
+    function timeSliderChangeHandler() {
+        updateTimeline(getTimeLineValue(), mapControl)
+    }
+
+    // We need to handle the 'change' event for IE, but 'input' for Chrome and Firefox
+    // in order to update smoothly as the range input is dragged.
+    timeSliderElement.oninput = timeSliderChangeHandler;
+    timeSliderElement.onchange = timeSliderChangeHandler;
+
+    timeBackButton.addEventListener("click", () => setTimelineValue(
+        getTimeLineValue() - 1
+    ));
+
+    timeForwardButton.addEventListener("click", () => setTimelineValue(
+        getTimeLineValue() + 1
+    ));
+
     handleFileInput = async (file) => {
         return new Promise(resolve => {
             const reader = new FileReader();
             reader.onload = async function (e) {
-                try {
-                    errorMessageElement.innerHTML = '';
-                    mapControl.reset();
-                    timeSliderElement.value = 0
-                } catch (ex) {
-                    errorHandler(ex);
-                }
+                resetMap();
 
                 igcFile = parseIGC(reader.result);
                 displayIgc(mapControl);
@@ -166,8 +158,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     fileControl.onchange = function () {
         if (this.files.length < 1) return;
-        sendData(this.files[0]);
         handleFileInput(this.files[0]);
+    }
+
+    function resetMap() {
+        try {
+            errorMessageElement.innerHTML = '';
+            mapControl.reset();
+            timeSliderElement.value = 0
+        } catch (ex) {
+            errorHandler(ex);
+        }
     }
 
     function displayDefaultFile() {
@@ -208,30 +209,6 @@ document.addEventListener("DOMContentLoaded", () => {
         storePreference("altitudeUnit", altitudeUnit);
     };
 
-    function timeSliderChangeHandler() {
-        updateTimeline(getTimeLineValue(), mapControl)
-    }
-
-    // We need to handle the 'change' event for IE, but
-    // 'input' for Chrome and Firefox in order to update smoothly
-    // as the range input is dragged.
-    timeSliderElement.oninput = timeSliderChangeHandler;
-    timeSliderElement.onchange = timeSliderChangeHandler;
-
-    function timeLineButtonEventHandler(valueUpdateHandler) {
-        setTimelineValue(
-            valueUpdateHandler(getTimeLineValue())
-        );
-    }
-
-    timeBackButton.addEventListener("click", () => timeLineButtonEventHandler(
-        (val) => val - 1
-    ));
-
-    timeForwardButton.addEventListener("click", () => timeLineButtonEventHandler(
-        (val) => val + 1
-    ));
-
     // Load preferences from local storage, if available.
 
     let altitudeUnit = '';
@@ -251,10 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    if (!timeZone) {
-        timeZone = 'UTC';
-    }
-
+    if (!timeZone) timeZone = 'UTC';
     timeZoneSelect.value = timeZone;
     moment.tz.setDefault(timeZone);
 

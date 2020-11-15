@@ -9,13 +9,6 @@ const fileURL = 'https://api.igc.onestudies.com/api/igc/getFile.php';
 
 window.onload = async () => {
     await loadFileByURL(fileURL);
-    // runCircleDetection();
-}
-
-async function runCircleDetection() {
-    if (showCpuUsageWarning) openModal();
-    results.shapeDetection.circle = await circleDetection();
-    let eights = await eightDetection();
 
     console.group('algorithm results');
     console.log('%c IGC Header', 'color: gray', results.igcHeader)

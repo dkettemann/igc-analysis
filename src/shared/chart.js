@@ -1,6 +1,6 @@
-let dataLabels = [];
-let pressureBarogramData = [];
-let gpsBarogramData = [];
+const dataLabels = [];
+const pressureBarogramData = [];
+const gpsBarogramData = [];
 let timestamp;
 let myChart;
 let pruningFactor;
@@ -27,12 +27,13 @@ function getPruningFactor(recordLength) {
     return recordLength > 200 ? Math.round(recordLength / 50) : 1;
 }
 
-chartElement.onclick = function (evt) {
+chartElement.onclick = evt => {
     const point = myChart.getElementsAtEventForMode(evt, 'point', myChart.options)[0];
     if (!point) return; // no point was focused, just the chart background was clicked
     setTimelineValue(point._index * pruningFactor);
 };
 
+// TODO: reduce point size??
 function getChartConfig() {
     return {
         type: 'line',
@@ -69,7 +70,7 @@ function getChartConfig() {
             scales: {
                 xAxes: [{
                     afterTickToLabelConversion: function (data) {
-                        let xLabels = data.ticks;
+                        const xLabels = data.ticks;
                         xLabels.forEach(function (labels, i) {
                             if (i % 2 === 1) {
                                 xLabels[i] = '';

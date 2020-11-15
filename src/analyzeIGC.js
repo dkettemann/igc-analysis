@@ -6,6 +6,8 @@ async function runAlgorithms(track) {
     maxPointDistance = Math.max(...distances);
     const curves = await curveDetection(track.latLong, distances, 0.3);
     results = getResultObject(curves);
+    results.shapeDetection.circle = await circleDetection();
+    results.shapeDetection.eight = await eightDetection();
     return results;
 }
 

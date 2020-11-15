@@ -29,19 +29,18 @@ function displayCurves(positionArray, layerName = "") {
 
 function displayCircles(algorithmOutput) {
     circles = algorithmOutput;
-    for (const circle in circleIndices) {
-        const circlePoints = latLong.slice(circleIndices[circle][0], circleIndices[circle][1]+1);
-        mapControl.addMarkerTo("circles", latLong[circleIndices[circle][0]]);
+    for (const circleIndex of circleIndices) {
+        const circlePoints = latLong.slice(circleIndex[0], circleIndex[1]+1);
+        // mapControl.addMarkerTo("circles", latLong[circleIndices[circle][0]]);
         mapControl.addCircle(circlePoints);
     }
-    if (circles.length === 0) circleCheckbox.disabled = true;
-    else circleCheckbox.disabled = false;
+    circleCheckbox.disabled = circles.length === 0;
 }
 
 function displayEights(algorithmOutput) {
-    for (let i = 0; i < algorithmOutput.length; i++) {
-        const points = latLong.slice(algorithmOutput[i][0], algorithmOutput[i][1]+1);
-        mapControl.addMarkerTo("eights", latLong[algorithmOutput[i][0]]);
+    for (const item of algorithmOutput) {
+        const points = latLong.slice(item[0], item[1]+1);
+        mapControl.addMarkerTo("eights", latLong[item[0]]);
         mapControl.addCircle(points);
     }
 }

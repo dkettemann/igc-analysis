@@ -14,11 +14,6 @@ function applyCircleDetectionProgress(value) {
     circleDetectionContainer.style.display = 'block';
 }
 
-function setCircleDetectionProgress(currentIndex, arrayLength) {
-    const value = getProgressValue(currentIndex, arrayLength);
-    applyCircleDetectionProgress(value);
-}
-
 function setCheckboxValue(checkbox, value) { checkbox.checked = value; }
 
 function getTimeLineValue() {

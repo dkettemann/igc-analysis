@@ -11,14 +11,6 @@ async function runAlgorithms(track) {
     return results;
 }
 
-function fetchIGCData() {
-    fetch(serverAddress + 'api/igc/getIGCDocuments.php')
-        .then(async response => {
-            if (!response.ok) throw new Error("HTTP error " + response.status);
-            response = await response.json();
-        })
-}
-
 async function pauseCalculations() {
     await domUpdate();
     await sleep(calculationSlowdown);

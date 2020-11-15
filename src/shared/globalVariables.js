@@ -16,8 +16,6 @@ const taskElement = document.querySelector('#task');
 const taskListElement = document.querySelector('#task ul');
 const igcFileDisplay = document.querySelector('#igcFileDisplay');
 const igcContainer = document.querySelector('.igc-container');
-const downloadParagraph = document.querySelector('#download-p');
-const downloadURL = document.querySelector('#download-url');
 const timeZoneSelect = document.querySelector('#timeZoneSelect');
 const errorMessageElement = document.querySelector('#errorMessage');
 const displayDefaultFileButton = document.querySelector('#display-default-file');
@@ -28,7 +26,7 @@ const fileControl = document.querySelector('#fileControl');
 let handleFileInput;
 let mapControl;
 let updateTimeline;
-let altitudeConversionFactor; // Conversion from metres to required units
+let altitudeConversionFactor = 1.0; // Convert from metres to required units
 
 let igcFile;
 let latLong = [];

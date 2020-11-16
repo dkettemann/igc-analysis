@@ -32,5 +32,4 @@ let igcFile;
 let latLong = [];
 let distances = [];
 let maxPointDistance = NaN;
-let circleIndices = [];
 let results;

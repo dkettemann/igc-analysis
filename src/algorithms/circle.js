@@ -1,15 +1,36 @@
 let _circlesFound = false;
 
-async function circleDetection() {
+async function circleDetection(useTheta) {
     const start = window.performance.now();
-    const circles = await findCircles(latLong, distances);
+
+    let circles = [];
+    if (useTheta) circles = await thetaCircles();
+    else circles = await findCircles(latLong, distances);
+
     const end = window.performance.now();
     const secondsSpent = ((end - start) / 1000).toFixed(3);
 
     applyCircleDetectionProgress(100);
     setCircleDetectionOutput(secondsSpent, circles.length);
-    displayCircles(circles);
+    if(useTheta) displayCircles(circles, 'orange')
+    else displayCircles(circles, 'blue')
     return circles;
+}
+
+async function thetaCircles() {
+    const thetaCircles = [];
+    for (let i = 0; i < latLong.length - 2; i++) {
+        let p0 = i, p1 = i + 1, p2 = i + 2;
+        while (p2 < latLong.length && validAngle(p0, p1, p2)) {
+            if (p2 > i + 5 && circleGapCondition(i, p2)) {
+                thetaCircles.push([i, p2]);
+                i = p2;
+            }
+            p0++, p1++, p2++;
+        }
+    }
+
+    return thetaCircles;
 }
 
 async function findCircles(latLong, distances) {
@@ -17,9 +38,9 @@ async function findCircles(latLong, distances) {
     let p0 = 0;
     while (p0 < latLong.length) {
         if (p0 % domUpdateInterval === 0) await updateProgressBar(p0);
-        let p1 = getNextPointRecursive(0.1, p0, distances);
+        let p1 = getNextPointRecursive(0.08, p0, distances);
         while (p1 < latLong.length) {
-        // for (let p1 = getNextPointRecursive(0.1, p0, distances); p1 < latLong.length; p1++) {
+            // for (let p1 = getNextPointRecursive(0.1, p0, distances); p1 < latLong.length; p1++) {
             if (p1 < 0) break; // nextPointInDistance could not find a point
             const distP0P1 = distance(p0, p1);
             const circleCondition1 = distP0P1 < circleMaxGap;
@@ -48,6 +69,20 @@ async function findCircles(latLong, distances) {
     return circles;
 }
 
+// The calculation approximates the angle because of the earth's curvature
+function getAngle(p0, p1, p2) {
+    const bearingP0P1 = getBearing(latLong[p0], latLong[p1]);
+    const bearingP1P2 = getBearing(latLong[p1], latLong[p2]);
+    return bearingP0P1 - bearingP1P2;
+}
+
+function validAngle(p0, p1, p2) {
+    let angle = getAngle(p0, p1, p2);
+    if (angle < 0) angle += 360;
+    // if (p0 > 190 && p0 < 200) console.log(angle)
+    return angle > thetaMinValue && angle < thetaMaxValue;
+}
+
 async function updateProgressBar(p0) {
     if (!_circlesFound && circles.length > 0) {
         _circlesFound = true;
@@ -62,15 +97,14 @@ async function updateProgressBar(p0) {
 function getP0OptimalCircle(circleCandidates) {
     let bestCandidate;
     let minimalGap = circleMaxGap;
-    for (const key in circleCandidates) {
-        const value = distance(circleCandidates[key][0], circleCandidates[key][1]);
+    for (const candidate of circleCandidates) {
+        const value = distance(candidate[0], candidate[1]);
         // optimization criterion is minimizing the circle gap.
         if (value < minimalGap) {
             minimalGap = value;
-            bestCandidate = circleCandidates[key];
+            bestCandidate = candidate;
         }
     }
-    circleIndices.push(bestCandidate);
     return bestCandidate;
 }
 

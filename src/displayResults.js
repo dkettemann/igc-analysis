@@ -27,21 +27,19 @@ function displayCurves(positionArray, layerName = "") {
     }
 }
 
-function displayCircles(algorithmOutput) {
-    circles = algorithmOutput;
-    for (const circleIndex of circleIndices) {
+function displayCircles(circles, color) {
+    for (const circleIndex of circles) {
         const circlePoints = latLong.slice(circleIndex[0], circleIndex[1]+1);
-        // mapControl.addMarkerTo("circles", latLong[circleIndices[circle][0]]);
-        mapControl.addCircle(circlePoints);
+        mapControl.addShape(circlePoints, color);
     }
     circleCheckbox.disabled = circles.length === 0;
 }
 
-function displayEights(algorithmOutput) {
-    for (const item of algorithmOutput) {
+function displayEights(eights) {
+    for (const item of eights) {
         const points = latLong.slice(item[0], item[1]+1);
         mapControl.addMarkerTo("eights", latLong[item[0]]);
-        mapControl.addCircle(points);
+        mapControl.addShape(points);
     }
 }
 

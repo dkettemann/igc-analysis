@@ -85,3 +85,24 @@ function pathLength(distances, p0, p1) {
     const p0ToP1 = distances.slice(p0, p1 + 1); // include p1 into the path
     return p0ToP1.reduce((a, b) => a + b, 0);
 }
+
+/**
+ * Calculate the bearing from pt1 to pt2 in degrees.
+ * Formula from: http://www.movable-type.co.uk/scripts/latlong.html.
+ * Use radians (1 radian is about 57.2958 degrees)
+ */
+function getBearing(pt1, pt2) {
+    const degreeToRadians = Math.PI / 180.0;
+    const lat1 = pt1[0] * degreeToRadians;
+    const lon1 = pt1[1] * degreeToRadians;
+    const lat2 = pt2[0] * degreeToRadians;
+    const lon2 = pt2[1] * degreeToRadians;
+
+    const y = Math.sin(lon2 - lon1) * Math.cos(lat2);
+    const x = Math.cos(lat1) * Math.sin(lat2) -
+        Math.sin(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1);
+
+    let bearing = Math.atan2(y, x) / degreeToRadians;
+    bearing = (bearing + 360.0) % 360.0;
+    return bearing;
+}

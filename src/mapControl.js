@@ -67,25 +67,6 @@ function createMapControl(elementName) {
 
     // Private methods for drawing turn point sectors and start / finish lines
 
-    function getBearing(pt1, pt2) {
-        // Get bearing from pt1 to pt2 in degrees
-        // Formula from: http://www.movable-type.co.uk/scripts/latlong.html
-        // Start by converting to radians.
-        const degToRad = Math.PI / 180.0;
-        const lat1 = pt1[0] * degToRad;
-        const lon1 = pt1[1] * degToRad;
-        const lat2 = pt2[0] * degToRad;
-        const lon2 = pt2[1] * degToRad;
-
-        const y = Math.sin(lon2 - lon1) * Math.cos(lat2);
-        const x = Math.cos(lat1) * Math.sin(lat2) -
-            Math.sin(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1);
-
-        let bearing = Math.atan2(y, x) / degToRad;
-        bearing = (bearing + 360.0) % 360.0;
-        return bearing;
-    }
-
     function getLine(pt1, pt2, lineRad, drawOptions) {
         //returns line through pt1, at right angles to line between pt1 and pt2, length lineRad.
         //Use Pythogoras- accurate enough on this scale
@@ -168,8 +149,8 @@ function createMapControl(elementName) {
         },
 
         // TODO: generic implementation
-        addCircle: latLong => {
-            const trackLine = L.polyline(latLong, {color: 'blue', weight: 3});
+        addShape: (latLong, color) => {
+            const trackLine = L.polyline(latLong, {color: color, weight: 3});
             mapLayers.track = L.layerGroup([
                 trackLine
             ]).addTo(map);

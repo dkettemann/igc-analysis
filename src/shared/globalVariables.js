@@ -31,5 +31,7 @@ let altitudeConversionFactor = 1.0; // Convert from metres to required units
 let igcFile;
 let latLong = [];
 let distances = [];
+let bearings = [];
+let thetaTurnings = [];
 let maxPointDistance = NaN;
 let results;

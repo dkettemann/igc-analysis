@@ -3,12 +3,15 @@
 async function runAlgorithms(track) {
     latLong = track.latLong;
     distances = calcDistances(latLong);
+    bearings = await getBearings();
     maxPointDistance = Math.max(...distances);
-    const curves = await curveDetection(track.latLong, distances, 0.3);
+    const curves = await curveDetection(track.latLong, distances, 0.3, false);
     results = getResultObject(curves);
-    results.shapeDetection.thetaCircle = await circleDetection(true);
-    results.shapeDetection.circle = await circleDetection(false);
+    await displayResults(results, mapControl)
+    results.shapeDetection.circle = await circleDetection(true);
+    // results.shapeDetection.circle = await circleDetection(false);
     results.shapeDetection.eight = await eightDetection();
+    console.log(results)
     return results;
 }
 

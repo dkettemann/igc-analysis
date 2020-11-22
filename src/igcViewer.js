@@ -146,7 +146,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 displayIgc(mapControl);
                 const results = await runAlgorithms(igcFile);
                 console.log(results);
-                await displayResults(results, mapControl);
                 plotBarogramChart(igcFile);
                 return resolve();
             };

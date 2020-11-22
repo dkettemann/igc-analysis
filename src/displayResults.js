@@ -5,7 +5,6 @@ let curve90 = [],
 
 async function displayResults(results, mapCtrl) {
     mapControl = mapCtrl;
-    setOutput("curve detection completed.");
     curve90 = results.shapeDetection.curve90;
     curve180 = results.shapeDetection.c180;
     if (curve90.length > 0) {
@@ -18,18 +17,27 @@ async function displayResults(results, mapCtrl) {
     } else curve180Checkbox.disabled = true;
 }
 
-function displayCurves(positionArray, layerName = "") {
-    for (const key in positionArray) {
-        const array = positionArray[key];
-        mapControl.addMarkerTo(layerName, latLong[array[1]]); // position 1 is the center of a curve
-        const curvePoints = latLong.slice(array[0], array[2]);
+function displayCurves(curves, layerName = "") {
+    for (const curve of curves) {
+        mapControl.addMarkerTo(layerName, latLong[curve[1]]); // position 1 is the center of a curve
+        const curvePoints = latLong.slice(curve[0], curve[2]+1);
         mapControl.addCurve(curvePoints);
+    }
+}
+
+function displayThetaCurves(curves, layerName = "") {
+    for (const shape of curves) {
+        for (const curve of shape) {
+            mapControl.addMarkerTo(layerName, latLong[curve[0]]);
+            const curvePoints = latLong.slice(curve[0], curve[1]+1);
+            mapControl.addCurve(curvePoints);
+        }
     }
 }
 
 function displayCircles(circles, color) {
     for (const circleIndex of circles) {
-        const circlePoints = latLong.slice(circleIndex[0], circleIndex[1]+1);
+        const circlePoints = latLong.slice(circleIndex[0], circleIndex[1] + 1);
         mapControl.addShape(circlePoints, color);
     }
     circleCheckbox.disabled = circles.length === 0;
@@ -37,7 +45,7 @@ function displayCircles(circles, color) {
 
 function displayEights(eights) {
     for (const item of eights) {
-        const points = latLong.slice(item[0], item[1]+1);
+        const points = latLong.slice(item[0], item[1] + 1);
         mapControl.addMarkerTo("eights", latLong[item[0]]);
         mapControl.addShape(points);
     }

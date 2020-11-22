@@ -1,32 +1,17 @@
-const _curves = {
-    c90: [],
-    c180: []
-};
+const _curve90 = [], _curve180 = [];
 // Cache previous curve scores for optimization with Greedy Local Search (Hill Climbing).
 // https://courses.cs.washington.edu/courses/cse573/12sp/lectures/04-lsearch.pdf
 let _curve90PreviousScore = 0,
     _curve180PreviousScore = 0;
 
-async function curveDetection(latLong, distances, radius) {
-    const curves = [[], []];
+async function curveDetection(latLong, distances, radius, useTheta) {
     console.time("curveDetection");
-    const result = await findCurves(latLong, distances, 1, radius);
-    result.c90.forEach(idx => {
-        curves[0].push([
-            idx,
-            getNextPointRecursive(radius, idx, distances),
-            getNextPointRecursive(2 * radius, idx, distances)
-        ]);
-    })
-    result.c180.forEach(idx => {
-        curves[1].push([
-            idx,
-            getNextPointRecursive(radius, idx, distances),
-            getNextPointRecursive(2 * radius, idx, distances)
-        ]);
-    })
+    let result;
+    if(useTheta) result = await findThetaCurves();
+    else result = await findCurves(latLong, distances, 1, radius);
     console.timeEnd("curveDetection");
-    return curves;
+    if(useTheta) displayThetaCurves(result, "curves")
+    return result;
 }
 
 async function findCurves(latLong, distances, stepSize, radius) {
@@ -42,9 +27,9 @@ async function findCurves(latLong, distances, stepSize, radius) {
             distP0P2 = distance(p2, p0);
         // TODO: common straight-line check
         if (isCurve90(distP0P1, distP1P2, distP0P2, radius)) {
-            onCurve90Detected(p0, distP0P1, distP1P2, distP0P2, radius);
+            onCurve90Detected([p0, p1, p2], distP0P1, distP1P2, distP0P2, radius);
         } else if (isCurve180(distP0P1, distP1P2, distP0P2, radius)) {
-            onCurve180Detected(p0, distP0P2, radius);
+            onCurve180Detected([p0, p1, p2], distP0P2, radius);
         }
 
         // runtime optimization - skip points until distP0P1 might fulfill the criteria
@@ -52,22 +37,22 @@ async function findCurves(latLong, distances, stepSize, radius) {
             - stepSize;
         if (skipIndices > 0 && p0 + skipIndices + stepSize) p0 += skipIndices;
     }
-    return _curves;
+    return [_curve90, _curve180];
 }
 
-function onCurve90Detected(p0, distP0P1, distP1P2, distP0P2, radius) {
+function onCurve90Detected(curve, distP0P1, distP1P2, distP0P2, radius) {
     const score = get90DegreeScore(distP0P1, distP1P2, distP0P2, radius);
-    _curves.c90.push(p0);
-    if (_curves.c90.length > 1)
-        removeDuplicates(latLong, radius, _curve90PreviousScore, score, _curves.c90);
+    _curve90.push(curve);
+    if (_curve90.length > 1)
+        removeDuplicates(latLong, radius, _curve90PreviousScore, score, _curve90);
     _curve90PreviousScore = score;
 }
 
-function onCurve180Detected(p0, distP0P2, radius) {
+function onCurve180Detected(curve, distP0P2, radius) {
     const score = get180DegreeScore(distP0P2, radius);
-    _curves.c180.push(p0);
-    if (_curves.c180.length > 1)
-        removeDuplicates(latLong, radius, _curve180PreviousScore, score, _curves.c180);
+    _curve180.push(curve);
+    if (_curve180.length > 1)
+        removeDuplicates(latLong, radius, _curve180PreviousScore, score, _curve180);
     _curve180PreviousScore = score;
 }
 
@@ -92,8 +77,9 @@ function get180DegreeScore(distP0P2, radius) {
 }
 
 function removeDuplicates(latLong, radius, previousScore, currentScore, arr) {
-    const p0 = arr[arr.length - 2];
-    const p1 = arr[arr.length - 1];
+    const p0 = arr[arr.length - 2][0];
+    const p1 = arr[arr.length - 1][0];
+    // TODO: update the duplicate detection formula
     if (distance(p1, p0) > radius) return false;
     if (previousScore > currentScore) arr.splice(-1, 1) // remove current element
     else arr.splice(-2, 1) // remove previous element

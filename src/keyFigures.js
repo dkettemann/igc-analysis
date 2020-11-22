@@ -60,11 +60,11 @@ function getMaxAltitudeAboveStart() {
 }
 
 function getStartLocation() {
-    return "Bremmer Calmont";
+    return latLong[0];
 }
 
 function getLandingLocation() {
-    return "Nehren";
+    return latLong[latLong.length-1];
 }
 
 function getStartLandingDistanceKM() {

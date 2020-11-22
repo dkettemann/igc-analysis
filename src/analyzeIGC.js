@@ -7,11 +7,10 @@ async function runAlgorithms(track) {
     maxPointDistance = Math.max(...distances);
     const curves = await curveDetection(track.latLong, distances, 0.3, false);
     results = getResultObject(curves);
-    await displayResults(results, mapControl)
+    await displayResults(results, mapControl);
     results.shapeDetection.circle = await circleDetection(true);
     // results.shapeDetection.circle = await circleDetection(false);
     results.shapeDetection.eight = await eightDetection();
-    console.log(results)
     return results;
 }
 
@@ -26,7 +25,7 @@ function getResultObject(curves) {
         additionalData: getKeyFigures(),
         shapeDetection: {
             curve90: curves[0],
-            c180: curves[1],
+            curve180: curves[1],
             circle: null,
             eight: null
         }

@@ -6,7 +6,7 @@ let curve90 = [],
 async function displayResults(results, mapCtrl) {
     mapControl = mapCtrl;
     curve90 = results.shapeDetection.curve90;
-    curve180 = results.shapeDetection.c180;
+    curve180 = results.shapeDetection.curve180;
     if (curve90.length > 0) {
         setCheckboxValue(curve90Checkbox, true);
         displayCurves(curve90, "curve90")
@@ -36,10 +36,12 @@ function displayThetaCurves(curves, layerName = "") {
 }
 
 function displayCircles(circles, color) {
-    for (const circleIndex of circles) {
-        const circlePoints = latLong.slice(circleIndex[0], circleIndex[1] + 1);
+    for (const circle of circles) {
+        mapControl.addMarkerTo("circles", latLong[circle[0]]);
+        const circlePoints = latLong.slice(circle[0], circle[1] + 1);
         mapControl.addShape(circlePoints, color);
     }
+    if(circles.length === 0) console.log(false)
     circleCheckbox.disabled = circles.length === 0;
 }
 
@@ -53,7 +55,7 @@ function displayEights(eights) {
 
 circleCheckbox.addEventListener('change', () => {
     if (circleCheckbox.checked)
-        displayCircles(circles);
+        displayCircles(results.shapeDetection.circle);
     else
         mapControl.clearLayer("circles");
 
@@ -61,14 +63,14 @@ circleCheckbox.addEventListener('change', () => {
 
 curve90Checkbox.addEventListener('change', () => {
     if (curve90Checkbox.checked)
-        displayCurves(curve90, "curve90");
+        displayCurves(results.shapeDetection.curve90, "curve90");
     else
         mapControl.clearLayer("curve90");
 });
 
 curve180Checkbox.addEventListener('change', () => {
     if (curve180Checkbox.checked)
-        displayCurves(curve180, "curve180");
+        displayCurves(results.shapeDetection.curve180, "curve180");
     else
         mapControl.clearLayer("curve180");
 });

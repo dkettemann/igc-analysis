@@ -6,6 +6,10 @@ html {
 .igc-content{
 }
 
+.options-row{
+    margin-bottom: 20px;
+}
+
 canvas {
     margin-left: -2px; /* avoid the bottom scrollbar */
 }

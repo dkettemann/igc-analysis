@@ -5,6 +5,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="initial-scale=1, width=device-width">
     <title>IGC Analytics</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 </head>
 
 <body>
@@ -29,53 +30,38 @@
     </div>
 </div>
 
-<button id="run-algorithms-btn" onclick="runCircleDetection()">Run Algorithms</button>
-
 <div class="igc-content">
     <div id="drop_zone" ondrop="dropHandler(event, handleFileInput);" ondragover="dragOverHandler(event);">
-        <label for="fileControl">Select a file to view:</label>
-        <input id="fileControl" type="file"/>
 
-        <button type="button" id="display-default-file">Display a default file!</button>
 
-<!--        <p>-->
-<!--            <em>IGC File Upload:</em> IGC files will be uploaded to jsigc.onestudies.com.-->
-<!--        </p>-->
+        <!--        <p>-->
+        <!--            <em>IGC File Upload:</em> IGC files will be uploaded to jsigc.onestudies.com.-->
+        <!--        </p>-->
 
         <div id="analytics-output-container">
-            <p><em>Curve Detection Algorithm output:</em></p>
+            <div class="options-row">
+                <label for="fileControl">Select a file to view:</label>
+                <input id="fileControl" type="file"/>
+                <button type="button" id="display-default-file">Display a default file!</button>
+                <button id="run-algorithms-btn" onclick="runAlgorithms()">Run all Algorithms</button>
+            </div>
 
             <div>
                 <input type="checkbox" id="curve-90" name="scales">
                 <label for="curve-90" class="checkbox-label">curves detected (90°)</label>
                 <input type="checkbox" id="curve-180" name="scales">
                 <label for="curve-180" class="checkbox-label">curves detected (180°)</label>
+                <input type="checkbox" id="circle-checkbox" name="scales">
+                <label for="circle-checkbox" class="checkbox-label">circles detected</label>
             </div>
-            <pre><code id="curve-detection-output"></code></pre>
+<!--            <pre><code id="curve-detection-output"></code></pre>-->
 
             <div class="igc-container">
                 <p id="download-p"></p>
                 <a id="download-url"></a>
             </div>
 
-            <div class="algorithm-buttons">
-                <button type="button" id="run-circle-detection" onclick="circleDetection()">
-                    run circle detection
-                </button>
-                <button type="button" id="run-eight-detection" onclick="console.log('Eight detection clicked!')">
-                    run eight detection
-                </button>
-                <button type="button" id="run-triangle-detection" onclick="console.log('FAI detection clicked!')">
-                    run FAI triangle detection
-                </button>
-            </div>
-
             <div class="circle-detection">
-                <p><em>Circle Detection Algorithm output:</em></p>
-                <div>
-                    <input type="checkbox" id="circle-checkbox" name="scales">
-                    <label for="circle-checkbox" class="checkbox-label">circles detected</label>
-                </div>
                 <label for="circle-progress">running circle detection:</label>
                 <progress id="circle-progress" value="0" max="100"> 0%</progress>
                 <p id="time-spent-circles"></p>
@@ -146,6 +132,7 @@
         <script src="src/shared/UIControl.js"></script>
         <script src="src/shared/modal.js"></script>
         <script src="src/shared/chart.js"></script>
+        <script src="src/shared/latAndLong.js"></script>
         <script src="src/utils/readFile.js"></script>
         <script src="src/utils/dropFile.js"></script>
         <script src="src/utils/wait.js"></script>
@@ -158,6 +145,7 @@
         <script src="src/algorithms/curve.js"></script>
         <script src="src/algorithms/circle.js"></script>
         <script src="src/algorithms/eight.js"></script>
+        <script src="src/algorithms/thetaTurning.js"></script>
         <script src="src/displayResults.js"></script>
         <script src="index.js"></script>
     </div>

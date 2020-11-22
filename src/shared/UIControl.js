@@ -1,6 +1,6 @@
 function setOutput(text) {
-    outputElement.textContent = text;
-    algorithmButtons.style.display = 'inline-block';
+    // outputElement.textContent = text;
+    // algorithmButtons.style.display = 'inline-block';
 }
 
 function setCircleDetectionOutput(timeSpent, circlesCount) {

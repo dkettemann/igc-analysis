@@ -1,15 +1,18 @@
-const dataLabels = [];
-const pressureBarogramData = [];
-const gpsBarogramData = [];
+let dataLabels;
+let pressureBarogramData;
+let gpsBarogramData;
 let timestamp;
 let myChart;
 let pruningFactor;
 
 function plotBarogramChart(igcFile) {
+    dataLabels = [];
+    pressureBarogramData = [];
+    gpsBarogramData = [];
+    if(myChart !== undefined) myChart.destroy();
     getBarogramData(igcFile);
     const ctx = document.getElementById("canvas").getContext('2d');
     const config = getChartConfig();
-
     myChart = new Chart(ctx, config);
 }
 

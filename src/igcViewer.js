@@ -141,7 +141,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const reader = new FileReader();
             reader.onload = async function (e) {
                 resetMap();
-
                 igcFile = parseIGC(reader.result);
                 displayIgc(mapControl);
                 const results = await runAlgorithms(igcFile);
@@ -163,7 +162,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function resetMap() {
         try {
             errorMessageElement.innerHTML = '';
-            mapControl.reset();
+            mapControl.initMap();
             timeSliderElement.value = 0
         } catch (ex) {
             errorHandler(ex);

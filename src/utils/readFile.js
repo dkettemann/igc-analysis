@@ -5,11 +5,9 @@
  */
 function readFile(file) {
     return new Promise((resolve, reject) => {
-        let reader = new FileReader();
+        const reader = new FileReader();
 
-        reader.onload = () => {
-            resolve(reader.result);
-        };
+        reader.onload = () => resolve(reader.result);
 
         reader.onerror = reject;
 

@@ -4,7 +4,7 @@
  */
 
 /**
- * Handles the ondragover event.
+ * Prevents the dragOver event default behavior.
  * @param ev
  */
 function dragOverHandler(ev) {
@@ -13,7 +13,7 @@ function dragOverHandler(ev) {
 }
 
 /**
- * Handles the ondrop event.
+ * Receive dropped files and run a callback function.
  * @param ev
  * @param callback
  */

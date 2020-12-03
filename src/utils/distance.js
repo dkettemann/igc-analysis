@@ -9,7 +9,6 @@ function distance(p0, p1) {
         console.log("distance(" + p0 + ", " + p1 + "): invalid coordinates passed");
     if(p1 >= latLong.length)
         console.log(p1 + " >= " + latLong.length + ": p1 >= latLong.length")
-    const lat1 = latLong[p1][0], lon1 = latLong[p1][1], lat2 = latLong[p0][0], lon2 = latLong[p0][1];
     return distanceBetweenCoordinates(latLong[p0], latLong[p1])
 }
 
@@ -37,7 +36,7 @@ function distanceBetweenCoordinates(p0, p1) {
 function nextPointInDistance(dist, idx, distances) {
     for (let i = idx; i < distances.length - 1; i++) {
         const arr = distances.slice(idx, i + 1);
-        const sum = arr.reduce((a, b) => a + b, 0);
+        const sum = arr.reduce((a, b) => a + b);
         if (sum > dist) return i;
     }
     return -1;
@@ -45,7 +44,7 @@ function nextPointInDistance(dist, idx, distances) {
 
 let recursionExceptionHappened = false;
 /**
- * Finds the next index in range of the dist parameter.
+ * Finds the biggest index in range of dist.
  */
 function getNextPointRecursive(dist, idx, distances) {
     if(recursionExceptionHappened) return nextPointInDistance(dist, idx, distances);
@@ -72,7 +71,7 @@ function increaseIndexRecursive(dist, idx, distances, sum){
  * @param values numbers for which the mean should be calculated.
  */
 function average(values) {
-    const sum = values.reduce((a, b) => a + b, 0);
+    const sum = values.reduce((a, b) => a + b);
     const avg = (sum / values.length) || 0;
 
     console.log(`The sum is: ${sum}. The average is: ${avg}.`);
@@ -87,16 +86,18 @@ function pathLength(distances, p0, p1) {
 }
 
 /**
- * Calculate the bearing from pt1 to pt2 in degrees.
+ * Calculates the bearing from p0 to p1 in degrees.
+ * 0° bearing is north, 90° east, 180° south, 270° west
  * Formula from: http://www.movable-type.co.uk/scripts/latlong.html.
- * Use radians (1 radian is about 57.2958 degrees)
+ * Use radians (1 radian is about 57.2958 degrees);
  */
-function getBearing(pt1, pt2) {
+function getBearing(p0, p1) {
     const degreeToRadians = Math.PI / 180.0;
-    const lat1 = pt1[0] * degreeToRadians;
-    const lon1 = pt1[1] * degreeToRadians;
-    const lat2 = pt2[0] * degreeToRadians;
-    const lon2 = pt2[1] * degreeToRadians;
+    if(p1 === undefined) console.log("here it is", p0, p1)
+    const lat1 = p0[0] * degreeToRadians;
+    const lon1 = p0[1] * degreeToRadians;
+    const lat2 = p1[0] * degreeToRadians;
+    const lon2 = p1[1] * degreeToRadians;
 
     const y = Math.sin(lon2 - lon1) * Math.cos(lat2);
     const x = Math.cos(lat1) * Math.sin(lat2) -

@@ -128,7 +128,7 @@ function parseIGC(igcFile) {
         return [latitude, longitude];
     }
 
-    function parsePosition(positionRecord,  model, flightDate) {
+    function parsePosition(positionRecord, model, flightDate) {
         // Regex to match position records:
         // Hours, minutes, seconds, latitude, N or S, longitude, E or W,
         // Fix validity ('A' = 3D fix, 'V' = 2D or no fix),
@@ -170,20 +170,20 @@ function parseIGC(igcFile) {
             // If the turnpoint name is blank, use the latitude and longitude.
             if (name.trim().length === 0) {
                 name = taskRecord.substring(1, 3) +
-                degreeSymbol +
-                taskRecord.substring(3, 5) +
-                '.' +
-                taskRecord.substring(5, 8) +
-                "' " +
-                taskRecord.charAt(8) +
-                ', ' +
-                taskRecord.substring(9, 12) +
-                degreeSymbol +
-                taskRecord.substring(12, 14) +
-                '.' +
-                taskRecord.substring(14, 17) +
-                "' " +
-                taskRecord.charAt(17);
+                    degreeSymbol +
+                    taskRecord.substring(3, 5) +
+                    '.' +
+                    taskRecord.substring(5, 8) +
+                    "' " +
+                    taskRecord.charAt(8) +
+                    ', ' +
+                    taskRecord.substring(9, 12) +
+                    degreeSymbol +
+                    taskRecord.substring(12, 14) +
+                    '.' +
+                    taskRecord.substring(14, 17) +
+                    "' " +
+                    taskRecord.charAt(17);
             }
 
             return {
@@ -224,7 +224,7 @@ function parseIGC(igcFile) {
         // this is a valid 6 character code
     } else if (/^A[\w]{3}/.test(igcLines[0])) {
         // the serial number is missing
-        console.log("The serial number is missing. ")
+        console.log("The serial number is missing. ");
     } else {
         throw new IGCException(invalidFileMessage);
     }
@@ -279,26 +279,24 @@ function parseIGC(igcFile) {
         }
     }
 
-// Extract takeoff and landing  names from model.task and reduce model.task.coordinates to what we want to plot
-// Throw away takeoff and landing coordinates as we won't be using them
-if(model.task.names.length > 0)  {
-    const takeoffName = model.task.takeoff = model.task.names.shift();
-    if  (model.task.coordinates[0][0]!==0)  {
-       model.task.takeoff=takeoffName;
-   }
-else {
-            model.task.takeoff="";
-   }
+    // Extract takeoff and landing  names from model.task and reduce model.task.coordinates to what we want to plot
+    // Throw away takeoff and landing coordinates as we won't be using them
+    if (model.task.names.length > 0) {
+        const takeoffName = model.task.takeoff = model.task.names.shift();
+        if (model.task.coordinates[0][0] !== 0) {
+            model.task.takeoff = takeoffName;
+        } else {
+            model.task.takeoff = "";
+        }
 
-model.task.coordinates.shift();
-    const landingName = model.task.names.pop();
-    if  (model.task.coordinates[model.task.coordinates.length-1][0]!==0)  {
-       model.task.landing=landingName;
-   }
-   else     {
-            model.task.landing="";
-     }
-    model.task.coordinates.pop();
+        model.task.coordinates.shift();
+        const landingName = model.task.names.pop();
+        if (model.task.coordinates[model.task.coordinates.length - 1][0] !== 0) {
+            model.task.landing = landingName;
+        } else {
+            model.task.landing = "";
+        }
+        model.task.coordinates.pop();
     }
 
     return model;

@@ -4,7 +4,9 @@
  */
 function errorHandler(e){
     if (e instanceof IGCException) {
-        errorMessageElement.innerHTML = e.message;
+        errorMessageElement.style.display = "block";
+        errorMessageElement.innerHTML = e.message
+        + " You can inform the administrator at " + administratorEmail + ". ";
     } else {
         throw e;
     }

@@ -1,6 +1,3 @@
-const serverAddress = "https://api.igc.onestudies.com/";
-const displayDefaultFileOnStartup = false;
-
 // --- CPU usage ---
 let domUpdateInterval = 2000; // At least every n milliseconds, the DOM needs to be updated
 const runtimeModalTimeout = 4000; // The runtime info modal will be shown after this timeout, if the algorithms are still running
@@ -16,3 +13,7 @@ const maxEightGapPercentage = 0.1;
 // e.g. for a circle of 10 vectors (11 different points) the average angle should be 36° (360 / 10)
 const thetaMinValue = 3;
 const thetaMaxValue = 60;
+
+// --- Server info ---
+const serverAddress = "https://api.igc.onestudies.com/";
+const administratorEmail = "daniel.kettemann@gmail.com";

@@ -148,16 +148,9 @@ function createMapControl(elementName) {
             map.fitBounds(trackLine.getBounds());
         },
 
-        // TODO: generic implementation
+
         addShape: (latLong, color) => {
             const trackLine = L.polyline(latLong, {color: color, weight: 3});
-            mapLayers.track = L.layerGroup([
-                trackLine
-            ]).addTo(map);
-        },
-
-        addCurve: latLong => {
-            const trackLine = L.polyline(latLong, {color: 'green', weight: 3});
             mapLayers.track = L.layerGroup([
                 trackLine
             ]).addTo(map);
@@ -222,28 +215,14 @@ function createMapControl(elementName) {
         },
 
         addMarker: markerLatLng => {
-            if (markerLatLng) {
-                L.marker(markerLatLng).addTo(layerGroup);
-
-                if (!map.getBounds().contains(markerLatLng)) {
-                    map.panTo(markerLatLng);
-                }
-            }
-            // L.marker(latLong[100]).addTo(map);
+            L.marker(markerLatLng).addTo(layerGroup);
         },
 
         addMarkerTo: (layerName, markerLatLng) => {
-            if (layerGroups[layerName] === undefined) layerGroups[layerName] = L.layerGroup().addTo(map);
-            if (markerLatLng) {
-                L.marker(markerLatLng).addTo(layerGroups[layerName]);
-                if (!map.getBounds().contains(markerLatLng)) {
-                    map.panTo(markerLatLng);
-                }
+            if (layerGroups[layerName] === undefined) {
+                layerGroups[layerName] = L.layerGroup().addTo(map);
             }
+            L.marker(markerLatLng).addTo(layerGroups[layerName]);
         },
     };
 }
-
-
-
-

@@ -1,67 +1,77 @@
-let _circlesFound = false;
+let _circles = [];
 
 async function circleDetection(useTheta) {
-    const start = window.performance.now();
+    setStartTime();
+    _circles = [];
+    if (useTheta) {
+        _circles = await findThetaCircles();
+    } else {
+        _circles = await findCircles();
+    }
 
-    let circles = [];
-    if (useTheta) circles = await thetaCircles();
-    else circles = await findCircles(latLong, distances);
+    setCircleDetectionOutput(getCurrentRuntime(), _circles.length);
+    if (useTheta) {
+        displayCircles(_circles, 'orange');
+    } else {
+        displayCircles(_circles, 'blue');
+    }
 
-    const end = window.performance.now();
-    const secondsSpent = ((end - start) / 1000).toFixed(3);
-
-    applyCircleDetectionProgress(100);
-    setCircleDetectionOutput(secondsSpent, circles.length);
-    if(useTheta) displayCircles(circles, 'orange')
-    else displayCircles(circles, 'blue')
-    return circles;
+    return _circles;
 }
 
-async function findCircles(latLong, distances) {
-    let currentCircleCandidates = [];
-    let p0 = 0;
-    while (p0 < latLong.length) {
-        if (p0 % domUpdateInterval === 0) await updateProgressBar(p0);
-        let p1 = getNextPointRecursive(0.08, p0, distances);
-        while (p1 < latLong.length) {
-            // for (let p1 = getNextPointRecursive(0.1, p0, distances); p1 < latLong.length; p1++) {
-            if (p1 < 0) break; // nextPointInDistance could not find a point
-            const distP0P1 = distance(p0, p1);
-            const circleCondition1 = distP0P1 < circleMaxGap;
+async function findCircles() {
+    for (let p0 = 0; p0 < latLong.length; p0++) {
+        const currentCircleCandidates = [];
+        p0 = fastForwardP0(p0);
+        if (getCurrentRuntime() > domUpdateInterval) await showProgress(p0);
+
+        for (let p1 = getFirstPossibleP1(p0); p1 < latLong.length; p1++) {
+            if (pathLength(distances, p0, p1) > circleMaxLength) break;
+            if(p0===296 && p1 === 315) {
+                console.log(true);
+            }
 
             // circle check - the order of conditions minimizes runtime
-            if (circleCondition1 && locallyOptimalP1(p0, p1) && circleDiameterCondition(latLong, distances, p0, p1)) {
+            if (circleGapCondition(p0, p1) && locallyOptimalP1(p0, p1) && circleDiameterCondition(p0, p1)) {
                 currentCircleCandidates.push([p0, p1]);
                 break;
             }
             // runtime optimization - skip points until p1 might fulfill the circleGap condition again
-            const skipIndices = Math.floor((distP0P1 - circleMaxGap) / maxPointDistance) - 1;
+            const skipIndices = Math.floor((distance(p0, p1) - circleMaxGap) / maxPointDistance) - 1;
             if (skipIndices > 0) p1 += skipIndices;
-
-            if (p1 >= latLong.length - 1 && currentCircleCandidates.length > 0) {
-                // circles were found in previous iterations - now optimize p0
-                const bestCandidate = getP0OptimalCircle(currentCircleCandidates);
-                circles.push([bestCandidate[0], bestCandidate[1]]);
-                p0 = bestCandidate[1] - 1; // intersections are forbidden - fast-forward to the circle end
-                currentCircleCandidates = [];
-            }
-            p1++;
         }
-        p0++;
+        processCircleCandidates(currentCircleCandidates);
     }
-    closeModal();
-    return circles;
+    return _circles;
 }
 
-async function updateProgressBar(p0) {
-    if (!_circlesFound && circles.length > 0) {
-        _circlesFound = true;
-        setCheckboxValue(circleCheckbox, true);
-    }
+async function showProgress(p0) {
+    if (_circles.length > 0) setCheckboxValue(circleCheckbox, true);
+
+    if (getCurrentRuntimeMilliseconds() > runtimeModalTimeout && !modalWasOpened) showRuntimeInfoModal();
     await applyCircleDetectionProgress(
         getProgressValue(p0, latLong.length)
     );
-    await pauseCalculations();
+    await domUpdate();
+}
+
+function processCircleCandidates(currentCircleCandidates) {
+    while (currentCircleCandidates.length > 0) {
+        if (multipleSubsequentCircles(currentCircleCandidates)) {
+            if (noIntersection(currentCircleCandidates[0])) _circles.push(currentCircleCandidates[0]);
+        } else {
+            const bestCandidate = getP0OptimalCircle(currentCircleCandidates);
+            _circles.push(bestCandidate);
+        }
+        currentCircleCandidates.shift();
+    }
+}
+
+function multipleSubsequentCircles(circles) {
+    if (circles.length === 0) return false;
+    const endpointFirstCircle = circles[0][1];
+    const startPointLastCircle = circles[circles.length - 1][0];
+    if (endpointFirstCircle <= startPointLastCircle) return true;
 }
 
 function getP0OptimalCircle(circleCandidates) {
@@ -78,6 +88,21 @@ function getP0OptimalCircle(circleCandidates) {
     return bestCandidate;
 }
 
+function noIntersection(circle) {
+    return _circles.length === 0 || circle[0] > getLastCircle()[1];
+}
+
+function fastForwardP0(p0) {
+    if (_circles.length > 0 && getLastCircle()[1] > p0) p0 = getLastCircle()[1];
+    return p0;
+}
+
+function getFirstPossibleP1(p0) {
+    const firstPossibleP1 = getNextPointRecursive(0.05, p0, distances);
+    if (firstPossibleP1 < 0) return "no point found within the minimum range";
+    return firstPossibleP1;
+}
+
 function getProgressValue(currentIndex, arrayLength) {
     return (currentIndex / arrayLength) * 100;
 }
@@ -90,16 +115,14 @@ function circleGapCondition(p0, p1) {
     return distance(p0, p1) < circleMaxGap;
 }
 
-function circleDiameterCondition(latLong, distances, p0, p1) {
+function circleDiameterCondition(p0, p1) {
     const circumference = pathLength(distances, p0, p1);
-    const diameter = circumference / (2 * Math.PI);
-    for (let px = p0 + 1; px < p1; px++) {
+    const diameter = circumference / Math.PI;
+    for (let px = p0; px < p1; px++) {
         const opposite = getOppositeCirclePoint(circumference, px);
         if (opposite < 0) return true; // end of circle is reached
         const oppositeDistance = distance(px, opposite);
-        if (oppositeDistance < (1 - circleDiameterMaxDeviation) * diameter) {
-            return false;
-        }
+        if (oppositeDistance < (1 - circleDiameterMaxDeviation) * diameter) return false;
     }
     return true;
 }
@@ -110,7 +133,12 @@ function locallyOptimalP1(p0, p1) {
     return distance(p0, p1) <= distance(p0, p1 + 1) || !isCircle(p0, p1 + 1);
 }
 
+function getLastCircle() {
+    if (_circles.length === 0) return false;
+    return _circles[_circles.length - 1];
+}
+
 function isCircle(p0, p1) {
     if (p1 >= latLong.length) return false;
-    return circleGapCondition(p0, p1) && circleDiameterCondition(latLong, distances, p0, p1);
+    return circleGapCondition(p0, p1) && circleDiameterCondition(p0, p1);
 }

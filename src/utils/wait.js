@@ -1,3 +1,6 @@
+// time.js
+let _algorithmStartTime;
+
 /**
  * It might be necessary to wait some milliseconds in order to prevent
  * that Chrome postpones rendering due to high CPU usage
@@ -16,4 +19,16 @@ async function domUpdate(){
         const fn = () => window.requestAnimationFrame(resolve);
         window.requestAnimationFrame(fn);
     })
+}
+
+function setStartTime() {
+    _algorithmStartTime = window.performance.now();
+}
+
+function getCurrentRuntime() {
+    return twoDigitsFixed(getCurrentRuntimeMilliseconds() / 1000);
+}
+
+function getCurrentRuntimeMilliseconds() {
+    return twoDigitsFixed((window.performance.now() - _algorithmStartTime));
 }

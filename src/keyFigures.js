@@ -21,7 +21,9 @@ function getFlightTime() {
 }
 
 function getTotalDistance() {
-    return distances.reduce((a, b) => a + b, 0);
+    return twoDigitsFixed(
+        distances.reduce((a, b) => a + b)
+    );
 }
 
 function getMaxSpeed() {
@@ -34,7 +36,7 @@ function getMaxSpeed() {
         const km = distances[i];
         if ((km/h) > maxSpeed) maxSpeed = km/h;
     }
-    return maxSpeed;
+    return twoDigitsFixed(maxSpeed);
 }
 
 function getMinAltitude() {
@@ -68,5 +70,9 @@ function getLandingLocation() {
 }
 
 function getStartLandingDistanceKM() {
-    return +distance(0, distances.length).toFixed(2);
+    return twoDigitsFixed(distance(0, distances.length));
+}
+
+function twoDigitsFixed(value){
+    return +value.toFixed(2)
 }

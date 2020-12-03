@@ -17,6 +17,22 @@ async function findThetaCurves(){
     return [theta90, theta180];
 }
 
+async function findThetaCircles() {
+    const thetaCircles = [];
+    for (let i = 0; i < latLong.length - 2; i++) {
+        let p0 = i, p1 = i + 1, p2 = i + 2;
+        while (validTurningAngle(p0, p1) && p2 < latLong.length) {
+            if (p2 > i + 5 && circleGapCondition(i, p2)) {
+                thetaCircles.push([i, p2]);
+                i = p2;
+            }
+            p0++, p1++, p2++;
+        }
+    }
+
+    return thetaCircles;
+}
+
 function getThetaTurnings(){
     const turnings = [];
     for (let i = 0; i < latLong.length - 2; i++) {

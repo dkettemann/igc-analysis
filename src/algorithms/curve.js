@@ -1,4 +1,4 @@
-const _curve90 = [], _curve180 = [];
+let _curve90 = [], _curve180 = [];
 // Cache previous curve scores for optimization with Greedy Local Search (Hill Climbing).
 // https://courses.cs.washington.edu/courses/cse573/12sp/lectures/04-lsearch.pdf
 let _curve90PreviousScore = 0,
@@ -25,17 +25,17 @@ async function findCurves(latLong, distances, stepSize, radius) {
         const distP0P1 = distance(p1, p0),
             distP1P2 = distance(p2, p1),
             distP0P2 = distance(p2, p0);
-        // TODO: common straight-line check
+
         if (isCurve90(distP0P1, distP1P2, distP0P2, radius)) {
             onCurve90Detected([p0, p1, p2], distP0P1, distP1P2, distP0P2, radius);
         } else if (isCurve180(distP0P1, distP1P2, distP0P2, radius)) {
-            onCurve180Detected([p0, p1, p2], distP0P2, radius);
+            onCurve180Detected([p0, p1, p2], distP0P1, distP1P2, distP0P2, radius);
         }
 
-        // runtime optimization - skip points until distP0P1 might fulfill the criteria
+        // runtime optimization - skip points until distP0P1 might fulfill the straight-line criterion
         const skipIndices = Math.floor((radius - distP0P1 - radius * curveMaxDeviation) / maxPointDistance)
             - stepSize;
-        if (skipIndices > 0 && p0 + skipIndices + stepSize) p0 += skipIndices;
+        if (skipIndices > 0) p0 += skipIndices;
     }
     return [_curve90, _curve180];
 }
@@ -43,47 +43,54 @@ async function findCurves(latLong, distances, stepSize, radius) {
 function onCurve90Detected(curve, distP0P1, distP1P2, distP0P2, radius) {
     const score = get90DegreeScore(distP0P1, distP1P2, distP0P2, radius);
     _curve90.push(curve);
-    if (_curve90.length > 1)
-        removeDuplicates(latLong, radius, _curve90PreviousScore, score, _curve90);
+    if (_curve90.length > 1) removeDuplicates(latLong, radius, _curve90PreviousScore, score, _curve90);
     _curve90PreviousScore = score;
 }
 
-function onCurve180Detected(curve, distP0P2, radius) {
-    const score = get180DegreeScore(distP0P2, radius);
+function onCurve180Detected(curve, distP0P1, distP1P2, distP0P2, radius) {
+    const score = get180DegreeScore(distP0P1, distP1P2, distP0P2, radius);
     _curve180.push(curve);
-    if (_curve180.length > 1)
-        removeDuplicates(latLong, radius, _curve180PreviousScore, score, _curve180);
+    if (_curve180.length > 1) removeDuplicates(latLong, radius, _curve180PreviousScore, score, _curve180);
     _curve180PreviousScore = score;
 }
 
-// TODO: radius is not a very good variable name
 function isCurve90(distP0P1, distP1P2, distP0P2, radius) {
-    return (distP0P1 + distP1P2) > 2 * (1 - curveMaxDeviation) * radius
-        && distP0P2 > (1.44 * (1 - curveMaxDeviation)) * radius
+    return straightLineCondition(distP0P1, distP1P2, radius) &&
+        distP0P2 > (1.44 * (1 - curveMaxDeviation)) * radius
         && distP0P2 < (1.44 * (1 + curveMaxDeviation)) * radius;
 }
 
-// TODO: use maximum deviation parameter
 function isCurve180(distP0P1, distP1P2, distP0P2, radius) {
-    return (distP0P1 + distP1P2) > 1.86 * radius && distP0P2 < 0.2 * radius;
+    return straightLineCondition(distP0P1, distP1P2, radius) &&
+        radius && distP0P2 < curve180MaxGap * radius;
+}
+
+function straightLineCondition(distP0P1, distP1P2, radius) {
+    return distP0P1 > (1 - curveMaxDeviation) * radius &&
+        distP1P2 > (1 - curveMaxDeviation) * radius;
 }
 
 function get90DegreeScore(distP0P1, distP1P2, distP0P2, radius) {
-    return (1.44 * radius - distP0P2) ** 2 - (distP0P1 - distP1P2) ** 2;
+    return distP0P1 ** 2 + distP1P2 ** 2
+        - Math.abs(distP0P1 ** 2 + distP1P2 ** 2 - distP0P2 ** 2)
+        - (radius - distP0P1) ** 2 - (radius - distP1P2) ** 2;
 }
 
-function get180DegreeScore(distP0P2, radius) {
-    return radius - distP0P2;
+function get180DegreeScore(distP0P1, distP1P2, distP0P2, radius) {
+    return Math.abs(distP0P1) + Math.abs(distP1P2) - Math.abs(distP0P2)
+        - 2 * radius + Math.abs(distP0P1) + Math.abs(distP1P2);
 }
 
-function removeDuplicates(latLong, radius, previousScore, currentScore, arr) {
-    const p0 = arr[arr.length - 2][0];
-    const p1 = arr[arr.length - 1][0];
-    // TODO: update the duplicate detection formula
-    if (distance(p1, p0) > radius) return false;
-    if (previousScore > currentScore) arr.splice(-1, 1) // remove current element
-    else arr.splice(-2, 1) // remove previous element
-    return true;
+function removeDuplicates(latLong, radius, previousScore, currentScore, curves) {
+    const previousCurveEnd = curves[curves.length - 2][2];
+    const currentCurveStart = curves[curves.length - 1][0];
+    if (currentCurveStart >= previousCurveEnd) return "no duplicate";
+    if (previousScore > currentScore) {
+        curves.splice(-1, 1); // remove current element
+    } else {
+        curves.splice(-2, 1); // remove previous element
+    }
+    return "duplicate removed";
 }
 
 function calcDistances(latLong, stepSize = 1) {

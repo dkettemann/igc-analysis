@@ -1,15 +1,5 @@
 /**
- * Verify if the bearing angle for p0 and p1 qualifies as a turning movement
- */
-function validTurningAngle(p0, p1) {
-    if (p1 + 1 >= latLong.length) return false;
-    let angle = getAngle(p0, p1);
-    angle = (angle + 360.0) % 360.0; // ensure that the resulting angle is a positive number
-    return angle > thetaMinValue && angle < thetaMaxValue;
-}
-
-/**
- * Calculates the sum of all angles between subsequent vectors of a turn
+ * Calculates the sum of all angles between subsequent vectors of a turn.
  */
 function totalTurningAngle(p0){
     let angle = 0;
@@ -24,6 +14,7 @@ function totalTurningAngle(p0){
  * Calculates all bearings once.
  */
 function getBearings(){
+    bearings = [];
     for (let i = 0; i < latLong.length - 1; i++) {
         bearings.push(getBearing(latLong[i], latLong[i+1]))
     }
@@ -32,9 +23,50 @@ function getBearings(){
 
 /**
  * Calculates the angle between the bearing of two points:
- * The calculation approximates the angle without including of the earth's curvature.
+ * The calculation does not take into account the impact of the earth's curvature (which is very little).
  */
 function getAngle(p0, p1) {
-    if (latLong[p1 + 1] === undefined) console.log(p0, p1)
     return bearings[p0] - bearings[p1];
+}
+
+/**
+ * Calculates a degree value with minutes for a given degree value.
+ */
+function getDegreeMinutes(degreeValue) {
+    const wholeDegrees = Math.floor(degreeValue);
+    const minuteValue = (60 * (degreeValue - wholeDegrees)).toFixed(3);
+    return wholeDegrees + '\u00B0\u00A0' + minuteValue + '\u00B4';
+}
+
+/**
+ * Generates a string representation for a given position
+ * @param {number[]} position latitude and longitude
+ * @returns {string}
+ */
+function getPositionString(position) {
+    return getLatitudeString(position) + ",   " + getLongitudeString(position);
+}
+
+/**
+ * Generates a string representation for a given latitude.
+ */
+function getLatitudeString(position){
+    const positionLatitude = getDegreeMinutes(Math.abs(position[0]));
+    if (position[0] > 0) {
+        return positionLatitude + "N";
+    } else {
+        return positionLatitude + "S";
+    }
+}
+
+/**
+ * Generates a string representation for a given longitude.
+ */
+function getLongitudeString(position){
+    const positionLongitude = getDegreeMinutes(Math.abs(position[1]));
+    if (position[1] > 0) {
+        return positionLongitude + "E";
+    } else {
+        return positionLongitude + "W";
+    }
 }

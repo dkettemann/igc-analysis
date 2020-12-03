@@ -1,12 +1,15 @@
-function setOutput(text) {
-    // outputElement.textContent = text;
-    // algorithmButtons.style.display = 'inline-block';
-}
-
 function setCircleDetectionOutput(timeSpent, circlesCount) {
-    const msg = circlesCount > 0 ? circlesCount + " circles found!" : "no circles were detected"
+    let msg;
+    if (circlesCount > 1) {
+        msg = circlesCount + " circles found!";
+    } else if (circlesCount === 1) {
+        msg = "1 circle found!";
+    } else {
+        msg = "no circles were detected";
+    }
+
     circlesTimeSpent.textContent = "circle detection finished in " + timeSpent + " seconds: " + msg;
-    if (circlesCount > 0) setCheckboxValue(circleCheckbox, true);
+    showProgress(latLong.length);
 }
 
 function applyCircleDetectionProgress(value) {
@@ -20,8 +23,76 @@ function getTimeLineValue() {
     return parseInt(timeSliderElement.value, 10);
 }
 
+function showCheckboxes() {
+    checkboxContainer.style.display = "block";
+}
+
+function showInfoContainers() {
+    igcInfoContainer.style.display = "block";
+    outputContainer.style.display = "block";
+    dragAndDropParagraph.style.display = "none";
+}
+
 function setTimelineValue(timeIndex) {
     if(timeIndex < 0) return;
     updateTimeline(timeIndex, mapControl);
     timeSliderElement.value = timeIndex;
+}
+
+function displayIGCHeader(){
+    showInfoContainers();
+    const displayDate = moment(igcFile.recordTime[0]).format('LL');
+    headerTableElement.innerHTML = '<tr></tr>' + '<th>Date</th>'
+        + '<td>' + displayDate + '</td>';
+    addToTable(igcFile.headers);
+}
+
+function addToTable(elementsArray) {
+    for (const item of elementsArray) {
+        headerTableElement.innerHTML += '<tr></tr>' + '<th>' + item.name + '</th>'
+            + '<td>' + item.value + '</td>';
+    }
+}
+
+function getAltitudeString(altitude){
+    if(altitudeUnits.value === "feet") return (altitude * altitudeConversionFactor).toFixed(0) + " feet";
+    return altitude + "m";
+}
+
+function getDistanceString(distance){
+    if(altitudeUnits.value === "feet") return twoDigitsFixed(distance * 0.621371) + " miles";
+    return distance + "km";
+}
+
+function showIGCTasks(){
+    // Show the task declaration if it is present.
+    if (igcFile.task.coordinates.length > 0) {
+        //eliminate anything with empty start line coordinates
+        if (igcFile.task.coordinates[0][0] !== 0) {
+            taskElement.style.display = 'block';
+            //Now add TP numbers.  Change to unordered list
+            if (igcFile.task.takeoff.length > 0) {
+                taskListElement.innerHTML = '<li>' + 'Takeoff: ' + igcFile.task.takeoff + '</li>';
+            }
+            for (let j = 0; j < igcFile.task.names.length; j++) {
+                switch (j) {
+                    case 0:
+                        taskListElement.innerHTML += '<li>' + 'Start: ' + igcFile.task.names[j] + '</li>';
+                        break;
+                    case (igcFile.task.names.length - 1):
+                        taskListElement.innerHTML += '<li>' + 'Finish: ' + igcFile.task.names[j] + '</li>';
+                        break;
+                    default:
+                        taskListElement.innerHTML += '<li>' + 'TP' + (j).toString() + ": " + igcFile.task.names[j] + '</li>';
+                }
+            }
+            if (igcFile.task.landing.length > 0) {
+                taskListElement.innerHTML += '<li>' + 'Landing: ' + igcFile.task.landing + '</li>';
+            }
+            mapControl.addTask(igcFile.task.coordinates, igcFile.task.names);
+        }
+    } else {
+        taskElement.style.display = 'none';
+    }
+
 }

@@ -26,12 +26,9 @@ const timeBackButton = document.querySelector('#timeBack');
 const timeForwardButton = document.querySelector('#timeForward');
 const fileControl = document.querySelector('#file-control');
 
-let handleFileInput;
-let mapControl;
-let updateTimeline;
-let altitudeConversionFactor = 1.0; // Convert from metres to required units
-
 let igcFile;
+let mapControl;
+let altitudeConversionFactor = 1.0; // Convert from metres to required units
 let latLong = [];
 let distances = [];
 let bearings = [];

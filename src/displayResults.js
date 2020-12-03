@@ -6,14 +6,11 @@ async function displayResults(results, mapCtrl) {
     mapControl = mapCtrl;
     curve90 = results.shapeDetection.curve90;
     curve180 = results.shapeDetection.curve180;
-    if (curve90.length > 0) {
-        setCheckboxValue(curve90Checkbox, true);
-        displayCurves(curve90, "curve90", "#32cd32");
-    } else curve90Checkbox.disabled = true;
-    if (curve180.length > 0) {
-        setCheckboxValue(curve180Checkbox, true);
-        displayCurves(curve180, "curve180", "#00FF00");
-    } else curve180Checkbox.disabled = true;
+    if (curve90.length > 0) displayCurves(curve90, "curve90", "#32cd32");
+    if (curve180.length > 0) displayCurves(curve180, "curve180", "#00FF00");
+    for (const algorithm of algorithms) {
+        if (arrayIsEmpty(algorithm.result)) algorithm.checkbox.disabled = true;
+    }
 }
 
 function displayCurves(curves, layerName = "", color) {
@@ -40,7 +37,6 @@ function displayCircles(circles, color) {
         const circlePoints = latLong.slice(circle[0], circle[1] + 1);
         mapControl.addShape(circlePoints, color);
     }
-    if (circles.length > 0) setCheckboxValue(circleCheckbox, true);
     circleCheckbox.disabled = circles.length === 0;
 }
 
@@ -54,6 +50,7 @@ function displayEights(eights) {
 
 document.addEventListener("DOMContentLoaded", async () => {
     curve90Checkbox.addEventListener('change', () => {
+        storePreference("curve90", curve90Checkbox.checked);
         if (curve90Checkbox.checked) {
             displayCurves(results.shapeDetection.curve90, "curve90");
         } else {
@@ -62,6 +59,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     curve180Checkbox.addEventListener('change', () => {
+        storePreference("curve180", curve180Checkbox.checked);
         if (curve180Checkbox.checked) {
             displayCurves(results.shapeDetection.curve180, "curve180");
         } else {
@@ -70,6 +68,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     circleCheckbox.addEventListener('change', () => {
+        storePreference("circle", circleCheckbox.checked);
         if (circleCheckbox.checked) {
             displayCircles(results.shapeDetection.circle);
         } else {
@@ -79,6 +78,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     eightCheckbox.addEventListener('change', () => {
+        storePreference("eight", eightCheckbox.checked);
         if (eightCheckbox.checked) {
             displayEights(results.shapeDetection.eight);
         } else {
@@ -86,4 +86,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     });
 
+    curveAlgorithm.addEventListener('change', () => {
+        storePreference("curveAlgorithm", curveAlgorithm.value);
+    });
+
+    circleAlgorithm.addEventListener('change', () => {
+        storePreference("circleAlgorithm", circleAlgorithm.value);
+    });
+
 });
+
+function arrayNotEmpty(array){
+    // if array.length returns 0, the statement evaluates to false
+    return Array.isArray(array) && array.length;
+}
+
+function arrayIsEmpty(array){
+    return !arrayNotEmpty(array);
+}

@@ -4,30 +4,35 @@ async function runAlgorithms(track) {
     await initAlgorithmVariables(track);
     showCheckboxes();
     const curves = await curveDetection(track.latLong, distances, 0.3, false);
-    results = await getResultObject(curves);
+    getResultObject(curves);
+    addAlgorithms();
     await displayKeyFigures(results.additionalData);
-    await displayResults(results, mapControl);
-
     results.shapeDetection.circle = await circleDetection(false);
     results.shapeDetection.eight = await eightDetection();
+    algorithms[2].result = results.shapeDetection.circle;
+    algorithms[3].result = results.shapeDetection.eight;
+    await displayResults(results, mapControl);
     closeRuntimeInfoModal();
     return results;
 }
 
-function getResultObject(curves) {
-    return {
-        igcHeader: getIGCHeader(),
-        additionalData: getKeyFigures(),
-        shapeDetection: {
-            curve90: curves[0],
-            curve180: curves[1],
-            circle: null,
-            eight: null
-        }
-    };
+function addAlgorithms() {
+    algorithms = [
+        {name: "curve90", result: results.shapeDetection.curve90, checkbox: curve90Checkbox},
+        {name: "curve180", result: results.shapeDetection.curve180, checkbox: curve180Checkbox},
+        {name: "circle", result: results.shapeDetection.circle, checkbox: circleCheckbox},
+        {name: "eight", result: results.shapeDetection.eight, checkbox: eightCheckbox},
+    ];
 }
 
-async function initAlgorithmVariables(track){
+function getResultObject(curves) {
+    results.igcHeader = getIGCHeader();
+    results.additionalData = getKeyFigures();
+    results.shapeDetection.curve90 = curves[0];
+    results.shapeDetection.curve180 = curves[1];
+}
+
+async function initAlgorithmVariables(track) {
     _curve90 = [];
     _curve180 = [];
     _circles = [];

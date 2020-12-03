@@ -50,7 +50,7 @@
                 <div class="file-selection">
                     <label for="file-control"id="open-file" class="blue-button">Select an IGC file</label>
                     <input id="file-control" type="file" style="display: none"/>
-                    <button type="button" id="display-default-file" class="white-button">Display a default file!</button>
+                    <button type="button" id="display-default-file" class="white-button" onclick="displayDefaultFile()">Display a default file!</button>
                 </div>
 
                 <div class="igc-container">
@@ -101,19 +101,19 @@
                     <label class="preferences-option">Which geometric shapes should be highlighted?</label>
                     <div id="checkbox-container" class="preferences-option">
                         <div class="checkbox">
-                            <input type="checkbox" id="curve-90" name="scales" checked="checked">
+                            <input type="checkbox" id="curve-90" name="scales">
                             <label for="curve-90" class="checkbox-label"> 90° curves</label>
                         </div>
                         <div class="checkbox">
-                            <input type="checkbox" id="curve-180" name="scales" checked="checked">
+                            <input type="checkbox" id="curve-180" name="scales">
                             <label for="curve-180" class="checkbox-label"> 180° curves</label>
                         </div>
                         <div class="checkbox">
-                            <input type="checkbox" id="circle-checkbox" name="scales" checked="checked">
+                            <input type="checkbox" id="circle-checkbox" name="scales">
                             <label for="circle-checkbox" class="checkbox-label"> circles</label>
                         </div>
                         <div class="checkbox">
-                            <input type="checkbox" id="eight-checkbox" name="scales" checked="checked">
+                            <input type="checkbox" id="eight-checkbox" name="scales">
                             <label for="eight-checkbox" class="checkbox-label"> eights</label>
                         </div>
                     </div>

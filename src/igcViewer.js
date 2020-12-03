@@ -1,8 +1,7 @@
 'use strict';
 
 document.addEventListener("DOMContentLoaded", () => {
-    getTimeZoneOptions();
-    getTimeZone();
+    getPreferences();
 });
 
 async function handleFileInput(file) {
@@ -19,7 +18,7 @@ async function handleFileInput(file) {
         };
         igcContainer.style.display = 'none';
         reader.readAsText(file);
-    })
+    });
 }
 
 async function displayDefaultFile() {
@@ -45,8 +44,9 @@ function updateTimeline(timeIndex) {
 async function resetMap() {
     try {
         errorMessageElement.innerHTML = "";
-        if (L.AwesomeMarkers === undefined) throw new IGCException('The Awesome Markers Library could not be loaded.')
-        if(mapControl) {
+        if (L.AwesomeMarkers === undefined) throw new IGCException('The Awesome Markers Library could not be loaded.');
+
+        if (mapControl) {
             mapControl.initMap();
         } else {
             mapControl = await createMapControl('map');
@@ -81,7 +81,7 @@ function displayIgc(mapControl) {
     return "done";
 }
 
-function getTimeZoneOptions(){
+function getTimeZoneOptions() {
     moment.tz.names().forEach((name) => {
         timeZoneSelect.innerHTML += `<option value="${name}">` + name + '</option>';
     });
@@ -96,28 +96,42 @@ function getTimeZoneOptions(){
         }
 
         storePreference('timeZone', selectedZone);
+    };
+}
+
+function getPreferences() {
+    getTimeZoneOptions();
+
+    if (!window.localStorage) {
+        setTimeZone('UTC');
+        return;
+    }
+
+    try {
+        for (const algorithm of algorithms) {
+            setCheckboxValue(algorithm.checkbox,
+                localStorage.getItem(algorithm.name)
+            );
+        }
+        const altitudeUnit = localStorage.getItem('altitudeUnit');
+        if (altitudeUnit) {
+            altitudeUnits.value = altitudeUnit;
+            altitudeUnits.onchange();
+        }
+
+        const timeZone = localStorage.getItem('timeZone');
+        if (timeZone) setTimeZone(timeZone);
+
+        const storedCurveAlgorithm = localStorage.getItem('curveAlgorithm');
+        if (storedCurveAlgorithm) curveAlgorithm.value = storedCurveAlgorithm;
+        const storedCircleAlgorithm = localStorage.getItem('circleAlgorithm');
+        if (storedCircleAlgorithm) curveAlgorithm.value = storedCircleAlgorithm;
+    } catch (e) {
+        // If permission is denied, ignore the error.
     }
 }
 
-function getTimeZone(){
-    let altitudeUnit = '';
-    let timeZone = '';
-    // Load preferences from local storage, if available.
-    if (window.localStorage) {
-        try {
-            altitudeUnit = localStorage.getItem('altitudeUnit');
-            if (altitudeUnit) {
-                altitudeUnits.value = altitudeUnit;
-                altitudeUnits.onchange();
-            }
-
-            timeZone = localStorage.getItem('timeZone');
-        } catch (e) {
-            // If permission is denied, ignore the error.
-        }
-    }
-
-    if (!timeZone) timeZone = 'UTC';
+function setTimeZone(timeZone) {
     timeZoneSelect.value = timeZone;
     moment.tz.setDefault(timeZone);
 }
@@ -125,7 +139,7 @@ function getTimeZone(){
 timeSliderElement.oninput = timeSliderChangeHandler; // for Chrome and Firefox
 timeSliderElement.onchange = timeSliderChangeHandler; // for IE
 function timeSliderChangeHandler() {
-    updateTimeline(getTimeLineValue(), mapControl)
+    updateTimeline(getTimeLineValue(), mapControl);
 }
 
 timeBackButton.addEventListener("click", () => setTimelineValue(
@@ -135,8 +149,6 @@ timeBackButton.addEventListener("click", () => setTimelineValue(
 timeForwardButton.addEventListener("click", () => setTimelineValue(
     getTimeLineValue() + 1
 ));
-
-displayDefaultFileButton.addEventListener("click", displayDefaultFile);
 
 fileControl.onchange = function () {
     if (this.files.length < 1) return;

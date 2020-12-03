@@ -27,9 +27,6 @@ async function findCircles() {
 
         for (let p1 = getFirstPossibleP1(p0); p1 < latLong.length; p1++) {
             if (pathLength(distances, p0, p1) > circleMaxLength) break;
-            if(p0===296 && p1 === 315) {
-                console.log(true);
-            }
 
             // circle check - the order of conditions minimizes runtime
             if (circleGapCondition(p0, p1) && locallyOptimalP1(p0, p1) && circleDiameterCondition(p0, p1)) {
@@ -46,8 +43,6 @@ async function findCircles() {
 }
 
 async function showProgress(p0) {
-    if (_circles.length > 0) setCheckboxValue(circleCheckbox, true);
-
     if (getCurrentRuntimeMilliseconds() > runtimeModalTimeout && !modalWasOpened) showRuntimeInfoModal();
     await applyCircleDetectionProgress(
         getProgressValue(p0, latLong.length)

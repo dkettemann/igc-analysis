@@ -5,12 +5,16 @@ let _curve90PreviousScore = 0,
     _curve180PreviousScore = 0;
 
 async function curveDetection(latLong, distances, radius, useTheta) {
+    setStartTime();
     console.time("curveDetection");
     let result;
-    if(useTheta) result = await findThetaCurves();
-    else result = await findCurves(latLong, distances, 1, radius);
+    if (useTheta) {
+        result = await findThetaCurves();
+    } else {
+        result = await findCurves(latLong, distances, 1, radius);
+    }
     console.timeEnd("curveDetection");
-    if(useTheta) displayThetaCurves(result, "curves")
+    if (useTheta) displayThetaCurves(result, "curves");
     return result;
 }
 
@@ -20,7 +24,7 @@ async function findCurves(latLong, distances, stepSize, radius) {
             p2 = getNextPointRecursive(radius, p1, distances);
 
         if (p2 < 0) break; // no next point exists
-        if (p0 % domUpdateInterval === 0) await domUpdate();
+        if (getCurrentRuntimeMilliseconds() > domUpdateInterval) await domUpdate();
 
         const distP0P1 = distance(p1, p0),
             distP1P2 = distance(p2, p1),

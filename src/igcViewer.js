@@ -151,6 +151,7 @@ altitudeUnits.onchange = function () {
     }
 
     if (igcFile !== undefined) {
+        initFlightInformation();
         updateTimeline(timeSliderElement.value, mapControl);
         plotBarogramChart();
     }

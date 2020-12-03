@@ -8,7 +8,7 @@ function getKeyFigures() {
         maxAltitudeAboveStart: getMaxAltitudeAboveStart(),
         startLocation: getStartLocation(),
         landingLocation: getLandingLocation(),
-        startLandingDistanceInKM: getStartLandingDistanceKM()
+        startLandingDistance: getStartLandingDistanceKM()
     }
 }
 

@@ -39,6 +39,11 @@ function setTimelineValue(timeIndex) {
     timeSliderElement.value = timeIndex;
 }
 
+function initFlightInformation(){
+    displayIGCHeader();
+    displayKeyFigures(results.additionalData);
+}
+
 function displayIGCHeader(){
     showInfoContainers();
     const displayDate = moment(igcFile.recordTime[0]).format('LL');
@@ -52,6 +57,25 @@ function addToTable(elementsArray) {
         headerTableElement.innerHTML += '<tr></tr>' + '<th>' + item.name + '</th>'
             + '<td>' + item.value + '</td>';
     }
+}
+
+function displayKeyFigures(keyFigures){
+    addToTable([
+        {name: "Total flight time", value: keyFigures.flightTime + " hours"},
+        {name: "Total distance", value: getDistanceString(keyFigures.totalDistance)},
+        {name: "Maximum speed", value: getSpeedString(keyFigures.maxSpeed)},
+        {name: "Maximum altitude", value: getAltitudeString(keyFigures.maxAltitude)},
+        {name: "Minimum altitude", value: getAltitudeString(keyFigures.minAltitude)},
+        {name: "Maximum altitude above start", value: getAltitudeString(keyFigures.maxAltitudeAboveStart)},
+        {name: "Start location", value: getPositionString(keyFigures.startLocation)},
+        {name: "Landing location", value: getPositionString(keyFigures.landingLocation)},
+        {name: "Distance from start to landing", value: getDistanceString(keyFigures.startLandingDistance)}
+    ]);
+}
+
+function getSpeedString(speed){
+    if(altitudeUnits.value === "feet") return twoDigitsFixed(speed * 0.621371) + " mph";
+    return speed + "km/h";
 }
 
 function getAltitudeString(altitude){

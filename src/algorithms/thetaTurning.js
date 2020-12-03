@@ -48,19 +48,28 @@ function getThetaTurnings(){
     return turnings;
 }
 
-async function thetaCircles() {
-    const thetaCircles = [];
-    for (let i = 0; i < latLong.length - 2; i++) {
-        let p0 = i, p1 = i + 1, p2 = i + 2;
-        while (validTurningAngle(p0, p1) && p2 < latLong.length) {
-            if (p2 > i + 5 && circleGapCondition(i, p2)) {
-                thetaCircles.push([i, p2]);
-                i = p2;
-            }
-            p0++, p1++, p2++;
-        }
-    }
-
-    return thetaCircles;
+function validTurningAngle(p0, p1) {
+    if (p1 + 1 >= latLong.length) return false;
+    let angle = getAngle(p0, p1);
+    angle = (angle + 360.0) % 360.0; // ensure that the resulting angle is a positive number
+    return angle > thetaMinValue && angle < thetaMaxValue;
 }
 
+function getTurningDirection(p0, p1){
+    let positives = 0;
+    let negatives = 0;
+    for (p0; p0 <= p1; p0++) {
+        if (getAngle(p0, p0+1) > 0) {
+            positives++;
+        } else if (getAngle(p0, p0+1) < 0) {
+            negatives++;
+        }
+    }
+    if (positives < negatives) {
+        return "right";
+    } else if (negatives > positives) {
+        return "left";
+    } else {
+        return "ahead";
+    }
+}

@@ -1,19 +1,20 @@
-const modal = document.getElementById("myModal");
+const modal = document.getElementById("runtime-info");
 const span = document.getElementsByClassName("close")[0];
+let modalWasOpened = false;
 
-const openModal = () => modal.style.display = "block";
-const closeModal = () => modal.style.display = "none";
+document.addEventListener("DOMContentLoaded", () => {
+    span.onclick = () => closeRuntimeInfoModal();
 
-span.onclick = () => closeModal();
+    window.addEventListener("click", (event) => {
+        if (event.target === modal) closeRuntimeInfoModal();
+    });
+});
 
-window.onclick = (event) => {
-    if (event.target === modal) closeModal();
+function showRuntimeInfoModal() {
+    modal.style.display = "block";
+    modalWasOpened = true;
 }
 
-async function reduceCalculationSpeed(){
-    closeModal();
-    console.log("reducing the calculation speed")
-    console.log("now waiting " + calculationSlowdown + "ms every " + domUpdateInterval + " operations");
-    calculationSlowdown = 300;
-    await domUpdate();
+function closeRuntimeInfoModal() {
+    modal.style.display = "none";
 }

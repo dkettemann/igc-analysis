@@ -1,27 +1,30 @@
-const outputElement = document.querySelector('#curve-detection-output');
-const algorithmButtons = document.querySelector('.algorithm-buttons');
+const checkboxContainer = document.querySelector('#checkbox-container');
 const curve90Checkbox = document.querySelector('#curve-90');
 const curve180Checkbox = document.querySelector('#curve-180');
-
-const circleDetectionContainer = document.querySelector('.circle-detection');
 const circleCheckbox = document.querySelector('#circle-checkbox');
+const eightCheckbox = document.querySelector('#eight-checkbox');
+const igcInfoContainer = document.querySelector('#igc-info-container');
+const outputContainer = document.querySelector('#analysis-output');
+const circleDetectionContainer = document.querySelector('.circle-detection');
+const dragAndDropParagraph = document.querySelector('#drag-and-drop-paragraph');
 const circlesTimeSpent = document.querySelector('#time-spent-circles');
 const circleAlgorithmProgressBar = document.querySelector('#circle-progress');
 const chartElement = document.querySelector('#barogram-chart');
-const altitudeUnits = document.querySelector('#altitudeUnits');
 const timePositionDisplay = document.querySelector('#timePositionDisplay');
 const timeSliderElement = document.querySelector('#timeSlider');
 let headerTableElement = document.querySelector('#headerInfo tbody');
 const taskElement = document.querySelector('#task');
 const taskListElement = document.querySelector('#task ul');
-const igcFileDisplay = document.querySelector('#igcFileDisplay');
+const igcFileDisplay = document.querySelector('#igc-file-display');
 const igcContainer = document.querySelector('.igc-container');
-const timeZoneSelect = document.querySelector('#timeZoneSelect');
+const altitudeUnits = document.querySelector('#select-altitude-units');
+const timeZoneSelect = document.querySelector('#select-time-zone');
+const circleAlgorithm = document.querySelector('#select-circle-algorithm');
 const errorMessageElement = document.querySelector('#errorMessage');
 const displayDefaultFileButton = document.querySelector('#display-default-file');
 const timeBackButton = document.querySelector('#timeBack');
 const timeForwardButton = document.querySelector('#timeForward');
-const fileControl = document.querySelector('#fileControl');
+const fileControl = document.querySelector('#file-control');
 
 let handleFileInput;
 let mapControl;

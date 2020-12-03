@@ -5,18 +5,26 @@ let timestamp;
 let myChart;
 let pruningFactor;
 
-function plotBarogramChart(igcFile) {
+document.addEventListener("DOMContentLoaded", () => {
+    chartElement.onclick = evt => {
+        const point = myChart.getElementsAtEventForMode(evt, 'point', myChart.options)[0];
+        if (!point) return; // no point was focused, just the chart background was clicked
+        setTimelineValue(point._index * pruningFactor);
+    };
+});
+
+function plotBarogramChart() {
     dataLabels = [];
     pressureBarogramData = [];
     gpsBarogramData = [];
-    if(myChart !== undefined) myChart.destroy();
-    getBarogramData(igcFile);
+    if (myChart !== undefined) myChart.destroy();
+    getBarogramData();
     const ctx = document.getElementById("canvas").getContext('2d');
     const config = getChartConfig();
     myChart = new Chart(ctx, config);
 }
 
-function getBarogramData(igcFile) {
+function getBarogramData() {
     pruningFactor = getPruningFactor(igcFile.recordTime.length);
     for (let i = 0; i < igcFile.recordTime.length; i += pruningFactor) {
         timestamp = moment(igcFile.recordTime[i]).format('HH:mm');
@@ -29,12 +37,6 @@ function getBarogramData(igcFile) {
 function getPruningFactor(recordLength) {
     return recordLength > 200 ? Math.round(recordLength / 50) : 1;
 }
-
-chartElement.onclick = evt => {
-    const point = myChart.getElementsAtEventForMode(evt, 'point', myChart.options)[0];
-    if (!point) return; // no point was focused, just the chart background was clicked
-    setTimelineValue(point._index * pruningFactor);
-};
 
 // TODO: reduce point size??
 function getChartConfig() {
@@ -65,22 +67,33 @@ function getChartConfig() {
         },
         options: {
             responsive: true,
-            maintainAspectRatio: true,
-            title: {
-                display: true,
-                text: 'Barogram Data Line Chart'
-            },
+            maintainAspectRatio: false,
             scales: {
                 xAxes: [{
-                    afterTickToLabelConversion: function (data) {
+                    afterTickToLabelConversion: data => {
                         const xLabels = data.ticks;
-                        xLabels.forEach(function (labels, i) {
+                        xLabels.forEach((labels, i) => {
                             if (i % 2 === 1) {
                                 xLabels[i] = '';
                             }
                         });
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Time'
                     }
-                }]
+                }],
+                yAxes: [
+                    {
+                        ticks: {
+                            callback: label => label + getHeightUnit()
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Height AGL (' + altitudeUnits.value + ')'
+                        }
+                    }
+                ]
             },
             legend: {
                 display: true,
@@ -92,4 +105,15 @@ function getChartConfig() {
         }
 
     };
+}
+
+function getHeightUnit() {
+    switch (altitudeUnits.value) {
+        case "metres":
+            return "m";
+        case "feet":
+            return "ft";
+        default:
+            return "";
+    }
 }

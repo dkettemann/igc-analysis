@@ -1,22 +1,17 @@
 'use strict';
 
 async function runAlgorithms(track) {
-    latLong = track.latLong;
-    distances = calcDistances(latLong);
-    bearings = await getBearings();
-    maxPointDistance = Math.max(...distances);
+    await initAlgorithmVariables(track);
+    showCheckboxes();
     const curves = await curveDetection(track.latLong, distances, 0.3, false);
-    results = getResultObject(curves);
+    results = await getResultObject(curves);
+    await displayKeyFigures(results.additionalData);
     await displayResults(results, mapControl);
-    results.shapeDetection.circle = await circleDetection(true);
-    // results.shapeDetection.circle = await circleDetection(false);
-    results.shapeDetection.eight = await eightDetection();
-    return results;
-}
 
-async function pauseCalculations() {
-    await domUpdate();
-    await sleep(calculationSlowdown);
+    results.shapeDetection.circle = await circleDetection(false);
+    results.shapeDetection.eight = await eightDetection();
+    closeRuntimeInfoModal();
+    return results;
 }
 
 function getResultObject(curves) {
@@ -30,6 +25,17 @@ function getResultObject(curves) {
             eight: null
         }
     };
+}
+
+async function initAlgorithmVariables(track){
+    _curve90 = [];
+    _curve180 = [];
+    _circles = [];
+    latLong = track.latLong;
+    distances = calcDistances(latLong);
+    bearings = await getBearings();
+    maxPointDistance = Math.max(...distances);
+    modalWasOpened = false;
 }
 
 function getIGCHeader() {

@@ -1,3 +1,5 @@
+let _customCircles = [];
+
 async function eightDetection() {
     console.time("eightDetection");
     const eights = await findEights(latLong, distances);
@@ -6,19 +8,26 @@ async function eightDetection() {
 }
 
 async function findEights() {
-    const circles = results.shapeDetection.circle;
+    _customCircles = await runCircleDetectionWithCustomParameters();
     const eights = [];
-    for (let i = 0; i < circles.length - 1; i++) {
+    for (let i = 0; i < _customCircles.length - 1; i++) {
         // One circle must be a right, the other a left turn
         if (!eightGapCondition(i, i+1) || sameTurningDirection(i, i+1)) continue;
 
-        if (noCircleIntersection(circles[i], circles[i+1]) && noEightIntersection(eights, circles[i])) {
-            console.log('%c eight found: ', 'color: gray', 'idx ' + circles[i][0] + ' to ' + circles[i + 1][1], eightGap(i, i+1) / combinedPathLength(i, i+1));
-            eights.push([circles[i][0], circles[i+1][1]])
+        if (noCircleIntersection(_customCircles[i], _customCircles[i+1]) && noEightIntersection(eights, _customCircles[i])) {
+            eights.push([_customCircles[i][0], _customCircles[i+1][1]])
         }
 
     }
     return eights;
+}
+
+async function runCircleDetectionWithCustomParameters() {
+    const previousCircleDiameterMaxDeviation = circleDiameterMaxDeviation;
+    circleDiameterMaxDeviation = eightDiameterMaxDeviation;
+    const circles = await circleDetection(false);
+    circleDiameterMaxDeviation = previousCircleDiameterMaxDeviation;
+    return circles;
 }
 
 function noCircleIntersection(circle1, circle2) {
@@ -54,16 +63,16 @@ function eightGapCondition(i, j){
 }
 
 function combinedPathLength(i, j) {
-    const circles = results.shapeDetection.circle;
+    const circles = _customCircles;
     return pathLength(distances, circles[i][0], circles[j][1]);
 }
 
 function eightGap(i, j) {
-    return pathLength(distances, results.shapeDetection.circle[i][1], results.shapeDetection.circle[j][0]);
+    return pathLength(distances, _customCircles[i][1], _customCircles[j][0]);
 }
 
 function sameTurningDirection(i, j){
-    const circleI = results.shapeDetection.circle[i];
-    const circleJ = results.shapeDetection.circle[j];
+    const circleI = _customCircles[i];
+    const circleJ = _customCircles[j];
     return getTurningDirection(circleI[0], circleI[1]) === getTurningDirection(circleJ[0], circleJ[1]);
 }

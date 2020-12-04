@@ -26,7 +26,6 @@ function dropHandler(ev, callback) {
         for (let i = 0; i < ev.dataTransfer.items.length; i++) {
             // If dropped items aren't files, reject them
             if (ev.dataTransfer.items[i].kind === 'file') {
-                mapControl.initMap();
                 const file = ev.dataTransfer.items[i].getAsFile();
                 console.log('%cfile received:', 'color: gray', file.name);
                 callback(file);

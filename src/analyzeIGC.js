@@ -3,11 +3,11 @@
 async function runAlgorithms(track) {
     await initAlgorithmVariables(track);
     showCheckboxes();
-    const curves = await curveDetection(track.latLong, distances, 0.3, false);
+    const curves = await curveDetection(track.latLong, distances, 0.3);
     getResultObject(curves);
-    addAlgorithms();
     await displayKeyFigures(results.additionalData);
-    results.shapeDetection.circle = await circleDetection(false);
+    results.shapeDetection.circle = await circleDetection();
+    setCircleDetectionOutput(getCurrentRuntime(), _circles.length);
     results.shapeDetection.eight = await eightDetection();
     algorithms[2].result = results.shapeDetection.circle;
     algorithms[3].result = results.shapeDetection.eight;
@@ -16,20 +16,13 @@ async function runAlgorithms(track) {
     return results;
 }
 
-function addAlgorithms() {
-    algorithms = [
-        {name: "curve90", result: results.shapeDetection.curve90, checkbox: curve90Checkbox},
-        {name: "curve180", result: results.shapeDetection.curve180, checkbox: curve180Checkbox},
-        {name: "circle", result: results.shapeDetection.circle, checkbox: circleCheckbox},
-        {name: "eight", result: results.shapeDetection.eight, checkbox: eightCheckbox},
-    ];
-}
-
 function getResultObject(curves) {
     results.igcHeader = getIGCHeader();
     results.additionalData = getKeyFigures();
     results.shapeDetection.curve90 = curves[0];
     results.shapeDetection.curve180 = curves[1];
+    algorithms[0].result = curves[0];
+    algorithms[1].result = curves[1];
 }
 
 async function initAlgorithmVariables(track) {
@@ -67,7 +60,6 @@ function setHeaderData(igcHeader) {
     for (let headerIndex = 0; headerIndex < igcFile.headers.length; headerIndex++) {
         const name = igcFile.headers[headerIndex].name;
         const value = igcFile.headers[headerIndex].value;
-        console.log(name + " --> " + value);
         switch (name) {
             case "Pilot":
                 igcHeader.pilotName = value;

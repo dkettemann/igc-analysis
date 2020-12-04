@@ -109,9 +109,8 @@ function getPreferences() {
 
     try {
         for (const algorithm of algorithms) {
-            setCheckboxValue(algorithm.checkbox,
-                localStorage.getItem(algorithm.name)
-            );
+            const checked = localStorage.getItem(algorithm.name) === "true";
+            setCheckboxValue(algorithm.checkbox, checked);
         }
         const altitudeUnit = localStorage.getItem('altitudeUnit');
         if (altitudeUnit) {
@@ -125,7 +124,7 @@ function getPreferences() {
         const storedCurveAlgorithm = localStorage.getItem('curveAlgorithm');
         if (storedCurveAlgorithm) curveAlgorithm.value = storedCurveAlgorithm;
         const storedCircleAlgorithm = localStorage.getItem('circleAlgorithm');
-        if (storedCircleAlgorithm) curveAlgorithm.value = storedCircleAlgorithm;
+        if (storedCircleAlgorithm) circleAlgorithm.value = storedCircleAlgorithm;
     } catch (e) {
         // If permission is denied, ignore the error.
     }

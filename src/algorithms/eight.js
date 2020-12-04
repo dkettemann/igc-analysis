@@ -2,7 +2,6 @@ async function eightDetection() {
     console.time("eightDetection");
     const eights = await findEights(latLong, distances);
     console.timeEnd("eightDetection");
-    displayEights(eights);
     return eights;
 }
 

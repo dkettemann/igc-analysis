@@ -19,6 +19,7 @@ const igcFileDisplay = document.querySelector('#igc-file-display');
 const igcContainer = document.querySelector('.igc-container');
 const altitudeUnits = document.querySelector('#select-altitude-units');
 const timeZoneSelect = document.querySelector('#select-time-zone');
+const curveAlgorithm = document.querySelector('#select-curve-algorithm');
 const circleAlgorithm = document.querySelector('#select-circle-algorithm');
 const errorMessageElement = document.querySelector('#errorMessage');
 const displayDefaultFileButton = document.querySelector('#display-default-file');
@@ -34,4 +35,19 @@ let distances = [];
 let bearings = [];
 let thetaTurnings = [];
 let maxPointDistance = NaN;
-let results;
+let results = {
+    igcHeader: null,
+    additionalData: null,
+    shapeDetection: {
+        curve90: null,
+        curve180: null,
+        circle: null,
+        eight: null
+    }
+};
+let algorithms = [
+    {name: "curve90", result: results.shapeDetection.curve90, checkbox: curve90Checkbox, color: "#32cd32"},
+    {name: "curve180", result: results.shapeDetection.curve180, checkbox: curve180Checkbox, color: "#00FF00"},
+    {name: "circle", result: results.shapeDetection.circle, checkbox: circleCheckbox, color: "blue"},
+    {name: "eight", result: results.shapeDetection.eight, checkbox: eightCheckbox, color: "yellow"},
+];

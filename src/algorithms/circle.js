@@ -1,21 +1,13 @@
 let _circles = [];
 
-async function circleDetection(useTheta) {
+async function circleDetection(useTheta = true) {
     setStartTime();
     _circles = [];
-    if (useTheta) {
+    if (useTheta && circleAlgorithm.value === "theta") {
         _circles = await findThetaCircles();
     } else {
         _circles = await findCircles();
     }
-
-    setCircleDetectionOutput(getCurrentRuntime(), _circles.length);
-    if (useTheta) {
-        displayCircles(_circles, 'orange');
-    } else {
-        displayCircles(_circles, 'blue');
-    }
-
     return _circles;
 }
 

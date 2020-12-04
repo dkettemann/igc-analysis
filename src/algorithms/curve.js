@@ -4,17 +4,16 @@ let _curve90 = [], _curve180 = [];
 let _curve90PreviousScore = 0,
     _curve180PreviousScore = 0;
 
-async function curveDetection(latLong, distances, radius, useTheta) {
+async function curveDetection(latLong, distances, radius) {
     setStartTime();
     console.time("curveDetection");
     let result;
-    if (useTheta) {
+    if (curveAlgorithm.value === "theta") {
         result = await findThetaCurves();
     } else {
         result = await findCurves(latLong, distances, 1, radius);
     }
     console.timeEnd("curveDetection");
-    if (useTheta) displayThetaCurves(result, "curves");
     return result;
 }
 

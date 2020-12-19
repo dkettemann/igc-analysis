@@ -9,6 +9,7 @@ async function eightDetection() {
 
 async function findEights() {
     _customCircles = await runCircleDetectionWithCustomParameters();
+    // _customCircles = results.shapeDetection.circle;
     const eights = [];
     for (let i = 0; i < _customCircles.length - 1; i++) {
         // One circle must be a right, the other a left turn
@@ -64,11 +65,11 @@ function eightGapCondition(i, j){
 
 function combinedPathLength(i, j) {
     const circles = _customCircles;
-    return pathLength(distances, circles[i][0], circles[j][1]);
+    return pathLength(circles[i][0], circles[j][1]);
 }
 
 function eightGap(i, j) {
-    return pathLength(distances, _customCircles[i][1], _customCircles[j][0]);
+    return pathLength(_customCircles[i][1], _customCircles[j][0]);
 }
 
 function sameTurningDirection(i, j){

@@ -16,7 +16,6 @@ async function handleFileInput(file) {
             plotBarogramChart(igcFile);
             return resolve();
         };
-        igcContainer.style.display = 'none';
         reader.readAsText(file);
     });
 }
@@ -29,7 +28,6 @@ async function displayDefaultFile() {
 
 function updateTimeline(timeIndex) {
     const currentPosition = igcFile.latLong[timeIndex];
-    if (timeIndex > 0) console.log(timeIndex);
     const positionText = getPositionString(currentPosition);
     const unitName = altitudeUnits.value;
     timePositionDisplay.innerHTML = moment(igcFile.recordTime[timeIndex]).format('HH:mm:ss') + ': ' +

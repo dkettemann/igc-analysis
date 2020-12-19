@@ -20,7 +20,7 @@ async function findCircles() {
         if (getCurrentRuntimeMilliseconds() > domUpdateInterval * (domUpdateCount + 1)) await showProgress(p0);
 
         for (let p1 = getFirstPossibleP1(p0); p1 < latLong.length; p1++) {
-            if (pathLength(distances, p0, p1) > circleMaxLength) break;
+            if (pathLength(p0, p1) > circleMaxLength) break;
 
             // circle check - the order of conditions minimizes runtime
             if (circleGapCondition(p0, p1) && locallyOptimalP1(p0, p1) && circleDiameterCondition(p0, p1)) {
@@ -107,7 +107,7 @@ function circleGapCondition(p0, p1) {
 }
 
 function circleDiameterCondition(p0, p1) {
-    const circumference = pathLength(distances, p0, p1);
+    const circumference = pathLength(p0, p1);
     const diameter = circumference / Math.PI;
     for (let px = p0; px < p1; px++) {
         const opposite = getOppositeCirclePoint(circumference, px);

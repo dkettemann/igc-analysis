@@ -5,10 +5,6 @@
  * @returns {number} The distance in kilometers.
  */
 function distance(p0, p1) {
-    if (latLong[p0] === undefined || latLong[p1] === undefined)
-        console.log("distance(" + p0 + ", " + p1 + "): invalid coordinates passed");
-    if(p1 >= latLong.length)
-        console.log(p1 + " >= " + latLong.length + ": p1 >= latLong.length")
     return distanceBetweenCoordinates(latLong[p0], latLong[p1])
 }
 
@@ -80,9 +76,9 @@ function average(values) {
 /**
  * Calculates the length of a path starting from p0 to p1 in the IGC graph.
  */
-function pathLength(distances, p0, p1) {
+function pathLength(p0, p1) {
     const p0ToP1 = distances.slice(p0, p1 + 1); // include p1 into the path
-    return p0ToP1.reduce((a, b) => a + b, 0);
+    return p0ToP1.reduce((a, b) => a + b);
 }
 
 /**
@@ -93,7 +89,6 @@ function pathLength(distances, p0, p1) {
  */
 function getBearing(p0, p1) {
     const degreeToRadians = Math.PI / 180.0;
-    if(p1 === undefined) console.log("here it is", p0, p1)
     const lat1 = p0[0] * degreeToRadians;
     const lon1 = p0[1] * degreeToRadians;
     const lat2 = p1[0] * degreeToRadians;

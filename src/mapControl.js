@@ -198,7 +198,6 @@ function createMapControl(elementName) {
                         taskLayers.push(tpSector);
                 }
             }
-            console.log(taskLayers)
             mapLayers.task = L.layerGroup(taskLayers).addTo(map);
             layersControl.addOverlay(mapLayers.task, 'Task');
         },

@@ -7,13 +7,17 @@
     <title>IGC Analysis Tool</title>
     <link rel="stylesheet" href="igcViewer.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.6.0/leaflet.css"/>
-    <!-- Load Font Awesome CSS asynchronously: https://stackoverflow.com/questions/32759272/how-to-load-css-asynchronously -->
-    <link rel="stylesheet" media="none" onload="if(media!=='all')media='all'"
-          href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" media="none" onload="if(media!=='all')media='all'"
-          href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <!-- Async CSS loading -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+          media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"
+          media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="//unpkg.com/leaflet-gesture-handling/dist/leaflet-gesture-handling.min.css" type="text/css"
+          media="print" onload="this.media='all'">
 
+<!--    Add Leaflet Gesture Handling and Maps-->
     <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+    <script src="//unpkg.com/leaflet-gesture-handling"></script>
     <script defer src="http://igc-analysis.com/lib/leaflet.awesome-markers.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
     <script defer src="lib/moment.min.js"></script>
@@ -48,14 +52,9 @@
                 <p id="drag-and-drop-paragraph">Drop an IGC file here or:</p>
 
                 <div class="file-selection">
-                    <label for="file-control"id="open-file" class="blue-button">Select an IGC file</label>
+                    <label for="file-control" id="open-file" class="blue-button">Select an IGC file</label>
                     <input id="file-control" type="file" style="display: none"/>
                     <button type="button" id="display-default-file" class="white-button" onclick="displayDefaultFile()">Display a default file!</button>
-                </div>
-
-                <div class="igc-container">
-                    <p id="download-p"></p>
-                    <a id="download-url"></a>
                 </div>
 
                 <div class="circle-detection">
@@ -206,7 +205,7 @@
     </div>
 
     <div id="about">
-        <h1>About IGC Analytics</h1>
+        <h1>About IGC Analysis</h1>
         <p>
             This site is built upon the <a href="https://github.com/alistairmgreen/jsigc">jsIGC GitHub Repository</a>.
             All code is open-source and available <a href="https://github.com/kettemann/igc-analysis">here</a>.

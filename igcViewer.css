@@ -180,9 +180,6 @@ table#headerInfo {
     max-height: 110vw;
     margin: 6px auto auto;
     width: 100%;
-    display: inline-block;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 #barogram-chart {
@@ -211,10 +208,6 @@ table#headerInfo {
     padding-bottom: 0; /* Default padding is huge in Internet Explorer. */
 }
 
-#igc-file-display > div {
-    overflow: auto; /* Lets the div size grow with its children. */
-}
-
 /* Bottom text */
 #igc-file-standard {
     margin-top: 45px;
@@ -223,8 +216,19 @@ table#headerInfo {
 #about {
     margin-bottom: 150px;
 }
+/* Fix the time and position display on mobile */
+@media screen and (max-width: 560px) {
+    #timePositionDisplay {
+        display: none;
+    }
+}
+
 
 @media screen and (min-width: 870px) {
+    #igc-analysis {
+        padding: 10px;
+    }
+
     #analysis-output {
         min-width: 500px;
         margin: 20px 30px 0 30px;
@@ -240,15 +244,14 @@ table#headerInfo {
     }
 
     .igc-info-content {
-        padding: 10px;
         -webkit-flex: 1; /* Safari */
         -ms-flex: 1; /* IE 10 */
         flex: 1 auto; /* Standard syntax */
     }
 
     #mapWrapper, #barogram-chart {
-        width: calc(100% - 60px);
-        margin-left: 30px;
+        width: calc(100% - 2em);
+        margin-left: 1em;
     }
 
     #display-default-file {

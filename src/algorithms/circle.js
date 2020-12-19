@@ -1,8 +1,10 @@
-let _circles = [];
+let _circles = [],
+    domUpdateCount = 0;
 
 async function circleDetection(useTheta = true) {
     setStartTime();
     _circles = [];
+    // if circleDetection is called with useTheta=false, run the optimal circle detection
     if (useTheta && circleAlgorithm.value === "theta") {
         _circles = await findThetaCircles();
     } else {
@@ -15,7 +17,7 @@ async function findCircles() {
     for (let p0 = 0; p0 < latLong.length; p0++) {
         const currentCircleCandidates = [];
         p0 = fastForwardP0(p0);
-        if (getCurrentRuntime() > domUpdateInterval) await showProgress(p0);
+        if (getCurrentRuntimeMilliseconds() > domUpdateInterval * (domUpdateCount + 1)) await showProgress(p0);
 
         for (let p1 = getFirstPossibleP1(p0); p1 < latLong.length; p1++) {
             if (pathLength(distances, p0, p1) > circleMaxLength) break;
@@ -35,6 +37,7 @@ async function findCircles() {
 }
 
 async function showProgress(p0) {
+    domUpdateCount++;
     if (getCurrentRuntimeMilliseconds() > runtimeModalTimeout && !modalWasOpened) showRuntimeInfoModal();
     await applyCircleDetectionProgress(
         getProgressValue(p0, latLong.length)
@@ -80,6 +83,7 @@ function noIntersection(circle) {
 }
 
 function fastForwardP0(p0) {
+    // if p0 is smaller than the last circle's endpoint, fast-forward p0 to this endpoint
     if (_circles.length > 0 && getLastCircle()[1] > p0) p0 = getLastCircle()[1];
     return p0;
 }
@@ -99,7 +103,7 @@ function getOppositeCirclePoint(circumference, px) {
 }
 
 function circleGapCondition(p0, p1) {
-    return distance(p0, p1) < circleMaxGap;
+    return distance(p0, p1) < circleMaxGap; // alternative – relative circle gap: 0.2 * pathLength(p0, p1)
 }
 
 function circleDiameterCondition(p0, p1) {

@@ -1,5 +1,5 @@
 // --- CPU usage ---
-let domUpdateInterval = 2000; // At least every n milliseconds, the DOM needs to be updated
+let domUpdateInterval = 200; // At least every n milliseconds, the DOM needs to be updated. Example: 100
 const runtimeModalTimeout = 4000; // The runtime info modal will be shown after this timeout, if the algorithms are still running
 
 // --- Algorithm parameters ---

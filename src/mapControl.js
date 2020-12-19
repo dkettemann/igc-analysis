@@ -14,7 +14,7 @@ function createMapControl(elementName) {
 
     function createMap() {
         if (map) map.remove();
-        map = L.map(elementName);
+        map = L.map(elementName, {gestureHandling: true});
         const attribution = '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>';
         mapLayers = {
             positron: L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
@@ -24,6 +24,11 @@ function createMapControl(elementName) {
 
             darkMatter: L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png', {
                 attribution: attribution,
+                maxZoom: 18
+            }),
+
+            openStreetMap: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
                 maxZoom: 18
             }),
 
@@ -43,6 +48,7 @@ function createMapControl(elementName) {
         };
 
         layersControl = L.control.layers({
+            'OpenStreetMap': mapLayers.openStreetMap,
             'Carto Positron': mapLayers.positron,
             'Carto Dark Matter': mapLayers.darkMatter,
             'Stamen Toner': mapLayers.toner,
@@ -50,7 +56,7 @@ function createMapControl(elementName) {
             'Stamen Terrain': mapLayers.terrain
         });
 
-        mapLayers.positron.addTo(map);
+        mapLayers.openStreetMap.addTo(map);
         layersControl.addTo(map);
 
         L.AwesomeMarkers.Icon.prototype.options.prefix = 'fa';
@@ -59,7 +65,7 @@ function createMapControl(elementName) {
             iconColor: 'white',
             markerColor: 'red'
         });
-        layerGroups = {}
+        layerGroups = {};
         layerGroup = L.layerGroup().addTo(map);
 
         return map;

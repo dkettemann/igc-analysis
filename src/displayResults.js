@@ -13,7 +13,7 @@ async function displayResults(results) {
 
 function setDisabledProperty() {
     for (const algorithm of algorithms) {
-        if (arrayIsEmpty(algorithm.result)) algorithm.checkbox.disabled = true;
+        algorithm.checkbox.disabled = arrayIsEmpty(algorithm.result);
     }
 }
 

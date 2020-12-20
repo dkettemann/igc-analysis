@@ -38,7 +38,6 @@ function getPruningFactor(recordLength) {
     return recordLength > 200 ? Math.round(recordLength / 50) : 1;
 }
 
-// TODO: reduce point size??
 function getChartConfig() {
     return {
         type: 'line',

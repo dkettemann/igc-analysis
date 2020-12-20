@@ -10,9 +10,8 @@ async function handleFileInput(file) {
         reader.onload = async () => {
             await resetMap();
             igcFile = parseIGC(reader.result);
-            displayIgc(mapControl);
-            const results = await runAlgorithms(igcFile);
-            console.log(results);
+            await displayIgc(mapControl);
+            await runAlgorithms(igcFile);
             plotBarogramChart(igcFile);
             return resolve();
         };
@@ -99,16 +98,12 @@ function getTimeZoneOptions() {
 
 function getPreferences() {
     getTimeZoneOptions();
-
     if (!window.localStorage) {
         setTimeZone('UTC');
-        return;
-    }
-
-    try {
+    } else try {
         for (const algorithm of algorithms) {
-            const checked = localStorage.getItem(algorithm.name) === "true";
-            setCheckboxValue(algorithm.checkbox, checked);
+            const unchecked = localStorage.getItem(algorithm.name) === "false";
+            setCheckboxValue(algorithm.checkbox, !unchecked);
         }
         const altitudeUnit = localStorage.getItem('altitudeUnit');
         if (altitudeUnit) {
@@ -117,7 +112,11 @@ function getPreferences() {
         }
 
         const timeZone = localStorage.getItem('timeZone');
-        if (timeZone) setTimeZone(timeZone);
+        if (timeZone) {
+            setTimeZone(timeZone);
+        } else {
+            setTimeZone('UTC');
+        }
 
         const storedCurveAlgorithm = localStorage.getItem('curveAlgorithm');
         if (storedCurveAlgorithm) curveAlgorithm.value = storedCurveAlgorithm;
